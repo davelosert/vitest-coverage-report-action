@@ -1,0 +1,6 @@
+name: 'David Losert'
+description: 'Provide a Vitest Test Coverage Report as Step Summary and Comment in Pull Requests'
+author: 'David Losert'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
