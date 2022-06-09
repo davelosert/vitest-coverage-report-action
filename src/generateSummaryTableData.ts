@@ -1,5 +1,9 @@
+import { markdownTable } from 'markdown-table';
 import { JsonSummary, ReportNumbers } from './types/JsonSummary';
 import { Thresholds } from './types/Threshold';
+import core from '@actions/core';
+
+type TableData = Parameters<typeof core.summary.addTable>[0];
 
 const generateTableLine = ({ reportNumbers, category, threshold }: { reportNumbers: ReportNumbers; category: string; threshold?: number; }): string[] => {
   
@@ -16,17 +20,28 @@ const generateTableLine = ({ reportNumbers, category, threshold }: { reportNumbe
   ]
 }
 
-const generateTableFrom = (jsonReport: JsonSummary, thresholds: Thresholds = {}): string[][] => {
-  const tableData = [
-    ['Status', 'Category', 'Percentage', 'Covered / Total'],
+
+const generateSummaryTableData = (jsonReport: JsonSummary, thresholds: Thresholds = {}): TableData => {
+  const tableData: TableData = [
+    [
+      { data: 'Status', header: true }, 
+      { data: 'Category', header: true },
+      { data: 'Percentage', header: true },
+      { data: 'Covered / Total ', header: true }
+    ],
     generateTableLine({ reportNumbers: jsonReport.total.lines, category: 'Lines', threshold: thresholds.lines }),
     generateTableLine({ reportNumbers: jsonReport.total.statements, category: 'Statements', threshold: thresholds.statements }),
     generateTableLine({ reportNumbers: jsonReport.total.functions, category: 'Functions',threshold: thresholds.functions  }),
     generateTableLine({ reportNumbers: jsonReport.total.branches, category: 'Branches', threshold: thresholds.branches }),
   ];
+  
   return tableData;
 }
 
 export {
-  generateTableFrom
+  generateSummaryTableData
+};
+
+export type {
+  TableData
 };
