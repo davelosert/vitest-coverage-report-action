@@ -18,4 +18,6 @@ jobs:
     - name: 'Test'
       run: npm run test:coverage
     - name: 'Use this action'
+      # run step also on failure of the previous step
+      if: always()
       uses: ./
