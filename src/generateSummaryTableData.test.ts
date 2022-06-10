@@ -78,4 +78,14 @@ describe('generateTableData', () => {
     
     expect(result).toContain('8 / 10');
   });
+  
+  it('if threshold is given, provides the threshold in the percentage column.', async (): Promise<void> => {
+    const data = generateSummaryTableData(mockReport, {
+      lines: 100
+    });
+    
+    const result = stringifyTableData(data);
+    
+    expect(result).toContain('80% / 100%');
+  });
 });
