@@ -7,7 +7,7 @@ export default defineConfig({
       reporter: ['text', 'json-summary'],
       include: ['src'],
       exclude: ['src/types'],
-      functions: 80
+      branch: 80,
     }
   }
 });
