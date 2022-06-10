@@ -6,7 +6,8 @@ export default defineConfig({
       all: true,
       reporter: ['text', 'json-summary'],
       include: ['src'],
-      exclude: ['src/types']
+      exclude: ['src/types'],
+      functions: 80
     }
   }
 });
