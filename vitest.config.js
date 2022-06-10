@@ -8,6 +8,9 @@ export default defineConfig({
       include: ['src'],
       exclude: ['src/types'],
       branches: 80,
+      lines: 80,
+      statements: 80,
+      functions: 80
     }
   }
 });
