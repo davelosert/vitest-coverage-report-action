@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2019",
     "useDefineForClassFields": true,
-    "module": "ESNext",
+    "module": "commonjs",
     "lib": ["ESNext"],
     "moduleResolution": "Node",
     "strict": true,
@@ -17,5 +17,6 @@
     "skipLibCheck": true,
     "outDir": "./dist",
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }
