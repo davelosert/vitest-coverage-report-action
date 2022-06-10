@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { Thresholds } from './types/Threshold';
 
-import { loadConfigFromFile, resolveConfig,  } from 'vite';
+import { loadConfigFromFile } from 'vite';
 
 const parseThresholds = async (vitestConfigPath: string): Promise<Thresholds> => {
   const resolvedViteConfigPath = path.resolve(process.cwd(), vitestConfigPath);
