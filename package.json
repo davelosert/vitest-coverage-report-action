@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "A GitHub Action to report the test coverage of vitest",
   "main": "src/index.js",
+  "private": true,
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
