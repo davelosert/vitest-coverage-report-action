@@ -62,3 +62,5 @@ This is a work in progress project. Currently, it will only take an already crea
 - [ ] Make summary file configurable
 - [ ] Invoke 'vitest' directly from the action
 - [ ] Also provide test results (failed tests etc.) in the generated markdown reports
+- [ ] Add option to let the action fail if coverage thresholds are not met
+- [ ] Also report test results themselves

@@ -8,14 +8,17 @@ type TableData = Parameters<typeof core.summary.addTable>[0];
 const generateTableLine = ({ reportNumbers, category, threshold }: { reportNumbers: ReportNumbers; category: string; threshold?: number; }): string[] => {
   
   let status = ':large_blue_circle:';
+  let percent = `${reportNumbers.pct}%`; 
+
   if(threshold) {
     status = reportNumbers.pct >= threshold ? ':white_check_mark:' : ':x:';
+    percent = `${percent} / ${threshold}%`;
   }
   
   return [
     status,
     category,
-    `${reportNumbers.pct}%`,
+    `${percent}`,
     `${reportNumbers.covered} / ${reportNumbers.total}`,
   ]
 }
