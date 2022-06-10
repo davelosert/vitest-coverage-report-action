@@ -7,7 +7,7 @@
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "build": "tsc",
+    "build": "node esbuild.cjs",
     "start": "npm run build && node dist/index.js",
     "typecheck": "npx tsc --noEmit"
   },
@@ -26,16 +26,16 @@
     "url": "https://github.com/davelosert/vitest-coverage-report-action/issues"
   },
   "homepage": "https://github.com/davelosert/vitest-coverage-report-action#readme",
-  "devDependencies": {
-    "c8": "7.11.3",
-    "typescript": "4.7.3",
-    "vite": "2.9.10",
-    "vitest": "0.14.1"
-  },
   "dependencies": {
     "@actions/core": "1.8.2",
     "@actions/github": "5.0.3",
+    "vite": "2.9.10"
+  },
+  "devDependencies": {
     "@types/node": "17.0.41",
-    "markdown-table": "3.0.2"
+    "c8": "7.11.3",
+    "esbuild": "0.14.43",
+    "typescript": "4.7.3",
+    "vitest": "0.14.1"
   }
 }

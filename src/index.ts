@@ -22,4 +22,6 @@ const run = async () => {
   await summary.write();
 };
 
-await run();
+run().then(() => {
+  core.setOutput('status', 'success');
+});
