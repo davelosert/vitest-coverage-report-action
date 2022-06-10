@@ -1,4 +1,3 @@
-import { markdownTable } from 'markdown-table';
 import { JsonSummary, ReportNumbers } from './types/JsonSummary';
 import { Thresholds } from './types/Threshold';
 import core from '@actions/core';
