@@ -1,6 +1,11 @@
-name: 'David Losert'
-description: 'Provide a Vitest Test Coverage Report as Step Summary and Comment in Pull Requests'
+name: 'Vitest coverage report'
+description: 'Provide a Vitest Test Coverage Report as Step-Summary and comment in Pull Requests'
 author: 'David Losert'
+inputs:
+  github-token:
+      required: false
+      description: 'A github access token. Uses secrets.GITHUB_TOKEN by default.'
+      default: ${{ github.token }}
 runs:
   using: 'node16'
   main: 'dist/index.js'

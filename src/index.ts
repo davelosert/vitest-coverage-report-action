@@ -4,9 +4,9 @@ import path from 'node:path';
 import { generateSummaryTableData } from './generateSummaryTableData.js';
 import { JsonSummary } from './types/JsonSummary';
 import * as core from '@actions/core';
+import { writeSummaryToPR } from './writeSummaryToPR.js';
 
 const DEFAULT_SUMMARY_PATH = path.join('coverage', 'coverage-summary.json');
-const COMMENT_MARKER = '<!-- coverage-summary-table -->';
 
 const run = async () => {
   const jsonSummaryPath = path.resolve(process.cwd(), DEFAULT_SUMMARY_PATH);
@@ -15,14 +15,12 @@ const run = async () => {
 
   const tableData = generateSummaryTableData(jsonSummary);
 
-  const report = core.summary
+  const summary = core.summary
     .addHeading('Coverage Summary')
     .addTable(tableData)
 
-  const commentReport = `${report.stringify()}\n\n${COMMENT_MARKER}`;
-
-
-  await report.write();
+  await writeSummaryToPR(summary);
+  await summary.write();
 };
 
 await run();
