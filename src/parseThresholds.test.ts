@@ -2,11 +2,8 @@ import { describe, it, expect } from 'vitest';
 import path from 'path';
 import { parseThresholds } from './parseThresholds';
 
-// get current dir name in module environment by url
-const moduleDir = path.dirname(new URL(import.meta.url).pathname);
-
 describe('generateTableData', () => {
-  const mockConfigPath = path.resolve(moduleDir, '..', 'test', 'mockConfig');
+  const mockConfigPath = path.resolve(__dirname, '..', 'test', 'mockConfig');
   const getConfig = (configName: string) => path.resolve(mockConfigPath, configName)
     
   it('reads all the thresholds from the given configuration file.', async (): Promise<void> => {
