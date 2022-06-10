@@ -1,19 +1,18 @@
-import { markdownTable } from 'markdown-table';
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
 import { generateSummaryTableData } from './generateSummaryTableData.js';
-import { JsonSummary } from './types/JsonSummary';
-import * as core from '@actions/core';
+import path from 'node:path';
+import { parseJsonSummary } from './parseJsonSummary.js';
 import { writeSummaryToPR } from './writeSummaryToPR.js';
+import * as core from '@actions/core';
+import { parseThresholds } from './parseThresholds.js';
 
 const DEFAULT_SUMMARY_PATH = path.join('coverage', 'coverage-summary.json');
+const DEFAULT_VITEST_CONFIG_PATH = path.join('vitest.config.js');
 
 const run = async () => {
-  const jsonSummaryPath = path.resolve(process.cwd(), DEFAULT_SUMMARY_PATH);
-  const jsonSummaryRaw = await readFile(jsonSummaryPath);
-  const jsonSummary: JsonSummary = JSON.parse(jsonSummaryRaw.toString());
+  const jsonSummary = await parseJsonSummary(DEFAULT_SUMMARY_PATH);
+  const thresholds = await parseThresholds(DEFAULT_VITEST_CONFIG_PATH);
 
-  const tableData = generateSummaryTableData(jsonSummary);
+  const tableData = generateSummaryTableData(jsonSummary, thresholds);
 
   const summary = core.summary
     .addHeading('Coverage Summary')
