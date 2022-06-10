@@ -23,5 +23,5 @@ const run = async () => {
 };
 
 run().then(() => {
-  core.setOutput('status', 'success');
+  core.info('Report generated successfully.');
 });
