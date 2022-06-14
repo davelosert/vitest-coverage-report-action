@@ -25,5 +25,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - name: Semantci Release
-        run: npx semantic-release --dry-run
+      - name: Semantic Release
+        run: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} npx semantic-release --dry-run
+       
