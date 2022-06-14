@@ -8,12 +8,11 @@ on:
     paths:
       - 'dist/index.js'
   workflow_dispatch:
-  ## todo: Remove after 
-  pull_request:
-    branches: [main]
 
 permissions:
   contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
   release:
@@ -26,5 +25,4 @@ jobs:
         with:
           node-version: '16'
       - name: Semantic Release
-        run: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} npx semantic-release --dry-run
-       
+        run: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} npx semantic-release
