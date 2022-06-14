@@ -1,0 +1,29 @@
+# release action with semantic release
+name: Release
+  
+## release whenever the rebuild action finished succesfuly
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dist/index.js'
+  workflow_dispatch:
+  ## todo: Remove after 
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Semantci Release
+        run: npx semantic-release --dry-run

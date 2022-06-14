@@ -1,0 +1,30 @@
+name: Rebuild Action
+
+on:
+    push:
+        paths:
+            - 'src/**'
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Use Node.js 16.x
+              uses: actions/setup-node@v2
+              with:
+                  node-version: '16'
+                  cache: 'npm'
+            - name: Installing dependencies
+              run: npm ci
+            - name: Building
+              run: npm run build
+            - name: Committing & pushing
+              run: |
+                  git config --global user.name 'Vitest Coverage Action Bot'
+                  git config --global user.email 'covbot@users.noreply.github.com'
+                  git commit -am "chore: Rebuilds dist on $(date +'%F %T')"
+                  git push origin main
