@@ -8,7 +8,6 @@ build({
     outfile: 'dist/index.js',
     target: 'node16',
   external: [
-    'esbuild',
     'vite/dist/client/client.mjs',
     'rollup',
     'fsevents',
