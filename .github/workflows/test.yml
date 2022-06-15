@@ -17,6 +17,9 @@ jobs:
       run: npm run build
     - name: 'Test'
       run: npm run test:coverage
+    # To check if this action runs without executing NPM install, we delete the node_modules folder
+    - name: 'Clean up node_modules'
+      run: rm -rf node_modules
     - name: 'Use this action'
       # run step also on failure of the previous step
       if: always()
