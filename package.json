@@ -7,7 +7,7 @@
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "build": "node esbuild.cjs",
+    "build": "ncc build ./src/index.ts -o dist -m",
     "start": "npm run build && node dist/index.js",
     "typecheck": "npx tsc --noEmit"
   },
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@types/node": "17.0.41",
+    "@vercel/ncc": "0.34.0",
     "c8": "7.11.3",
     "esbuild": "0.14.43",
     "semantic-release": "19.0.3",
