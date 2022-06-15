@@ -8,9 +8,7 @@ build({
     outfile: 'dist/index.js',
     target: 'node16',
   external: [
-    'vite/dist/client/client.mjs',
     'rollup',
     'fsevents',
-    'vite/dist/client/env.mjs'
   ]
 }).catch(() => process.exit(1));
