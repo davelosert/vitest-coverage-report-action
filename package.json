@@ -7,7 +7,7 @@
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "build": "node esbuild.cjs",
+    "build": "rm -rf dist && node esbuild.cjs",
     "start": "npm run build && node dist/index.js",
     "typecheck": "npx tsc --noEmit"
   },
@@ -28,8 +28,7 @@
   "homepage": "https://github.com/davelosert/vitest-coverage-report-action#readme",
   "dependencies": {
     "@actions/core": "1.8.2",
-    "@actions/github": "5.0.3",
-    "vite": "2.9.10"
+    "@actions/github": "5.0.3"
   },
   "devDependencies": {
     "@types/node": "17.0.41",
@@ -37,6 +36,7 @@
     "esbuild": "0.14.43",
     "semantic-release": "19.0.3",
     "typescript": "4.7.3",
+    "vite": "2.9.10",
     "vitest": "0.14.1"
   }
 }

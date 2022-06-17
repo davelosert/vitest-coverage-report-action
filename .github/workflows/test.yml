@@ -17,6 +17,9 @@ jobs:
       run: npm run build
     - name: 'Test'
       run: npm run test:coverage
+      # Remove node_modules to see if this action runs entirely compiled
+    - name: 'Remove Node Modules'
+      run: rm -rf node_modules
     - name: 'Use this action'
       # run step also on failure of the previous step
       if: always()
