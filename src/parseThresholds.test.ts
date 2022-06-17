@@ -6,6 +6,18 @@ describe('generateTableData', () => {
   const mockConfigPath = path.resolve(__dirname, '..', 'test', 'mockConfig');
   const getConfig = (configName: string) => path.resolve(mockConfigPath, configName)
     
+  it('returns no thresholds if config file can not be found.', async (): Promise<void> => {
+    const thresholds = await parseThresholds(getConfig('doesNotExist'));
+    
+    expect(thresholds).toEqual({});
+  });
+
+  it('returns no thresholds if non are provided in the config file', async (): Promise<void> => {
+    const thresholds = await parseThresholds(getConfig('vitest.config.none.js'));
+    
+    expect(thresholds).toEqual({});
+  });
+
   it('reads all the thresholds from the given configuration file.', async (): Promise<void> => {
     const thresholds = await parseThresholds(getConfig('vitest.config.all.js'));
     
@@ -16,8 +28,7 @@ describe('generateTableData', () => {
       statements: 90
     });
   });
-  
-  
+
   it('sets thresholds to 100 if 100 property is true.', async (): Promise<void> => {
     const thresholds = await parseThresholds(getConfig('vitest.config.100.js'));
     
@@ -28,4 +39,5 @@ describe('generateTableData', () => {
       statements: 100 
     });
   });
+  
 });
