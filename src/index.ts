@@ -5,12 +5,12 @@ import { writeSummaryToPR } from './writeSummaryToPR.js';
 import * as core from '@actions/core';
 import { parseThresholds } from './parseThresholds.js';
 
-const DEFAULT_SUMMARY_PATH = path.join('coverage', 'coverage-summary.json');
-const DEFAULT_VITEST_CONFIG_PATH = path.join('vitest.config.js');
-
 const run = async () => {
-  const jsonSummary = await parseJsonSummary(DEFAULT_SUMMARY_PATH);
-  const thresholds = await parseThresholds(DEFAULT_VITEST_CONFIG_PATH);
+  // get action input for json-summary-path
+  const jsonSummaryPath = path.resolve(core.getInput('json-summary-path'));
+  const viteConfigPath = path.resolve(core.getInput('vite-config-path'));
+  const jsonSummary = await parseJsonSummary(jsonSummaryPath);
+  const thresholds = await parseThresholds(viteConfigPath);
 
   const tableData = generateSummaryTableData(jsonSummary, thresholds);
 
