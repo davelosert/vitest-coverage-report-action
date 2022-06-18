@@ -9,7 +9,7 @@ on:
 
 jobs:
     build:
-        name: Build
+        name: Rebuild
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
@@ -25,6 +25,6 @@ jobs:
             - name: Committing & pushing
               run: |
                   git config --global user.name 'Vitest Coverage Action Bot'
-                  git config --global user.email 'covbot@users.noreply.github.com'
+                  git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
                   git commit -am "chore: Rebuilds dist on $(date +'%F %T')"
                   git push origin main
