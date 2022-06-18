@@ -3,7 +3,7 @@
 # This script gets executed by semantic-release/exec after a release is published.
 # It will push a shortened tag (e.g. v1 for v1.0.0) as it is considered best practice to do so in GitHub Actions.
 
-FULL_TAG=$1
+FULL_TAG="v$1"
 SHORT_TAG=$(echo $FULL_TAG | cut -d '.' -f 1)
 
 git config --global user.name 'Vitest Coverage Action Bot'
