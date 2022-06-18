@@ -1,6 +1,6 @@
 # vitest-coverage-report-action
 
-A GitHub Action to report [vitest](https://vitest.dev/) coverage results as a step-summary and PR comment.
+A GitHub Action to report [vitest](https://vitest.dev/) coverage results as a GitHub step-summary and Pull-Request comment.
 
 ![Coverage Report as Step Summary](./docs/coverage-report.png)
 
@@ -12,7 +12,7 @@ This action requires you to use `vitest` to create a `json-summary` report as `c
 npx vitest run --coverage.reporter json-summary
 ```
 
-Or by adding the configuration to you `vitest.config.js`-File:
+Or by adding the configuration to you `vite.config.js`-File:
 
 ```js
 import { defineConfig } from 'vite';
@@ -54,7 +54,7 @@ jobs:
 
 ### Coverage Thresholds
 
-This action will read the coverage thresholds defined in the `coverage`-property of the `vitest.config.js`-File and mark the status of the generated report accordingly.
+This action will read the coverage thresholds defined in the `coverage`-property of the `vite.config.js`-file and mark the status of the generated report accordingly.
 
 E.g. with a config like this:
 
@@ -79,16 +79,17 @@ the report would look like this:
 
 ## Current Status
 
-This is a work in progress project. Currently, it will only take an already created `json-summary`-reporter, convert it to markdown and export that to:
+This is a work in progress project. Currently, it will only take an already created `json-summary`-report, convert it to markdown and export it to:
 
 1. a comment within an associated pull-request (if there is one)
-2. the [GitHub Step Summary](https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables)
+2. the [GitHub Step Summary](https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables) of the current action
 
 ### Future Plans
 
+- [x] Make summary file configurable
 - [ ] Also report detailed file-coverage (coverage per file and unconvered lines) based on the `json`-Reporter
-- [ ] Make summary file configurable
 - [ ] Invoke 'vitest' directly from the action
 - [ ] Also provide test results (failed tests etc.) in the generated markdown reports
 - [ ] Add option to let the action fail if coverage thresholds are not met
 - [ ] Also report test results themselves
+- [ ] Beatufiy the report with better markdown

@@ -6,6 +6,14 @@ inputs:
       required: false
       description: 'A github access token. Uses secrets.GITHUB_TOKEN by default.'
       default: ${{ github.token }}
+  vite-config-path:
+      required: false
+      description: 'The path to the vite config file. Uses "vite.config.js" by default.'
+      default: vite.config.js
+  json-summary-path:
+      required: false
+      description: 'The path to the json summary file. Uses "coverage/coverage-summary.json" by default.'
+      default: coverage/coverage-summary.json
 runs:
   using: 'node16'
   main: 'dist/index.js'
