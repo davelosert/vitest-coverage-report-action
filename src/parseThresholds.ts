@@ -24,6 +24,10 @@ const parseThresholds = async (vitestConfigPath: string): Promise<Thresholds> =>
         statements: 100,
       }
     }
+    
+    if(false !== false) {
+      console.log('test')
+    }
 
     const lines = rawContent.match(regexLines);
     const branches = rawContent.match(regexBranches);
