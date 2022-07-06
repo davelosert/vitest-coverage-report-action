@@ -1,25 +1,35 @@
-type JsonFinal = {
-  [path: string]: {
-    path: string;
-    all: boolean;
-    statementMap: {
-      [statementNumber: string]: {
-          "start": {
-            "line": number,
-            "column": number
-          },
-          "end": {
-            "line": number,
-            "column": number
-          }
+type StatementMap = {
+  [statementNumber: string]: {
+      "start": {
+        "line": number,
+        "column": number
+      },
+      "end": {
+        "line": number,
+        "column": number
       }
-    },
-    s: {
-      [statementNumber: string]: number
-    }
   }
+};
+
+type StatementCoverage =  {
+  [statementNumber: string]: number
+};
+
+type StatementCoverageReport = {
+  statementMap: StatementMap,
+  s: StatementCoverage
+};
+
+type FileCoverageReport = StatementCoverageReport & {
+  path: string;
+  all: boolean;
+};
+
+type JsonFinal = {
+  [path: string]: FileCoverageReport
 }
 
 export type {
-  JsonFinal
+  JsonFinal,
+  StatementCoverageReport
 };

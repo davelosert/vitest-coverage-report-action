@@ -1,20 +1,36 @@
-import { JsonFinal } from './types/JsonFinal';
+import { StatementCoverageReport } from './types/JsonFinal';
 
-const getUntestedLinesFromStatements = (jsonFinal: JsonFinal) => {
-  const untestedLines: number[] = [];
-  const statements = jsonFinal.s;
-  for (const statementNumber in statements) {
-    if (statements.hasOwnProperty(statementNumber)) {
-      const statement = statements[statementNumber];
-      if (statement === 0) {
-        // push each line between the start and end of the statement
-        const start = jsonFinal.statementMap[statementNumber].start;
-        const end = jsonFinal.statementMap[statementNumber].end;
-        for (let i = start.line; i <= end.line; i++) {
-          untestedLines.push(i);
-        }
+type LineCoverage = {
+  start: number,
+  end: number
+};
+
+const getUncoveredLinesFromStatements = ({ s, statementMap }: StatementCoverageReport): LineCoverage[] => {
+  const keys = Object.keys(statementMap);
+  
+  const uncoveredLines = keys.reduce<LineCoverage[]>((acc, key) => {
+    if(s[key] === 0) {
+      const lastLine = acc.at(-1);
+
+      if(lastLine && lastLine.end === statementMap[key].start.line - 1) {
+         lastLine.end = statementMap[key].end.line;
+         return acc;
       }
+      
+      return [
+        ...acc, 
+        {
+          start: statementMap[key].start.line,
+          end: statementMap[key].end.line
+        }
+    ]
     }
-  }
-  return untestedLines;
+    return acc;
+  }, [])
+
+  return uncoveredLines;
 }
+
+export {
+  getUncoveredLinesFromStatements
+};
