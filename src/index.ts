@@ -6,7 +6,7 @@ import * as core from '@actions/core';
 import { parseThresholds } from './parseThresholds.js';
 import { JsonSummary } from './types/JsonSummary.js';
 import { JsonFinal } from './types/JsonFinal.js';
-import { generateFileBasedReport } from './generateFileBasedReport.js';
+import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
 
 const run = async () => {
   // get action input for json-summary-path
@@ -18,15 +18,15 @@ const run = async () => {
   const thresholds = await parseThresholds(viteConfigPath);
 
   const tableData = generateSummaryTableData(jsonSummary.total, thresholds);
-  const fileTable = generateFileBasedReport({
-    jsonSummary, jsonFinal ,
-  }, thresholds)
+  const fileTable = generateFileCoverageHtml({
+    jsonSummary, jsonFinal, thresholds
+  })
 
 
   const summary = core.summary
     .addHeading('Coverage Summary')
     .addTable(tableData)
-    .addDetails('Details', fileTable.toString())
+    .addDetails('Details', fileTable)
 
   await writeSummaryToPR(summary);
   await summary.write();
