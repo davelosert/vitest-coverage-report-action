@@ -14,6 +14,10 @@ inputs:
       required: false
       description: 'The path to the json summary file. Uses "coverage/coverage-summary.json" by default.'
       default: coverage/coverage-summary.json
+  json-final-path:
+      required: false
+      description: 'The path to the json final file. Uses "coverage/coverage-final.json" by default.'
+      default: coverage/coverage-final.json
 runs:
   using: 'node16'
   main: 'dist/index.js'

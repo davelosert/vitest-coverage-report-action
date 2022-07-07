@@ -41,7 +41,8 @@ const generateSummaryTableData = (jsonReport: CoverageReport, thresholds: Thresh
 }
 
 export {
-  generateSummaryTableData
+  generateSummaryTableData,
+  generateTableLine
 };
 
 export type {
