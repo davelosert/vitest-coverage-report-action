@@ -4,7 +4,7 @@ import { getUncoveredLinesFromStatements } from './getUncoveredLinesFromStatemen
 import { JsonFinal } from './types/JsonFinal';
 import { JsonSummary } from './types/JsonSummary';
 import { Thresholds } from './types/Threshold';
-import { oneLine, safeHtml } from 'common-tags';
+import { oneLine } from 'common-tags';
 
 type Sources = {
   jsonSummary: JsonSummary;
@@ -22,12 +22,13 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, thresholds = {} }: S
     const url = generateBlobFileUrl(relativeFilePath);
     
     return `
-      <tr align="left"><a href="${relativeFilePath}">${url}</a></tr>
-      <tr align="right">${coverage.statements.pct}%</tr>
-      <tr align="right">${coverage.branches.pct}%</tr>
-      <tr align="right">${coverage.functions.pct}%</tr>
-      <tr align="right">${coverage.lines.pct}%</tr>
-      <tr align="left">${uncoveredLines.map((range) => {
+      <tr>
+      <td align="left"><a href="${relativeFilePath}">${url}</a></td>
+      <td align="right">${coverage.statements.pct}%</td>
+      <td align="right">${coverage.branches.pct}%</td>
+      <td align="right">${coverage.functions.pct}%</td>
+      <td align="right">${coverage.lines.pct}%</td>
+      <td align="left">${uncoveredLines.map((range) => {
         let end = '';
         let endUrl = '';
 
@@ -39,8 +40,8 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, thresholds = {} }: S
         const rangeUrl = `${url}#L${range.start}${endUrl}`;
 
         return `<a href="${rangeUrl}">${range.start}${end}</a>`;
-      }).join(', ')}</tr>
-      `
+      }).join(', ')}</td>
+      </tr>`
     });
 
   return oneLine`
