@@ -27,7 +27,7 @@ const run = async () => {
   const summary = core.summary
     .addHeading('Coverage Summary')
     .addTable(tableData)
-    .addDetails('Details', fileTable)
+    .addDetails('File Coverage', fileTable)
 
   await writeSummaryToPR(summary);
   await summary.write();

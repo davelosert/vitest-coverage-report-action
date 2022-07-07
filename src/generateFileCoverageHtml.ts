@@ -23,24 +23,24 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, thresholds = {} }: S
     
     return `
       <tr>
-      <td align="left"><a href="${relativeFilePath}">${url}</a></td>
-      <td align="right">${coverage.statements.pct}%</td>
-      <td align="right">${coverage.branches.pct}%</td>
-      <td align="right">${coverage.functions.pct}%</td>
-      <td align="right">${coverage.lines.pct}%</td>
-      <td align="left">${uncoveredLines.map((range) => {
-        let end = '';
-        let endUrl = '';
+        <td align="left"><a href="${url}">${relativeFilePath}</a></td>
+        <td align="right">${coverage.statements.pct}%</td>
+        <td align="right">${coverage.branches.pct}%</td>
+        <td align="right">${coverage.functions.pct}%</td>
+        <td align="right">${coverage.lines.pct}%</td>
+        <td align="left">${uncoveredLines.map((range) => {
+          let end = '';
+          let endUrl = '';
 
-        if(range.start !== range.end) {
-          end = `-${range.end}`;
-          endUrl = `-L${range.end}`;
-        }
-        
-        const rangeUrl = `${url}#L${range.start}${endUrl}`;
+          if(range.start !== range.end) {
+            end = `-${range.end}`;
+            endUrl = `-L${range.end}`;
+          }
+          
+          const rangeUrl = `${url}#L${range.start}${endUrl}`;
 
-        return `<a href="${rangeUrl}">${range.start}${end}</a>`;
-      }).join(', ')}</td>
+          return `<a href="${rangeUrl}">${range.start}${end}</a>`;
+        }).join(', ')}</td>
       </tr>`
     });
 
