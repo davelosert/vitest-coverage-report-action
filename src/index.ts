@@ -9,7 +9,6 @@ import { JsonFinal } from './types/JsonFinal.js';
 import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
 
 const run = async () => {
-  // get action input for json-summary-path
   const jsonSummaryPath = path.resolve(core.getInput('json-summary-path'));
   const jsonFinalPath = path.resolve(core.getInput('json-final-path'));
   const viteConfigPath = path.resolve(core.getInput('vite-config-path'));

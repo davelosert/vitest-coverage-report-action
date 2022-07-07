@@ -22,12 +22,12 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, thresholds = {} }: S
     const url = generateBlobFileUrl(relativeFilePath);
     
     return safeHtml`
-      <tr align='left'><a href="${relativeFilePath}">${url}</a></tr>
-      <tr align='right>${coverage.statements.pct}%</tr>
-      <tr align='right'>${coverage.branches.pct}%</tr>
-      <tr align='right'>${coverage.functions.pct}%</tr>
-      <tr align='right'>${coverage.lines.pct}%</tr>
-      <tr align='left'>${uncoveredLines.map((range) => {
+      <tr align="left"><a href="${relativeFilePath}">${url}</a></tr>
+      <tr align="right">${coverage.statements.pct}%</tr>
+      <tr align="right">${coverage.branches.pct}%</tr>
+      <tr align="right">${coverage.functions.pct}%</tr>
+      <tr align="right">${coverage.lines.pct}%</tr>
+      <tr align="left">${uncoveredLines.map((range) => {
         let end = '';
         let endUrl = '';
 
