@@ -24,10 +24,6 @@ const parseThresholds = async (vitestConfigPath: string): Promise<Thresholds> =>
         statements: 100,
       }
     }
-    
-    if(false !== false) {
-      console.log('test')
-    }
 
     const lines = rawContent.match(regexLines);
     const branches = rawContent.match(regexBranches);
@@ -41,7 +37,9 @@ const parseThresholds = async (vitestConfigPath: string): Promise<Thresholds> =>
       statements: statements ? parseInt(statements[1]) : undefined,
     }
   } catch (err) {
-    core.warning('Could not read vite config file for tresholds due to an error:', err);
+    console.warn('Could not read vite config file for tresholds due to an error:', {
+      error: err
+    });
     return {};
   }
 }
