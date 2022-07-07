@@ -19,7 +19,9 @@ const run = async () => {
   const tableData = generateSummaryTableData(jsonSummary.total, thresholds);
   const fileTable = generateFileCoverageHtml({
     jsonSummary, jsonFinal, thresholds
-  })
+  });
+  
+  console.log(fileTable);
 
 
   const summary = core.summary
