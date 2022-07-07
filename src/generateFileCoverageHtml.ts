@@ -21,7 +21,7 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, thresholds = {} }: S
     const relativeFilePath = path.relative(workspacePath, filePath);
     const url = generateBlobFileUrl(relativeFilePath);
     
-    return safeHtml`
+    return `
       <tr align="left"><a href="${relativeFilePath}">${url}</a></tr>
       <tr align="right">${coverage.statements.pct}%</tr>
       <tr align="right">${coverage.branches.pct}%</tr>
@@ -39,7 +39,7 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, thresholds = {} }: S
         const rangeUrl = `${url}#L${range.start}${endUrl}`;
 
         return `<a href="${rangeUrl}">${range.start}${end}</a>`;
-      }).join(', ')}</tr>,
+      }).join(', ')}</tr>
       `
     });
 
