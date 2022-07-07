@@ -1,4 +1,4 @@
-import { JsonSummary, ReportNumbers } from './types/JsonSummary';
+import { CoverageReport, JsonSummary, ReportNumbers } from './types/JsonSummary';
 import { Thresholds } from './types/Threshold';
 import core from '@actions/core';
 
@@ -23,7 +23,7 @@ const generateTableLine = ({ reportNumbers, category, threshold }: { reportNumbe
 }
 
 
-const generateSummaryTableData = (jsonReport: JsonSummary, thresholds: Thresholds = {}): TableData => {
+const generateSummaryTableData = (jsonReport: CoverageReport, thresholds: Thresholds = {}): TableData => {
   const tableData: TableData = [
     [
       { data: 'Status', header: true }, 
@@ -31,10 +31,10 @@ const generateSummaryTableData = (jsonReport: JsonSummary, thresholds: Threshold
       { data: 'Percentage', header: true },
       { data: 'Covered / Total ', header: true }
     ],
-    generateTableLine({ reportNumbers: jsonReport.total.lines, category: 'Lines', threshold: thresholds.lines }),
-    generateTableLine({ reportNumbers: jsonReport.total.statements, category: 'Statements', threshold: thresholds.statements }),
-    generateTableLine({ reportNumbers: jsonReport.total.functions, category: 'Functions',threshold: thresholds.functions  }),
-    generateTableLine({ reportNumbers: jsonReport.total.branches, category: 'Branches', threshold: thresholds.branches }),
+    generateTableLine({ reportNumbers: jsonReport.lines, category: 'Lines', threshold: thresholds.lines }),
+    generateTableLine({ reportNumbers: jsonReport.statements, category: 'Statements', threshold: thresholds.statements }),
+    generateTableLine({ reportNumbers: jsonReport.functions, category: 'Functions',threshold: thresholds.functions  }),
+    generateTableLine({ reportNumbers: jsonReport.branches, category: 'Branches', threshold: thresholds.branches }),
   ];
   
   return tableData;

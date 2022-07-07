@@ -1,17 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import * as core from '@actions/core';
 import { generateSummaryTableData, TableData } from './generateSummaryTableData';
-import { JsonSummary } from './types/JsonSummary';
+import { CoverageReport  } from './types/JsonSummary';
 
 describe('generateTableData', () => {
-    const mockReport: JsonSummary = {
-      total: {
+    const mockReport: CoverageReport = {
         branches: { covered: 10, skipped: 8, pct: 100, total: 18 },
         functions: { covered: 0, skipped: 0, pct: 100, total: 0 },
         lines: { covered: 8, skipped: 0, pct: 80, total: 10 },
         statements: { covered: 0, skipped: 0, pct: 100, total: 0 }
-      }
-
   }
 
   const stringifyTableData = (tableData: TableData) => {

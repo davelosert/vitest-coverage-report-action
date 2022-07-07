@@ -12,7 +12,7 @@ const run = async () => {
   const jsonSummary = await parseJsonSummary(jsonSummaryPath);
   const thresholds = await parseThresholds(viteConfigPath);
 
-  const tableData = generateSummaryTableData(jsonSummary, thresholds);
+  const tableData = generateSummaryTableData(jsonSummary.total, thresholds);
 
   const summary = core.summary
     .addHeading('Coverage Summary')
