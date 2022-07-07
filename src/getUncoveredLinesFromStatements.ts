@@ -1,19 +1,19 @@
 import { StatementCoverageReport } from './types/JsonFinal';
 
-type LineCoverage = {
+type LineRange = {
   start: number,
   end: number
 };
 
-const getUncoveredLinesFromStatements = ({ s, statementMap }: StatementCoverageReport): LineCoverage[] => {
+const getUncoveredLinesFromStatements = ({ s, statementMap }: StatementCoverageReport): LineRange[] => {
   const keys = Object.keys(statementMap);
   
-  const uncoveredLines = keys.reduce<LineCoverage[]>((acc, key) => {
+  const uncoveredLineRanges = keys.reduce<LineRange[]>((acc, key) => {
     if(s[key] === 0) {
-      const lastLine = acc.at(-1);
+      const lastRange = acc.at(-1);
 
-      if(lastLine && lastLine.end === statementMap[key].start.line - 1) {
-         lastLine.end = statementMap[key].end.line;
+      if(lastRange && lastRange.end === statementMap[key].start.line - 1) {
+         lastRange.end = statementMap[key].end.line;
          return acc;
       }
       
@@ -28,7 +28,7 @@ const getUncoveredLinesFromStatements = ({ s, statementMap }: StatementCoverageR
     return acc;
   }, [])
 
-  return uncoveredLines;
+  return uncoveredLineRanges;
 }
 
 export {

@@ -5,7 +5,7 @@ type ReportNumbers = {
   pct: number;
 };
 
-type ReportTypes = {
+type CoverageReport = {
   lines: ReportNumbers;
   statements: ReportNumbers;
   functions: ReportNumbers;
@@ -13,12 +13,12 @@ type ReportTypes = {
 }
 
 type JsonSummary = {
-  total: ReportTypes;
-  [filePath: string]: ReportTypes;
+  total: CoverageReport;
+  [filePath: string]: CoverageReport;
 }
 
 export type {
   JsonSummary,
   ReportNumbers,
-  ReportTypes
+  CoverageReport
 };
