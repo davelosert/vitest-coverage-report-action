@@ -24,5 +24,3 @@ jobs:
       # run step also on failure of the previous step
       if: always()
       uses: ./
-      with:
-        json-summary-path: ./doesnotexist.json
