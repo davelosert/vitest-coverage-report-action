@@ -20,9 +20,9 @@ const run = async () => {
   const fileTable = generateFileCoverageHtml({
     jsonSummary, jsonFinal, thresholds
   });
-  
-  console.log(fileTable);
 
+  console.log(`Used SHA: ${process.env.GITHUB_SHA}`);
+  console.log(`Head Ref: ${process.env.GITHUB_HEAD_REF}`);
 
   const summary = core.summary
     .addHeading('Coverage Summary')
