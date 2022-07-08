@@ -15,7 +15,7 @@ type Sources = {
 const workspacePath = process.cwd();
 const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, thresholds = {} }: Sources) => {
   const filePaths = Object.keys(jsonFinal);
-  const reportData = filePaths.map((filePath) => {
+  const reportData: string = filePaths.map((filePath) => {
     const coverage = jsonSummary[filePath];
     const uncoveredLines = getUncoveredLinesFromStatements(jsonFinal[filePath])
     const relativeFilePath = path.relative(workspacePath, filePath);
