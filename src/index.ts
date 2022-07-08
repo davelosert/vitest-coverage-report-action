@@ -1,4 +1,4 @@
-import { generateSummaryTableData } from './generateSummaryTableData.js';
+import { generateSummaryTableData } from './generateSummaryTableHtml.js';
 import path from 'node:path';
 import { parseJsonReport } from './parseJsonReports.js';
 import { writeSummaryToPR } from './writeSummaryToPR.js';
@@ -26,7 +26,7 @@ const run = async () => {
 
   const summary = core.summary
     .addHeading('Coverage Summary')
-    .addTable(tableData)
+    .addRaw(tableData)
     .addDetails('File Coverage', fileTable)
 
   await writeSummaryToPR(summary);
