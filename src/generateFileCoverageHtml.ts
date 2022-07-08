@@ -9,12 +9,11 @@ import { oneLine } from 'common-tags';
 type Sources = {
   jsonSummary: JsonSummary;
   jsonFinal: JsonFinal;
-  thresholds?: Thresholds;
 }
 
 const workspacePath = process.cwd();
-const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, thresholds = {} }: Sources) => {
-  const filePaths = Object.keys(jsonFinal);
+const generateFileCoverageHtml = ({ jsonSummary, jsonFinal }: Sources) => {
+  const filePaths = Object.keys(jsonSummary).filter((key) => key === 'total');
   const reportData: string = filePaths.map((filePath) => {
     const coverage = jsonSummary[filePath];
     const uncoveredLines = getUncoveredLinesFromStatements(jsonFinal[filePath])
