@@ -4,11 +4,13 @@ A GitHub Action to report [vitest](https://vitest.dev/) coverage results as a Gi
 
 ![Coverage Report as Step Summary](./docs/coverage-report.png)
 
+It will create a high-level coverage summary for all coverage-category as well as a file-based report linking to the files itself and the uncovered lines for easy discovery.
+
 ## Usage
 
-This action requires you to use `vitest` to create at least `json-summary` and optionally a `json` reporter (required for specific line-coverage report).
+This action requires you to use `vitest` to create a coverage report with the `json-summary`-reporter and optionally the `json`-reporter (if you don't provide it, uncovered lines won't appear in the report).
 
-You can configure those within the `vitest.config.js` file:
+You can configure the reporters within the `vitest.config.js` file likes this:
 
 ```js
 import { defineConfig } from 'vite';
@@ -22,6 +24,8 @@ export default defineConfig({
   }
 });
 ```
+
+Then execute `npx vitest --coverage` in a step before this action.
 
 ### Example Workflow
 
@@ -42,7 +46,7 @@ jobs:
     - name: 'Install Deps'
       run: npm install
     - name: 'Test'
-      run: npx vitest --coverage.report json-summary
+      run: npx vitest --coverage
     - name: 'Report Coverage'
       if: always() # Also generate the report if tests are failing
       uses:  davelosert/vitest-coverage-report-action@v1
@@ -84,7 +88,7 @@ the report would look like this:
 
 ## Current Status
 
-This is a work in progress project. Currently, it will only take an already created `json-summary`-report, convert it to markdown and export it to:
+This is a work in progress project. Currently, it will only take an already created `json-summary` and `json`-report, convert it to markdown and export it to:
 
 1. a comment within an associated pull-request (if there is one)
 2. the [GitHub Step Summary](https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables) of the current action
@@ -92,9 +96,8 @@ This is a work in progress project. Currently, it will only take an already crea
 ### Future Plans
 
 - [x] Make summary file configurable
-- [ ] Also report detailed file-coverage (coverage per file and unconvered lines) based on the `json`-Reporter
+- [x] Also report detailed file-coverage (coverage per file and unconvered lines) based on the `json`-Reporter
 - [ ] Invoke 'vitest' directly from the action
 - [ ] Also provide test results (failed tests etc.) in the generated markdown reports
-- [ ] Add option to let the action fail if coverage thresholds are not met
 - [ ] Also report test results themselves
-- [ ] Beatufiy the report with better markdown
+- [x] Beatufiy the report with better markdown
