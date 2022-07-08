@@ -42,7 +42,7 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, thresholds = {} }: S
           return `<a href="${rangeUrl}">${range.start}${end}</a>`;
         }).join(', ')}</td>
       </tr>`
-    });
+    }).join('');
 
   return oneLine`
     <table>
