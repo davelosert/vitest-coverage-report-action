@@ -4,7 +4,7 @@ author: 'David Losert'
 inputs:
   github-token:
       required: false
-      description: 'A github access token. Uses secrets.GITHUB_TOKEN by default.'
+      description: 'A github access token with permissions to write to issues. Uses secrets.GITHUB_TOKEN by default.'
       default: ${{ github.token }}
   vite-config-path:
       required: false
@@ -21,3 +21,6 @@ inputs:
 runs:
   using: 'node16'
   main: 'dist/index.js'
+branding:
+  icon: 'check-circle'
+  color: 'green'
