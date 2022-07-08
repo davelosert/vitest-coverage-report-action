@@ -25,4 +25,4 @@ jobs:
       if: always()
       uses: ./
       with:
-        json-final-path: ./doesnotexist.json
+        json-summary-path: ./doesnotexist.json

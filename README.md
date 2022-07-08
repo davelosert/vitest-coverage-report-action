@@ -6,13 +6,9 @@ A GitHub Action to report [vitest](https://vitest.dev/) coverage results as a Gi
 
 ## Usage
 
-This action requires you to use `vitest` to create a `json-summary` report as `coverage/coverage-summary.json` (will be configurable in the future) before invoking the action. You can do this by either running `vitest` like this:
+This action requires you to use `vitest` to create at least `json-summary` and optionally a `json` reporter (required for specific line-coverage report).
 
-```shell
-npx vitest run --coverage.reporter json-summary
-```
-
-Or by adding the configuration to you `vite.config.js`-File:
+You can configure those within the `vitest.config.js` file:
 
 ```js
 import { defineConfig } from 'vite';
@@ -20,8 +16,8 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   test: {
     coverage: {
-      // you can include other reporters, but 'json-summary' is required
-      reporter: ['text', 'json-summary'],
+      // you can include other reporters, but 'json-summary' is required, json is recommended
+      reporter: ['text', 'json-summary', 'json'],
     }
   }
 });
@@ -51,6 +47,15 @@ jobs:
       if: always() # Also generate the report if tests are failing
       uses:  davelosert/vitest-coverage-report-action@v1
 ```
+
+### Options
+
+| Option            | Description                                                                                      | Default                            |
+| ----------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------- |
+| json-summary-path | The path to the json summary file. Uses "coverage/coverage-summary.json" by default.             | `./coverage/coverage-summary.json` |
+| json-final-path   | The path to the json final file. Uses "coverage/coverage-final.json" by default.                 | `./coverage/coverage-final.json`   |
+| vite-config-path  | The path to the vite config file. Uses "vite.config.js" by default.                              | `./vitest.config.js`               |
+| github-token      | A github access token with permissions to write to issues. Uses secrets.GITHUB_TOKEN by default. | `./vitest.config.js`               |
 
 ### Coverage Thresholds
 
