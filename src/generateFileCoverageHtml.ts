@@ -13,7 +13,7 @@ type Sources = {
 
 const workspacePath = process.cwd();
 const generateFileCoverageHtml = ({ jsonSummary, jsonFinal }: Sources) => {
-  const filePaths = Object.keys(jsonSummary).filter((key) => key === 'total');
+  const filePaths = Object.keys(jsonSummary).filter((key) => key !== 'total');
   const reportData: string = filePaths.map((filePath) => {
     const coverageSummary = jsonSummary[filePath];
     const lineCoverage = jsonFinal[filePath];
