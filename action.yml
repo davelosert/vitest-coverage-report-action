@@ -4,7 +4,7 @@ author: 'David Losert'
 inputs:
   github-token:
       required: false
-      description: 'A github access token. Uses secrets.GITHUB_TOKEN by default.'
+      description: 'A github access token with permissions to write to issues. Uses secrets.GITHUB_TOKEN by default.'
       default: ${{ github.token }}
   vite-config-path:
       required: false
@@ -14,6 +14,13 @@ inputs:
       required: false
       description: 'The path to the json summary file. Uses "coverage/coverage-summary.json" by default.'
       default: coverage/coverage-summary.json
+  json-final-path:
+      required: false
+      description: 'The path to the json final file. Uses "coverage/coverage-final.json" by default.'
+      default: coverage/coverage-final.json
 runs:
   using: 'node16'
   main: 'dist/index.js'
+branding:
+  icon: 'check-circle'
+  color: 'green'

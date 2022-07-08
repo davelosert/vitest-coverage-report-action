@@ -1,21 +1,19 @@
 import { describe, it, expect } from 'vitest';
 import * as core from '@actions/core';
-import { generateSummaryTableData, TableData } from './generateSummaryTableData';
-import { JsonSummary } from './types/JsonSummary';
+import { generateSummaryTableData, TableData } from './generateSummaryTableHtml';
+import { CoverageReport  } from './types/JsonSummary';
+import { icons } from './icons';
 
-describe('generateTableData', () => {
-    const mockReport: JsonSummary = {
-      total: {
+describe('generateSummaryTabelHtml', () => {
+    const mockReport: CoverageReport = {
         branches: { covered: 10, skipped: 8, pct: 100, total: 18 },
         functions: { covered: 0, skipped: 0, pct: 100, total: 0 },
         lines: { covered: 8, skipped: 0, pct: 80, total: 10 },
         statements: { covered: 0, skipped: 0, pct: 100, total: 0 }
-      }
-
   }
 
   const stringifyTableData = (tableData: TableData) => {
-    return core.summary.addTable(tableData).stringify()
+    return tableData;
   }
 
   it('generates the headline', () => {
@@ -32,27 +30,27 @@ describe('generateTableData', () => {
     const tableData = generateSummaryTableData(mockReport);
     const result = stringifyTableData(tableData);
 
-    expect(result).toContain(':large_blue_circle:');
+    expect(result).toContain(icons.blue);
   });
 
-  it('adds green checkmark if percentage is below threshold.', async (): Promise<void> => {
+  it('adds green-circle  if percentage is below threshold.', async (): Promise<void> => {
     const data = generateSummaryTableData(mockReport, {
       lines: 80
     });
 
     const result = stringifyTableData(data);
 
-    expect(result).toContain(':white_check_mark:');
+    expect(result).toContain(icons.green);
   });
   
-  it('adds red-x if percentage is below threshold.', async (): Promise<void> => {
+  it('adds red-circle if percentage is below threshold.', async (): Promise<void> => {
     const data = generateSummaryTableData(mockReport, {
       lines: 100
     });
     
     const result = stringifyTableData(data);
     
-    expect(result).toContain(':x:');
+    expect(result).toContain(icons.red);
   });
   
   it('shows all categories', async (): Promise<void> => {
