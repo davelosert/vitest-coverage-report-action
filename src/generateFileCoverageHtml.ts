@@ -15,18 +15,21 @@ const workspacePath = process.cwd();
 const generateFileCoverageHtml = ({ jsonSummary, jsonFinal }: Sources) => {
   const filePaths = Object.keys(jsonSummary).filter((key) => key === 'total');
   const reportData: string = filePaths.map((filePath) => {
-    const coverage = jsonSummary[filePath];
-    const uncoveredLines = getUncoveredLinesFromStatements(jsonFinal[filePath])
+    const coverageSummary = jsonSummary[filePath];
+    const lineCoverage = jsonFinal[filePath];
+
+    // LineCoverage might be empty if coverage-final.json was not provided.
+    const uncoveredLines = lineCoverage ? getUncoveredLinesFromStatements(jsonFinal[filePath]) : [];
     const relativeFilePath = path.relative(workspacePath, filePath);
     const url = generateBlobFileUrl(relativeFilePath);
     
     return `
       <tr>
         <td align="left"><a href="${url}">${relativeFilePath}</a></td>
-        <td align="right">${coverage.statements.pct}%</td>
-        <td align="right">${coverage.branches.pct}%</td>
-        <td align="right">${coverage.functions.pct}%</td>
-        <td align="right">${coverage.lines.pct}%</td>
+        <td align="right">${coverageSummary.statements.pct}%</td>
+        <td align="right">${coverageSummary.branches.pct}%</td>
+        <td align="right">${coverageSummary.functions.pct}%</td>
+        <td align="right">${coverageSummary.lines.pct}%</td>
         <td align="left">${uncoveredLines.map((range) => {
           let end = '';
           let endUrl = '';
