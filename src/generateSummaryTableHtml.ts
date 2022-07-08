@@ -35,7 +35,6 @@ const generateSummaryTableData = (jsonReport: CoverageReport, thresholds: Thresh
          <th align="left">Category</th>
          <th align="right">Percentage</th>
          <th align="right">Covered / Total</th>
-         <th align="left">Uncovered Lines</th>
         </tr>
       </thead>
       <tbody>
