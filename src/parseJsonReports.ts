@@ -13,10 +13,13 @@ const parseJsonReport = async <type extends JsonSummary | JsonFinal>(jsonSummary
 const parseJsonSummary = async (jsonSummaryPath: string): Promise<JsonSummary> => {
   try {
     return await parseJsonReport<JsonSummary>(jsonSummaryPath);
-  } catch (err) {
+  } catch (err: any) {
     core.error(`
         Failed to parse the json-summary at path "${jsonSummaryPath}."
         Make sure to run vitest before this action and to include the "json-summay" reporter.
+
+        Original Error: ${err.message}
+        ${err.stack}
     `);
     core.setFailed('coverage-summary.json not found - exiting.');
 
@@ -29,10 +32,13 @@ const parseJsonSummary = async (jsonSummaryPath: string): Promise<JsonSummary> =
 const parseJsonFinal = async (jsonFinalPath: string): Promise<JsonFinal> => {
   try {
     return await parseJsonReport<JsonFinal>(jsonFinalPath);
-  } catch (err) {
+  } catch (err: any) {
     core.warning(`
       Failed to parse JSON Final at path "${jsonFinalPath}".
       Line coverage will be empty. To include it, make sure to include the "json" reporter in your vitest execution.
+      
+      Original Error: ${err.message}
+      ${err.stack}
     `);
     return {};
   }
