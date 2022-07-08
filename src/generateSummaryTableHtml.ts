@@ -7,7 +7,7 @@ import { icons } from './icons';
 type TableData = string;
 
 
-const generateTableLine = ({ reportNumbers, category, threshold }: { reportNumbers: ReportNumbers; category: string; threshold?: number; }): string => {
+const generateTableRow = ({ reportNumbers, category, threshold }: { reportNumbers: ReportNumbers; category: string; threshold?: number; }): string => {
   
   let status = icons.blue;
   let percent = `${reportNumbers.pct}%`; 
@@ -39,12 +39,18 @@ const generateSummaryTableData = (jsonReport: CoverageReport, thresholds: Thresh
         </tr>
       </thead>
       <tbody>
-      <tr>
-        ${generateTableLine({ reportNumbers: jsonReport.lines, category: 'Lines', threshold: thresholds.lines })}
-        ${generateTableLine({ reportNumbers: jsonReport.statements, category: 'Statements', threshold: thresholds.statements })}
-        ${generateTableLine({ reportNumbers: jsonReport.functions, category: 'Functions',threshold: thresholds.functions  })}
-        ${generateTableLine({ reportNumbers: jsonReport.branches, category: 'Branches', threshold: thresholds.branches })}
-      </tr>
+        <tr>
+          ${generateTableRow({ reportNumbers: jsonReport.lines, category: 'Lines', threshold: thresholds.lines })}
+        </tr>
+        <tr>
+          ${generateTableRow({ reportNumbers: jsonReport.statements, category: 'Statements', threshold: thresholds.statements })}
+        </tr>
+        <tr>
+          ${generateTableRow({ reportNumbers: jsonReport.functions, category: 'Functions',threshold: thresholds.functions  })}
+        </tr>
+        <tr>
+          ${generateTableRow({ reportNumbers: jsonReport.branches, category: 'Branches', threshold: thresholds.branches })}
+        </tr>
       </tbody>
     </table>
   `
@@ -53,7 +59,7 @@ const generateSummaryTableData = (jsonReport: CoverageReport, thresholds: Thresh
 
 export {
   generateSummaryTableData,
-  generateTableLine
+  generateTableRow
 };
 
 export type {
