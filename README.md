@@ -73,10 +73,10 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   test: {
     coverage: {
-      lines: 80,
-      branches: 80,
-      functions: 80,
-      statements: 80
+      lines: 60,
+      branches: 60,
+      functions: 60,
+      statements: 60
     }
   }
 });
@@ -85,6 +85,8 @@ export default defineConfig({
 the report would look like this:
 
 ![Coverage Threshold Report](./docs/coverage-report-threshold.png)
+
+If there are no thresholds defined, the status will be '🔵'.
 
 ## Current Status
 
