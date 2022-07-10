@@ -31,5 +31,7 @@ type JsonFinal = {
 
 export type {
   JsonFinal,
-  StatementCoverageReport
+  FileCoverageReport,
+  StatementCoverageReport,
+  StatementMap
 };

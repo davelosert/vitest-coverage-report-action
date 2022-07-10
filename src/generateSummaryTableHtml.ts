@@ -1,11 +1,7 @@
-import { CoverageReport, JsonSummary, ReportNumbers } from './types/JsonSummary';
-import { Thresholds } from './types/Threshold';
-import core from '@actions/core';
-import { oneLine } from 'common-tags';
 import { icons } from './icons';
-
-type TableData = string;
-
+import { oneLine } from 'common-tags';
+import { Thresholds } from './types/Threshold';
+import { CoverageReport, ReportNumbers } from './types/JsonSummary';
 
 const generateTableRow = ({ reportNumbers, category, threshold }: { reportNumbers: ReportNumbers; category: string; threshold?: number; }): string => {
   
@@ -26,7 +22,7 @@ const generateTableRow = ({ reportNumbers, category, threshold }: { reportNumber
 }
 
 
-const generateSummaryTableData = (jsonReport: CoverageReport, thresholds: Thresholds = {}): TableData => {
+const generateSummaryTableHtml = (jsonReport: CoverageReport, thresholds: Thresholds = {}): string => {
   return oneLine`
     <table>
       <thead>
@@ -53,14 +49,9 @@ const generateSummaryTableData = (jsonReport: CoverageReport, thresholds: Thresh
       </tbody>
     </table>
   `
-
 }
 
 export {
-  generateSummaryTableData,
+  generateSummaryTableHtml,
   generateTableRow
-};
-
-export type {
-  TableData
 };
