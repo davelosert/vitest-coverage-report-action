@@ -52,6 +52,5 @@ const generateSummaryTableHtml = (jsonReport: CoverageReport, thresholds: Thresh
 }
 
 export {
-  generateSummaryTableHtml,
-  generateTableRow
+  generateSummaryTableHtml
 };
