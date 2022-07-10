@@ -6,7 +6,7 @@ export default defineConfig({
       all: true,
       reporter: ['text', 'json-summary', 'json'],
       include: ['src'],
-      exclude: ['src/types'],
+      exclude: ['src/types', '**/*.test.ts'],
     }
   }
 });
