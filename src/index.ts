@@ -31,4 +31,6 @@ const run = async () => {
 
 run().then(() => {
   core.info('Report generated successfully.');
+}).catch((err) => {
+  core.error(err);
 });
