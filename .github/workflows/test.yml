@@ -2,8 +2,11 @@ name: 'Build and Test'
 on: 
   pull_request:
 
+
 jobs:
   build-and-test:
+    permissions:
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
