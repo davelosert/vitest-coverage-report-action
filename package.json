@@ -34,7 +34,7 @@
   "devDependencies": {
     "@semantic-release/exec": "6.0.3",
     "@types/common-tags": "1.8.1",
-    "@types/node": "18.0.3",
+    "@types/node": "18.6.1",
     "c8": "7.11.3",
     "esbuild": "0.14.50",
     "semantic-release": "19.0.3",
