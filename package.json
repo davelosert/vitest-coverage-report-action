@@ -40,6 +40,6 @@
     "semantic-release": "19.0.5",
     "typescript": "4.8.2",
     "vite": "3.0.9",
-    "vitest": "0.21.0"
+    "vitest": "0.22.1"
   }
 }
