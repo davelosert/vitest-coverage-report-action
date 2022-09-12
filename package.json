@@ -35,7 +35,7 @@
     "@semantic-release/exec": "6.0.3",
     "@types/common-tags": "1.8.1",
     "@types/node": "18.7.13",
-    "@vitest/coverage-c8": "0.23.1",
+    "@vitest/coverage-c8": "0.23.2",
     "c8": "7.12.0",
     "esbuild": "0.15.5",
     "semantic-release": "19.0.5",
