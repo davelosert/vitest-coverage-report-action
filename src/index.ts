@@ -9,10 +9,8 @@ import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
 const run = async () => {
   // Working directory can be used to modify all default/provided paths (for monorepos, etc)
   const workingDirectory = core.getInput('working-directory');
-  // TODO: 'path.resolve' will always result in an absolute URL, defaulting to using the current working
-  //         directory if no other absolute path was provided (from right to left). Therefore, joining
-  //         with 'process.cwd()' later has no effect (since the input will already be an absolute path).
-  //       Should likely clean up the unnecessary/duplicate 'path.resolve' usage where these variables are used?
+
+  // Paths will be resolved to absolute filepaths from 'path.resolve' call (get defaults from Action inputs)
   const jsonSummaryPath = path.resolve(workingDirectory, core.getInput('json-summary-path'));
   const jsonFinalPath = path.resolve(workingDirectory, core.getInput('json-final-path'));
   const viteConfigPath = path.resolve(workingDirectory, core.getInput('vite-config-path'));
@@ -26,8 +24,14 @@ const run = async () => {
     jsonSummary, jsonFinal 
   });
 
+  // Indicate working directory (if set) in Action summary for easier understanding (ie. in a monorepo)
+  let summaryHeading = "Coverage Summary";
+  if (workingDirectory) {
+    summaryHeading += ` for \`${workingDirectory}\``;
+  }
+
   const summary = core.summary
-    .addHeading('Coverage Summary')
+    .addHeading(summaryHeading, 2)
     .addRaw(tableData)
     .addDetails('File Coverage', fileTable)
 

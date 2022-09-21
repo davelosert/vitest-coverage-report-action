@@ -11,6 +11,7 @@ const regexFunctions = /functions\s*:\s*(\d+)/;
 
 const parseThresholds = async (vitestConfigPath: string): Promise<Thresholds> => {
   try {
+    // Input path may already be an absolute path (will shortcut 'path.resolve' call).
     const resolvedViteConfigPath = path.resolve(process.cwd(), vitestConfigPath);
     const rawContent = await fs.readFile(resolvedViteConfigPath, 'utf8');
 
