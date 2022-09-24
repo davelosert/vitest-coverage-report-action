@@ -5,22 +5,15 @@ import { JsonFinal } from './types/JsonFinal';
 import { JsonSummary } from './types/JsonSummary';
 import { stripIndent } from 'common-tags';
 
-/** Parse a Vitest coverage reporter file */
-const parseJsonReport = async <type extends JsonSummary | JsonFinal>(jsonPath: string): Promise<type> => {
-  // Input path may already be an absolute path (will shortcut 'path.resolve' call).
+const parseVitestCoverageReport = async <type extends JsonSummary | JsonFinal>(jsonPath: string): Promise<type> => {
   const resolvedJsonSummaryPath = path.resolve(process.cwd(), jsonPath);
   const jsonSummaryRaw = await readFile(resolvedJsonSummaryPath);
   return JSON.parse(jsonSummaryRaw.toString()) as type;
 }
 
-/**
- * Parse Vitest coverage 'json-summary' reporter file
- *
- * @throws Errors when parsing fails
- */
-const parseJsonSummary = async (jsonSummaryPath: string): Promise<JsonSummary> => {
+const parseVitestJsonSummary = async (jsonSummaryPath: string): Promise<JsonSummary> => {
   try {
-    return await parseJsonReport<JsonSummary>(jsonSummaryPath);
+    return await parseVitestCoverageReport<JsonSummary>(jsonSummaryPath);
   } catch (err: any) {
     core.setFailed(stripIndent`
         Failed to parse the json-summary at path "${jsonSummaryPath}."
@@ -36,10 +29,9 @@ const parseJsonSummary = async (jsonSummaryPath: string): Promise<JsonSummary> =
   }
 }
 
-/** Parse Vitest coverage 'json' reporter file */
-const parseJsonFinal = async (jsonFinalPath: string): Promise<JsonFinal> => {
+const parseVitestJsonFinal = async (jsonFinalPath: string): Promise<JsonFinal> => {
   try {
-    return await parseJsonReport<JsonFinal>(jsonFinalPath);
+    return await parseVitestCoverageReport<JsonFinal>(jsonFinalPath);
   } catch (err: any) {
     core.warning(stripIndent`
       Failed to parse JSON Final at path "${jsonFinalPath}".
@@ -53,6 +45,6 @@ const parseJsonFinal = async (jsonFinalPath: string): Promise<JsonFinal> => {
 };
 
 export {
-  parseJsonSummary,
-  parseJsonFinal
+  parseVitestJsonSummary,
+  parseVitestJsonFinal,
 };

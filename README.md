@@ -60,7 +60,7 @@ jobs:
 | `json-final-path`   | The path to the json final file.                                                                | `./coverage/coverage-final.json`   |
 | `vite-config-path`  | The path to the vite config file.                                                               | `./vitest.config.js`               |
 | `github-token`      | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`). | `${{ github.token }}`              |
-| `working-directory` | Run action within a custom directory (for monorepos).                                           | `./server`                         |
+| `working-directory` | Run action within a custom directory (for monorepos).                                           | `./`                               |
 
 ### Coverage Thresholds
 

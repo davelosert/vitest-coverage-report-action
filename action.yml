@@ -21,6 +21,7 @@ inputs:
   working-directory:
       required: false
       description: 'Custom working directory'
+      default: ./
 runs:
   using: 'node16'
   main: 'dist/index.js'
