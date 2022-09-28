@@ -3,7 +3,7 @@ import path from 'node:path';
 import { parseVitestJsonFinal, parseVitestJsonSummary } from './parseJsonReports.js';
 import { writeSummaryToPR } from './writeSummaryToPR.js';
 import * as core from '@actions/core';
-import { parseCoverageThresholds } from './parseThresholds.js';
+import { parseCoverageThresholds } from './parseCoverageThresholds.js';
 import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
 
 const run = async () => {
