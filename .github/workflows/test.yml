@@ -23,7 +23,11 @@ jobs:
       # Remove node_modules to see if this action runs entirely compiled
     - name: 'Remove Node Modules'
       run: rm -rf node_modules
-    - name: 'Use this action'
+    - name: 'Test Working Directory Option'
+      uses: ./
+      with:
+        working-directory: './test/mockReports'
+    - name: 'Test Default Action'
       # run step also on failure of the previous step
       if: always()
       uses: ./
