@@ -54,12 +54,13 @@ jobs:
 
 ### Options
 
-| Option            | Description                                                                                      | Default                            |
-| ----------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------- |
-| json-summary-path | The path to the json summary file. Uses "coverage/coverage-summary.json" by default.             | `./coverage/coverage-summary.json` |
-| json-final-path   | The path to the json final file. Uses "coverage/coverage-final.json" by default.                 | `./coverage/coverage-final.json`   |
-| vite-config-path  | The path to the vite config file. Uses "vite.config.js" by default.                              | `./vitest.config.js`               |
-| github-token      | A github access token with permissions to write to issues. Uses secrets.GITHUB_TOKEN by default. | `./vitest.config.js`               |
+| Option              | Description                                                                                     | Default                            |
+| ------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `json-summary-path` | The path to the json summary file.                                                              | `./coverage/coverage-summary.json` |
+| `json-final-path`   | The path to the json final file.                                                                | `./coverage/coverage-final.json`   |
+| `vite-config-path`  | The path to the vite config file.                                                               | `./vitest.config.js`               |
+| `github-token`      | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`). | `${{ github.token }}`              |
+| `working-directory` | Run action within a custom directory (for monorepos).                                           | `./`                               |
 
 ### Coverage Thresholds
 

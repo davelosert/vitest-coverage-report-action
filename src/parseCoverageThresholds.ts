@@ -1,5 +1,4 @@
 import path from 'node:path';
-import * as core from '@actions/core';
 import { promises as fs } from 'fs';
 import { Thresholds } from './types/Threshold';
 
@@ -9,7 +8,7 @@ const regexLines = /lines:\s*(\d+)/;
 const regexBranches = /branches\s*:\s*(\d+)/;
 const regexFunctions = /functions\s*:\s*(\d+)/;
 
-const parseThresholds = async (vitestConfigPath: string): Promise<Thresholds> => {
+const parseCoverageThresholds = async (vitestConfigPath: string): Promise<Thresholds> => {
   try {
     const resolvedViteConfigPath = path.resolve(process.cwd(), vitestConfigPath);
     const rawContent = await fs.readFile(resolvedViteConfigPath, 'utf8');
@@ -45,5 +44,5 @@ const parseThresholds = async (vitestConfigPath: string): Promise<Thresholds> =>
 }
 
 export {
-  parseThresholds,
+  parseCoverageThresholds,
 };

@@ -5,33 +5,33 @@ import { JsonFinal } from './types/JsonFinal';
 import { JsonSummary } from './types/JsonSummary';
 import { stripIndent } from 'common-tags';
 
-const parseJsonReport = async <type extends JsonSummary | JsonFinal>(jsonSummaryPath: string): Promise<type> => {
-  const resolvedJsonSummaryPath = path.resolve(process.cwd(), jsonSummaryPath);
+const parseVitestCoverageReport = async <type extends JsonSummary | JsonFinal>(jsonPath: string): Promise<type> => {
+  const resolvedJsonSummaryPath = path.resolve(process.cwd(), jsonPath);
   const jsonSummaryRaw = await readFile(resolvedJsonSummaryPath);
   return JSON.parse(jsonSummaryRaw.toString()) as type;
 }
 
-const parseJsonSummary = async (jsonSummaryPath: string): Promise<JsonSummary> => {
+const parseVitestJsonSummary = async (jsonSummaryPath: string): Promise<JsonSummary> => {
   try {
-    return await parseJsonReport<JsonSummary>(jsonSummaryPath);
+    return await parseVitestCoverageReport<JsonSummary>(jsonSummaryPath);
   } catch (err: any) {
     core.setFailed(stripIndent`
         Failed to parse the json-summary at path "${jsonSummaryPath}."
-        Make sure to run vitest before this action and to include the "json-summay" reporter.
+        Make sure to run vitest before this action and to include the "json-summary" reporter.
 
         Original Error:
         ${err.stack}
     `);
 
-    // rethrow to abort everything
+    // Rethrow to abort the entire workflow
     throw err;
 
   }
 }
 
-const parseJsonFinal = async (jsonFinalPath: string): Promise<JsonFinal> => {
+const parseVitestJsonFinal = async (jsonFinalPath: string): Promise<JsonFinal> => {
   try {
-    return await parseJsonReport<JsonFinal>(jsonFinalPath);
+    return await parseVitestCoverageReport<JsonFinal>(jsonFinalPath);
   } catch (err: any) {
     core.warning(stripIndent`
       Failed to parse JSON Final at path "${jsonFinalPath}".
@@ -45,6 +45,6 @@ const parseJsonFinal = async (jsonFinalPath: string): Promise<JsonFinal> => {
 };
 
 export {
-  parseJsonSummary,
-  parseJsonFinal
+  parseVitestJsonSummary,
+  parseVitestJsonFinal,
 };
