@@ -24,7 +24,7 @@ const run = async () => {
   });
 
   let summaryHeading = "Coverage Summary";
-  if (workingDirectory) {
+  if (workingDirectory !== './') {
     summaryHeading += ` for \`${workingDirectory}\``;
   }
 
