@@ -77,7 +77,7 @@ ${F6}`,r=await Fn(p,F6);r?await p.rest.issues.updateComment({owner:J.context.rep
       ${d}
       </tbody>
     </table>
-  `};var jn=async()=>{let e=ee.getInput("working-directory"),a=Ja.default.resolve(e,ee.getInput("json-summary-path")),p=Ja.default.resolve(e,ee.getInput("json-final-path")),d=Ja.default.resolve(e,ee.getInput("vite-config-path")),r=await Mr(a),t=await jr(p),i=await I6(d),o=Hd(r.total,i),s=z6({jsonSummary:r,jsonFinal:t}),n="Coverage Summary";e&&(n+=` for \`${e}\``);let l=ee.summary.addHeading(n,2).addRaw(o).addDetails("File Coverage",s);await L6(l),await l.write()};jn().then(()=>{ee.info("Report generated successfully.")}).catch(e=>{ee.error(e)});
+  `};var jn=async()=>{let e=ee.getInput("working-directory"),a=Ja.default.resolve(e,ee.getInput("json-summary-path")),p=Ja.default.resolve(e,ee.getInput("json-final-path")),d=Ja.default.resolve(e,ee.getInput("vite-config-path")),r=await Mr(a),t=await jr(p),i=await I6(d),o=Hd(r.total,i),s=z6({jsonSummary:r,jsonFinal:t}),n="Coverage Summary";e!=="./"&&(n+=` for \`${e}\``);let l=ee.summary.addHeading(n,2).addRaw(o).addDetails("File Coverage",s);await L6(l),await l.write()};jn().then(()=>{ee.info("Report generated successfully.")}).catch(e=>{ee.error(e)});
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
