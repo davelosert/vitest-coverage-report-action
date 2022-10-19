@@ -3,15 +3,12 @@ const config = {
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
-    ['@semantic-release/github', {
-        "assets": [
-          {"path": "dist/index.js", "label": "Main Action File"},
-        ]
-      
-  }],
-  ["@semantic-release/exec", {
-      "successCmd": "./moveTag.sh ${nextRelease.version}"
-  }],
+    ["@semantic-release/git", {
+      "assets": ["dist/*.js", "dist/*.js.map"],
+      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+    }],
+    '@semantic-release/github',
+    'semantic-release-github-actions-tags'
   ]
 };
 
