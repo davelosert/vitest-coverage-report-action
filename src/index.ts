@@ -1,4 +1,4 @@
-import { generateSummaryTableData } from './generateSummaryTableHtml.js';
+import { generateSummaryTableHtml } from './generateSummaryTableHtml.js';
 import path from 'node:path';
 import { parseVitestJsonFinal, parseVitestJsonSummary } from './parseJsonReports.js';
 import { writeSummaryToPR } from './writeSummaryToPR.js';
@@ -18,7 +18,7 @@ const run = async () => {
   const jsonFinal = await parseVitestJsonFinal(jsonFinalPath);
   const thresholds = await parseCoverageThresholds(viteConfigPath);
 
-  const tableData = generateSummaryTableData(jsonSummary.total, thresholds);
+  const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds);
   const fileTable = generateFileCoverageHtml({
     jsonSummary, jsonFinal 
   });
