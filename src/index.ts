@@ -3,6 +3,7 @@ import path from 'node:path';
 import { parseVitestJsonFinal, parseVitestJsonSummary } from './parseJsonReports.js';
 import { writeSummaryToPR } from './writeSummaryToPR.js';
 import * as core from '@actions/core';
+import {RequestError} from '@octokit/request-error'
 import { parseCoverageThresholds } from './parseCoverageThresholds.js';
 import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
 
@@ -33,7 +34,19 @@ const run = async () => {
     .addRaw(tableData)
     .addDetails('File Coverage', fileTable)
 
-  await writeSummaryToPR(summary);
+  try {
+    await writeSummaryToPR(summary);
+  } catch (error) {
+    if (error instanceof RequestError && (error.status === 404 || error.status === 403)) {
+      core.warning(
+        `Couldn't write a comment to the pull-request. Please make sure your job has the permission 'pull-request: write'.`
+      )
+    } else {
+      // Rethrow to handle it in the catch block of the run()-call.
+      throw error;
+    }
+  }
+
   await summary.write();
 };
 
