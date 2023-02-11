@@ -37,6 +37,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    
+    permissions:
+      # Required to checkout the code
+      contents: read
+      # Required to put a comment into the pull-request
+      pull-requests: write
+
     steps:
     - uses: actions/checkout@v2
     - name: 'Install Node'
@@ -51,6 +58,11 @@ jobs:
       if: always() # Also generate the report if tests are failing
       uses:  davelosert/vitest-coverage-report-action@v1
 ```
+
+### Required Permissions
+
+This action requires permissions set to `pull-request: write` in order for it to be able to add a comment to your pull-request. If you are using the default `GITHUB_TOKEN`, make sure to include the permissions together with `contents: read` to the the job, so that the `actions/checkout` action is allowed to checkout the repository. This is especially important for new repositories created after [GitHub's announcement](https://github.blog/changelog/2023-02-02-github-actions-updating-the-default-github_token-permissions-to-read-only/) to change the default permissions to `read-only` for all new `GITHUB_TOKEN`s.
+
 
 ### Options
 
