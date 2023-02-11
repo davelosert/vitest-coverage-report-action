@@ -7,7 +7,7 @@ type Octokit =  ReturnType<typeof github.getOctokit>;
 
 const writeSummaryToPR = async (summary: typeof core.summary) => {
   if (!github.context.payload.pull_request) {
-    console.log('[vitest-coverage-report] Not in the context of a pull request. Skipping comment creation.');
+    core.info('[vitest-coverage-report] Not in the context of a pull request. Skipping comment creation.');
     return;
   }
   
