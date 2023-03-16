@@ -8,8 +8,7 @@ inputs:
       default: ${{ github.token }}
   vite-config-path:
       required: false
-      description: 'The path to the vite config file. Uses "vite.config.js" by default.'
-      default: vite.config.js
+      description: 'The path to the vite config file. Looks for paths on the form "vite[st].config.{t|mt|ct|j|mj|cj}s" by default.'
   json-summary-path:
       required: false
       description: 'The path to the json summary file. Uses "coverage/coverage-summary.json" by default.'
