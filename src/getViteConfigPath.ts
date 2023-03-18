@@ -30,9 +30,9 @@ const getViteConfigPath = async (workingDirectory: string, input: string) => {
       return await Promise.any(
         defaultPaths.map((filePath) => testFilePath(workingDirectory, filePath))
       );
-    } else {
-      return await testFilePath(workingDirectory, input);
-    }
+    } 
+    
+    return await testFilePath(workingDirectory, input);
   } catch (error) {
     core.setFailed(stripIndent`
           Failed to read vite config file"${workingDirectory}/${input}" or any of the default locations.
