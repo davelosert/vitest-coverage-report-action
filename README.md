@@ -70,7 +70,7 @@ This action requires permissions set to `pull-request: write` in order for it to
 | ------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------- |
 | `json-summary-path` | The path to the json summary file.                                                              | `./coverage/coverage-summary.json` |
 | `json-final-path`   | The path to the json final file.                                                                | `./coverage/coverage-final.json`   |
-| `vite-config-path`  | The path to the vite config file.                                                               | `./vitest.config.js`               |
+| `vite-config-path`  | The path to the vite config file. Will check the same paths as vite and vitest                  | Checks pattern `vite[st].config.{t|mt|ct|j|mj|cj}s`               |
 | `github-token`      | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`). | `${{ github.token }}`              |
 | `working-directory` | Run action within a custom directory (for monorepos).                                           | `./`                               |
 
