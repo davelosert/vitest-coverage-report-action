@@ -6,6 +6,7 @@ import * as core from '@actions/core';
 import {RequestError} from '@octokit/request-error'
 import { parseCoverageThresholds } from './parseCoverageThresholds.js';
 import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
+import { getViteConfigPath } from './getViteConfigPath.js';
 
 const run = async () => {
   // Working directory can be used to modify all default/provided paths (for monorepos, etc)
@@ -13,7 +14,7 @@ const run = async () => {
 
   const jsonSummaryPath = path.resolve(workingDirectory, core.getInput('json-summary-path'));
   const jsonFinalPath = path.resolve(workingDirectory, core.getInput('json-final-path'));
-  const viteConfigPath = path.resolve(workingDirectory, core.getInput('vite-config-path'));
+  const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
 
   const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
   const jsonFinal = await parseVitestJsonFinal(jsonFinalPath);
