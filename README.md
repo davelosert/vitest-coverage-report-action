@@ -63,14 +63,15 @@ jobs:
 
 This action requires permissions set to `pull-request: write` in order for it to be able to add a comment to your pull-request. If you are using the default `GITHUB_TOKEN`, make sure to include the permissions together with `contents: read` to the the job, so that the `actions/checkout` action is allowed to checkout the repository. This is especially important for new repositories created after [GitHub's announcement](https://github.blog/changelog/2023-02-02-github-actions-updating-the-default-github_token-permissions-to-read-only/) to change the default permissions to `read-only` for all new `GITHUB_TOKEN`s.
 
-
 ### Options
 
-| Option              | Description                                                                                     | Default                            |
-| ------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `json-summary-path` | The path to the json summary file.                                                              | `./coverage/coverage-summary.json` |
-| `json-final-path`   | The path to the json final file.                                                                | `./coverage/coverage-final.json`   |
-| `vite-config-path`  | The path to the vite config file. Will check the same paths as vite and vitest                  | Checks pattern `vite[st].config.{t|mt|ct|j|mj|cj}s`               |
+| Option              | Description                                                                                                        | Default                            |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
+| `json-summary-path` | The path to the json summary file.                                                                                 | `./coverage/coverage-summary.json` |
+| `json-final-path`   | The path to the json final file.                                                                                   | `./coverage/coverage-final.json`   |
+| `vite-config-path`  | The path to the vite config file. Will check the same paths as vite and vitest                                     | Checks pattern `vite[st].config.{t | mt | ct | j | mj | cj}s` |
+| `comment-pr`        | Set this to `false` to deactivate commenting on a PR (can be useful if the report is too large for comment-bodies) | true                               |
+
 | `github-token`      | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`). | `${{ github.token }}`              |
 | `working-directory` | Run action within a custom directory (for monorepos).                                           | `./`                               |
 
@@ -100,19 +101,3 @@ the report would look like this:
 ![Coverage Threshold Report](./docs/coverage-report-threshold.png)
 
 If there are no thresholds defined, the status will be '🔵'.
-
-## Current Status
-
-This is a work in progress project. Currently, it will only take an already created `json-summary` and `json`-report, convert it to markdown and export it to:
-
-1. a comment within an associated pull-request (if there is one)
-2. the [GitHub Step Summary](https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables) of the current action
-
-### Future Plans
-
-- [x] Make summary file configurable
-- [x] Also report detailed file-coverage (coverage per file and unconvered lines) based on the `json`-Reporter
-- [ ] Invoke 'vitest' directly from the action
-- [ ] Also provide test results (failed tests etc.) in the generated markdown reports
-- [ ] Also report test results themselves
-- [x] Beatufiy the report with better markdown

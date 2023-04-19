@@ -15,6 +15,7 @@ const run = async () => {
   const jsonSummaryPath = path.resolve(workingDirectory, core.getInput('json-summary-path'));
   const jsonFinalPath = path.resolve(workingDirectory, core.getInput('json-final-path'));
   const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
+  const commentPr = core.getBooleanInput('comment-pr');
 
   const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
   const jsonFinal = await parseVitestJsonFinal(jsonFinalPath);
@@ -35,6 +36,14 @@ const run = async () => {
     .addRaw(tableData)
     .addDetails('File Coverage', fileTable)
 
+  if (commentPr) {
+    await commentSummaryOnPR(summary);
+  }
+
+  await summary.write();
+};
+
+async function commentSummaryOnPR(summary: typeof core.summary): Promise<void> {
   try {
     await writeSummaryToPR(summary);
   } catch (error) {
@@ -47,9 +56,8 @@ const run = async () => {
       throw error;
     }
   }
+}
 
-  await summary.write();
-};
 
 run().then(() => {
   core.info('Report generated successfully.');

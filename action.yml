@@ -17,6 +17,9 @@ inputs:
       required: false
       description: 'The path to the json final file. Uses "coverage/coverage-final.json" by default.'
       default: coverage/coverage-final.json
+  comment-pr:
+      description: 'Wether a comment with the summary is written to the PR.'
+      default: true
   working-directory:
       required: false
       description: 'Custom working directory'
