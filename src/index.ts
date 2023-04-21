@@ -3,15 +3,28 @@ import path from 'node:path';
 import { parseVitestJsonFinal, parseVitestJsonSummary } from './parseJsonReports.js';
 import { writeSummaryToPR } from './writeSummaryToPR.js';
 import * as core from '@actions/core';
-import {RequestError} from '@octokit/request-error'
+import { RequestError } from '@octokit/request-error'
 import { parseCoverageThresholds } from './parseCoverageThresholds.js';
 import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
 import { getViteConfigPath } from './getViteConfigPath.js';
+import { getPullChanges } from './getPullChanges.js';
+import { SummaryModes } from './summaryModes.js'
 
 const run = async () => {
   // Working directory can be used to modify all default/provided paths (for monorepos, etc)
   const workingDirectory = core.getInput('working-directory');
 
+  if (Object.values(Vehicle).includes('car')) {
+    // Do stuff here
+  }
+  const summaryFilesModeRaw = core.getInput('summary-files-mode');//'none'; // mixed/changes/all/none
+  let summaryFilesMode = summaryFilesModeRaw
+  if (!Object.values(SummaryModes).includes(summaryFilesModeRaw)) {
+    core.warning(`Not valid value "${summaryFilesModeRaw}" for summary mode, used "mixed"`)
+    summaryFilesMode = SummaryModes.Mixed
+  }
+
+  const pullChanges = getPullChanges(summaryFilesMode);
   const jsonSummaryPath = path.resolve(workingDirectory, core.getInput('json-summary-path'));
   const jsonFinalPath = path.resolve(workingDirectory, core.getInput('json-final-path'));
   const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
@@ -22,7 +35,7 @@ const run = async () => {
 
   const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds);
   const fileTable = generateFileCoverageHtml({
-    jsonSummary, jsonFinal 
+    jsonSummary, jsonFinal, summaryFilesMode, pullChanges
   });
 
   let summaryHeading = "Coverage Summary";

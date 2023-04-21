@@ -5,6 +5,7 @@ import { JsonFinal } from './types/JsonFinal';
 import { JsonSummary } from './types/JsonSummary';
 import { createMockCoverageReport, createMockJsonSummary, createMockReportNumbers } from './types/JsonSummaryMockFactory';
 import { describe, it, expect } from 'vitest';
+import { SummaryModes } from './summaryModes';
 
 describe('generateFileCoverageHtml()', () => {
   it('renders the statements, branches, functions and line coverage-percentage of a file.', () => {
@@ -19,9 +20,11 @@ describe('generateFileCoverageHtml()', () => {
       
       const html = generateFileCoverageHtml({
         jsonSummary,
-        jsonFinal: {}
+        jsonFinal: {},
+        summaryFilesMode: SummaryModes.Mixed,
+        pullChanges: []
       });
-      
+
       const firstTableLine = getTableLine(1, html);
       
       expect(firstTableLine).toContain('70%');
@@ -45,7 +48,9 @@ describe('generateFileCoverageHtml()', () => {
     
       const html = generateFileCoverageHtml({
         jsonSummary,
-        jsonFinal
+        jsonFinal,
+        summaryFilesMode: SummaryModes.Mixed,
+        pullChanges: []
       });
       
       const firstTableLine = getTableLine(1, html);
