@@ -17,7 +17,7 @@ const run = async () => {
   if (Object.values(Vehicle).includes('car')) {
     // Do stuff here
   }
-  const summaryFilesModeRaw = core.getInput('summary-files-mode');//'none'; // mixed/changes/all/none
+  const summaryFilesModeRaw = core.getInput('summary-mode');//'none'; // mixed/changes/all/none
   let summaryFilesMode = summaryFilesModeRaw
   if (!Object.values(SummaryModes).includes(summaryFilesModeRaw)) {
     core.warning(`Not valid value "${summaryFilesModeRaw}" for summary mode, used "mixed"`)
