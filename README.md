@@ -8,7 +8,9 @@ It will create a high-level coverage summary for all coverage-category as well a
 
 ## Usage
 
-This action requires you to use `vitest` to create a coverage report with the `json-summary`-reporter and optionally the `json`-reporter (if you don't provide it, uncovered lines won't appear in the report).
+This action requires you to use `vitest` to create a coverage report with the following reporters:
+- `json-summary` (required): Will add a high-level summary of your overall coverage
+- `json` (optional): If provided, will add file-specific coverage reports for any file of your project
 
 You can configure the reporters within the `vitest.config.js` file likes this:
 
