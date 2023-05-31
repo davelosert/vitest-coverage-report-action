@@ -1,15 +1,15 @@
 import * as github from '@actions/github';
 import * as core from '@actions/core';
-import { SummaryModes } from './summaryModes.js'
+import { FileCoverageModes } from './fileCoverageModes'
 
-export async function getPullChanges(summaryMode: SummaryModes): Promise<String[]> {
+export async function getPullChanges(fileCoverageMode: FileCoverageModes): Promise<string[]> {
   // Skip Changes collection if we don't need it
-  if (summaryMode === SummaryModes.Mixed || summaryMode === SummaryModes.None) {
+  if (fileCoverageMode === FileCoverageModes.None) {
     return [];
   }
 
   // Skip Changes collection if we can't do it
-  if (!['pull_request', 'pull_request_review', 'pull_request_review_comment'].includes(github.context.eventName)) {
+  if (!github.context.payload?.pull_request) {
     return [];
   }
 
@@ -18,14 +18,14 @@ export async function getPullChanges(summaryMode: SummaryModes): Promise<String[
   try {
     const client = new github.GitHub(gitHubToken)
     const per_page = 100
-    const paths: String[] = []
+    const paths: string[] = []
 
     core.startGroup(`Fetching list of changed files for PR#${prNumber} from Github API`)
     for await (const response of client.paginate.iterator(
       client.pulls.listFiles.endpoint.merge({
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
-        pull_number: prNumber.number,
+        pull_number: prNumber,
         per_page
       })
     ) as AsyncIterableIterator<any>) {
@@ -35,7 +35,7 @@ export async function getPullChanges(summaryMode: SummaryModes): Promise<String[
       core.info(`Received ${response.data.length} items`)
 
       for (const row of response.data) {
-        core.info(`[${row.status}] ${row.filename}`)
+        core.debug(`[${row.status}] ${row.filename}`)
         if (['added', 'modified'].includes(row.status)) {
           paths.push(row.filename)
         }

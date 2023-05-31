@@ -1,22 +1,23 @@
-import * as path from 'path';
-import { generateBlobFileUrl } from './generateFileUrl';
-import { getUncoveredLinesFromStatements } from './getUncoveredLinesFromStatements';
-import { JsonFinal } from './types/JsonFinal';
-import { JsonSummary } from './types/JsonSummary';
-import { Thresholds } from './types/Threshold';
-import { oneLine } from 'common-tags';
-import { SummaryModes } from './summaryModes'
+import * as path from 'path'
+import { generateBlobFileUrl } from './generateFileUrl'
+import { getUncoveredLinesFromStatements } from './getUncoveredLinesFromStatements'
+import { JsonFinal } from './types/JsonFinal'
+import { JsonSummary } from './types/JsonSummary'
+import { oneLine } from 'common-tags'
+import { FileCoverageModes } from './fileCoverageModes'
 
-type Sources = {
+type FileCoverageInputs = {
   jsonSummary: JsonSummary;
   jsonFinal: JsonFinal;
+  fileCoverageMode: FileCoverageModes;
+  pullChanges: string[];
 }
 
 const workspacePath = process.cwd();
-const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, summaryFilesMode, pullChanges }: Sources) => {
+const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, fileCoverageMode, pullChanges }: FileCoverageInputs) => {
   const filePaths = Object.keys(jsonSummary).filter((key) => key !== 'total');
 
-  const formatFileLine = (filePath: String) => {
+  const formatFileLine = (filePath: string) => {
     const coverageSummary = jsonSummary[filePath];
     const lineCoverage = jsonFinal[filePath];
 
@@ -47,22 +48,20 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, summaryFilesMode, pu
     }).join(', ')}</td>
       </tr>`
   }
-  const formatGroupLine = (caption: String) => `
+  const formatGroupLine = (caption: string) => `
     <tr>
       <td align="left" rowspan="6"><b>${caption}</b></td>
     </tr>`
 
-  let reportData: String = ''
-  switch (summaryFilesMode) {
-    case SummaryModes.Mixed:
-      reportData = filePaths.map(formatFileLine).join('');
-      break;
-    case SummaryModes.Changes:
+  let reportData: string = ''
+
+  switch (fileCoverageMode) {
+    case FileCoverageModes.Changes:
       reportData = `
         ${formatGroupLine('Changed Files')} 
         ${filePaths.filter((path) => pullChanges.includes(path)).map(formatFileLine).join('')}`
       break;
-    case SummaryModes.All:
+    case FileCoverageModes.All:
       reportData = `
         ${formatGroupLine('Changed Files')} 
         ${filePaths.filter((path) => pullChanges.includes(path)).map(formatFileLine).join('')}

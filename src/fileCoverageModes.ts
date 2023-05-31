@@ -1,5 +1,4 @@
-export enum SummaryModes {
-  Mixed = 'mixed',
+export enum FileCoverageModes {
   All = 'all',
   Changes = 'changes',
   None = 'none',

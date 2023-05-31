@@ -8,23 +8,22 @@ import { parseCoverageThresholds } from './parseCoverageThresholds.js';
 import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
 import { getViteConfigPath } from './getViteConfigPath.js';
 import { getPullChanges } from './getPullChanges.js';
-import { SummaryModes } from './summaryModes.js'
+import { FileCoverageModes } from './fileCoverageModes'
 
 const run = async () => {
   // Working directory can be used to modify all default/provided paths (for monorepos, etc)
   const workingDirectory = core.getInput('working-directory');
 
-  if (Object.values(Vehicle).includes('car')) {
-    // Do stuff here
-  }
-  const summaryFilesModeRaw = core.getInput('summary-mode');//'none'; // mixed/changes/all/none
-  let summaryFilesMode = summaryFilesModeRaw
-  if (!Object.values(SummaryModes).includes(summaryFilesModeRaw)) {
-    core.warning(`Not valid value "${summaryFilesModeRaw}" for summary mode, used "mixed"`)
-    summaryFilesMode = SummaryModes.Mixed
+  const fileCoverageModeRaw = core.getInput('file-coverage-mode'); // all/changes/none
+  let fileCoverageMode: FileCoverageModes;
+  if (!Object.values(FileCoverageModes).includes(fileCoverageModeRaw)) {
+    core.warning(`Not valid value "${fileCoverageModeRaw}" for summary mode, used "all"`)
+    fileCoverageMode = FileCoverageModes.All
+  } else {
+    fileCoverageMode = FileCoverageModes[fileCoverageModeRaw]
   }
 
-  const pullChanges = getPullChanges(summaryFilesMode);
+  const pullChanges = await getPullChanges(fileCoverageMode);
   const jsonSummaryPath = path.resolve(workingDirectory, core.getInput('json-summary-path'));
   const jsonFinalPath = path.resolve(workingDirectory, core.getInput('json-final-path'));
   const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
@@ -35,7 +34,7 @@ const run = async () => {
 
   const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds);
   const fileTable = generateFileCoverageHtml({
-    jsonSummary, jsonFinal, summaryFilesMode, pullChanges
+    jsonSummary, jsonFinal, fileCoverageMode, pullChanges
   });
 
   let summaryHeading = "Coverage Summary";

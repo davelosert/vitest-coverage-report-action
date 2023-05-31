@@ -13,10 +13,10 @@ inputs:
       required: false
       description: 'The path to the json summary file. Uses "coverage/coverage-summary.json" by default.'
       default: coverage/coverage-summary.json
-  summary-mode:
+  file-coverage-mode:
       required: false
-      description: 'How to show summary for files coverage. Uses "mixed" by default.'
-      default: mixed
+      description: 'How to show summary for files coverage. Uses "all" by default.'
+      default: all
   json-final-path:
       required: false
       description: 'The path to the json final file. Uses "coverage/coverage-final.json" by default.'
