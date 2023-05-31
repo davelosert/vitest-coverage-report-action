@@ -17,25 +17,19 @@ const run = async () => {
   const fileCoverageModeRaw = core.getInput('file-coverage-mode'); // all/changes/none
   let fileCoverageMode: FileCoverageModes;
   if (!Object.values(FileCoverageModes).includes(fileCoverageModeRaw)) {
-    core.warning(`Not valid value "${fileCoverageModeRaw}" for summary mode, used "all"`)
-    fileCoverageMode = FileCoverageModes.All
+    core.warning(`Not valid value "${fileCoverageModeRaw}" for summary mode, used "changes"`)
+    fileCoverageMode = FileCoverageModes.Changes
   } else {
     fileCoverageMode = FileCoverageModes[fileCoverageModeRaw]
   }
 
-  const pullChanges = await getPullChanges(fileCoverageMode);
   const jsonSummaryPath = path.resolve(workingDirectory, core.getInput('json-summary-path'));
-  const jsonFinalPath = path.resolve(workingDirectory, core.getInput('json-final-path'));
   const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
 
   const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
-  const jsonFinal = await parseVitestJsonFinal(jsonFinalPath);
   const thresholds = await parseCoverageThresholds(viteConfigPath);
 
   const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds);
-  const fileTable = generateFileCoverageHtml({
-    jsonSummary, jsonFinal, fileCoverageMode, pullChanges
-  });
 
   let summaryHeading = "Coverage Summary";
   if (workingDirectory !== './') {
@@ -45,7 +39,16 @@ const run = async () => {
   const summary = core.summary
     .addHeading(summaryHeading, 2)
     .addRaw(tableData)
-    .addDetails('File Coverage', fileTable)
+
+  if (fileCoverageMode !== FileCoverageModes.None) {
+    const pullChanges = await getPullChanges(fileCoverageMode);
+    const jsonFinalPath = path.resolve(workingDirectory, core.getInput('json-final-path'));
+    const jsonFinal = await parseVitestJsonFinal(jsonFinalPath);
+    const fileTable = generateFileCoverageHtml({
+      jsonSummary, jsonFinal, fileCoverageMode, pullChanges
+    });
+    summary.addDetails('File Coverage', fileTable)
+  }
 
   try {
     await writeSummaryToPR(summary);
