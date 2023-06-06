@@ -30,7 +30,7 @@
     "@actions/core": "1.10.0",
     "@actions/github": "5.1.1",
     "@semantic-release/git": "10.0.1",
-    "@semantic-release/github": "8.1.0",
+    "@semantic-release/github": "9.0.2",
     "common-tags": "1.8.2"
   },
   "devDependencies": {
