@@ -73,11 +73,12 @@ This action requires permissions set to `pull-request: write` in order for it to
 | `vite-config-path`  | The path to the vite config file. Will check the same paths as vite and vitest                  | Checks pattern `vite[st].config.{t|mt|ct|j|mj|cj}s`               |
 | `github-token`      | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`). | `${{ github.token }}`              |
 | `working-directory` | Run action within a custom directory (for monorepos).                                           | `./`                               |
-| `file-coverage-mode`| Way how to coverage report, possible values (`all`, `changes`, `none`)                          | `all`                              |
+| `file-coverage-mode`| Decide how to showcase file-based coverage. Possible values are `all`, `changes` or `none`.                          | `changes`                              |
 
 ### File Coverage Mode
-* `all` - show it grouped by changed and not changed files in that pull request (works only with `pull_request`, `pull_request_review`, `pull_request_review_comment` actions)
+
 * `changes` - show Files coverage only for project files changed in that pull request (works only with `pull_request`, `pull_request_review`, `pull_request_review_comment` actions)
+* `all` - show it grouped by changed and not changed files in that pull request (works only with `pull_request`, `pull_request_review`, `pull_request_review_comment` actions)
 * `none` - do not show any File coverage details (only total Summary)
 
 ### Coverage Thresholds

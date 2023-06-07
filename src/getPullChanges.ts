@@ -1,49 +1,53 @@
 import * as github from '@actions/github';
 import * as core from '@actions/core';
-import { FileCoverageModes } from './fileCoverageModes'
+import { FileCoverageMode } from './FileCoverageMode'
 
-export async function getPullChanges(fileCoverageMode: FileCoverageModes): Promise<string[]> {
-  // Skip Changes collection if we don't need it
-  if (fileCoverageMode === FileCoverageModes.None) {
-    return [];
-  }
+type Octokit =  ReturnType<typeof github.getOctokit>;
 
-  // Skip Changes collection if we can't do it
-  if (!github.context.payload?.pull_request) {
-    return [];
-  }
+export async function getPullChanges(fileCoverageMode: FileCoverageMode): Promise<string[]> {
+	// Skip Changes collection if we don't need it
+	if (fileCoverageMode === FileCoverageMode.None) {
+		return [];
+	}
 
-  const gitHubToken = core.getInput('github-token').trim();
-  const prNumber = github.context.payload.pull_request.number
-  try {
-    const client = new github.GitHub(gitHubToken)
-    const per_page = 100
-    const paths: string[] = []
+	// Skip Changes collection if we can't do it
+	if (!github.context.payload?.pull_request) {
+		return [];
+	}
 
-    core.startGroup(`Fetching list of changed files for PR#${prNumber} from Github API`)
-    for await (const response of client.paginate.iterator(
-      client.pulls.listFiles.endpoint.merge({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        pull_number: prNumber,
-        per_page
-      })
-    ) as AsyncIterableIterator<any>) {
-      if (response.status !== 200) {
-        throw new Error(`Fetching list of changed files from GitHub API failed with error code ${response.status}`)
-      }
-      core.info(`Received ${response.data.length} items`)
+	const gitHubToken = core.getInput('github-token').trim();
+	const prNumber = github.context.payload.pull_request.number
+	try {
+		const octokit: Octokit = github.getOctokit(gitHubToken);
+		const paths: string[] = []
 
-      for (const row of response.data) {
-        core.debug(`[${row.status}] ${row.filename}`)
-        if (['added', 'modified'].includes(row.status)) {
-          paths.push(row.filename)
-        }
-      }
-    }
-    return paths
-  } finally {
-    core.endGroup()
-  }
+		core.startGroup(`Fetching list of changed files for PR#${prNumber} from Github API`)
+		
+		const iterator = octokit.paginate.iterator(
+			octokit.rest.pulls.listFiles, {
+				owner: github.context.repo.owner,
+				repo: github.context.repo.repo,
+				pull_number: prNumber,
+				per_page: 100
+			}
+		);
+
+		for await (const response of iterator) {
+			if (response.status !== 200) {
+				throw new Error(`Fetching list of changed files from GitHub API failed with error code ${response.status}`)
+			}
+			core.info(`Received ${response.data.length} items`)
+
+			for (const file of response.data) {
+				core.debug(`[${file.status}] ${file.filename}`)
+				if (['added', 'modified'].includes(file.status)) {
+					paths.push(file.filename)
+				}
+			}
+		}
+		return paths
+	} finally {
+		core.endGroup()
+	}
 }
 

@@ -34,3 +34,7 @@ const getUncoveredLinesFromStatements = ({ s, statementMap }: StatementCoverageR
 export {
   getUncoveredLinesFromStatements
 };
+
+export type {
+	LineRange
+};

@@ -1,76 +1,62 @@
 import * as path from 'path'
 import { generateBlobFileUrl } from './generateFileUrl'
-import { getUncoveredLinesFromStatements } from './getUncoveredLinesFromStatements'
+import { LineRange, getUncoveredLinesFromStatements } from './getUncoveredLinesFromStatements'
 import { JsonFinal } from './types/JsonFinal'
 import { JsonSummary } from './types/JsonSummary'
 import { oneLine } from 'common-tags'
-import { FileCoverageModes } from './fileCoverageModes'
+import { FileCoverageMode } from './FileCoverageMode'
 
 type FileCoverageInputs = {
-  jsonSummary: JsonSummary;
-  jsonFinal: JsonFinal;
-  fileCoverageMode: FileCoverageModes;
-  pullChanges: string[];
+	jsonSummary: JsonSummary;
+	jsonFinal: JsonFinal;
+	fileCoverageMode: FileCoverageMode;
+	pullChanges: string[];
 }
 
 const workspacePath = process.cwd();
 const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, fileCoverageMode, pullChanges }: FileCoverageInputs) => {
-  const filePaths = Object.keys(jsonSummary).filter((key) => key !== 'total');
+	const filePaths = Object.keys(jsonSummary).filter((key) => key !== 'total');
 
-  const formatFileLine = (filePath: string) => {
-    const coverageSummary = jsonSummary[filePath];
-    const lineCoverage = jsonFinal[filePath];
+	const formatFileLine = (filePath: string) => {
+		const coverageSummary = jsonSummary[filePath];
+		const lineCoverage = jsonFinal[filePath];
 
-    // LineCoverage might be empty if coverage-final.json was not provided.
-    const uncoveredLines = lineCoverage ? getUncoveredLinesFromStatements(jsonFinal[filePath]) : [];
-    const relativeFilePath = path.relative(workspacePath, filePath);
-    const url = generateBlobFileUrl(relativeFilePath);
+		// LineCoverage might be empty if coverage-final.json was not provided.
+		const uncoveredLines = lineCoverage ? getUncoveredLinesFromStatements(jsonFinal[filePath]) : [];
+		const relativeFilePath = path.relative(workspacePath, filePath);
+		const url = generateBlobFileUrl(relativeFilePath);
 
-    return `
+		return `
       <tr>
         <td align="left"><a href="${url}">${relativeFilePath}</a></td>
         <td align="right">${coverageSummary.statements.pct}%</td>
         <td align="right">${coverageSummary.branches.pct}%</td>
         <td align="right">${coverageSummary.functions.pct}%</td>
         <td align="right">${coverageSummary.lines.pct}%</td>
-        <td align="left">${uncoveredLines.map((range) => {
-      let end = '';
-      let endUrl = '';
-
-      if(range.start !== range.end) {
-        end = `-${range.end}`;
-        endUrl = `-L${range.end}`;
-      }
-
-      const rangeUrl = `${url}#L${range.start}${endUrl}`;
-
-      return `<a href="${rangeUrl}">${range.start}${end}</a>`;
-    }).join(', ')}</td>
+        <td align="left">${createRangeURLs(uncoveredLines, url)}</td>
+		
       </tr>`
-  }
-  const formatGroupLine = (caption: string) => `
-    <tr>
-      <td align="left" rowspan="6"><b>${caption}</b></td>
-    </tr>`
+	}
 
-  let reportData: string = ''
+	let reportData: string = ''
+	
+	const [changedFiles, unchangedFiles] = splitFilesByChangeStatus(filePaths, pullChanges);
 
-  switch (fileCoverageMode) {
-    case FileCoverageModes.Changes:
-      reportData = `
-        ${formatGroupLine('Changed Files')} 
-        ${filePaths.filter((path) => pullChanges.includes(path)).map(formatFileLine).join('')}`
-      break;
-    case FileCoverageModes.All:
-      reportData = `
-        ${formatGroupLine('Changed Files')} 
-        ${filePaths.filter((path) => pullChanges.includes(path)).map(formatFileLine).join('')}
-        ${formatGroupLine('Unchanged Files')} 
-        ${filePaths.filter((path) => !pullChanges.includes(path)).map(formatFileLine).join('')}        `
-      break;
-  }
+	if (changedFiles.length > 0) {
+		reportData += `
+			${formatGroupLine('Changed Files')} 
+			${changedFiles.map(formatFileLine).join('')}
+		`
+	};
+	
+	if(fileCoverageMode === FileCoverageMode.All && unchangedFiles.length > 0) {
+		reportData += `
+			${formatGroupLine('Unchanged Files')}
+			${unchangedFiles.map(formatFileLine).join('')}
+		`
+	}
 
-  return oneLine`
+	return oneLine`
     <table>
       <thead>
         <tr>
@@ -83,12 +69,46 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, fileCoverageMode, pu
         </tr>
       </thead>
       <tbody>
-      ${ reportData }
+      ${reportData}
       </tbody>
     </table>
   `
 }
 
+function formatGroupLine (caption: string): string { 
+	return `
+		<tr>
+			<td align="left" rowspan="6"><b>${caption}</b></td>
+		</tr>
+	`
+}
+
+function createRangeURLs(uncoveredLines: LineRange[], url: string): string {
+	return uncoveredLines.map((range) => {
+			let end = '';
+			let endUrl = '';
+
+			if (range.start !== range.end) {
+				end = `-${range.end}`;
+				endUrl = `-L${range.end}`;
+			}
+
+			return `<a href="${url}${endUrl}" class="text-red">${range.start}${end}</a>`;
+		})
+		.join(', ');
+}
+
+function splitFilesByChangeStatus(filePaths: string[], pullChanges: string[]): [string[], string[]] {
+	return filePaths.reduce(([changedFiles, unchangedFiles], filePath) => {
+		if (pullChanges.includes(filePath)) {
+			changedFiles.push(filePath)
+		} else {
+			unchangedFiles.push(filePath)
+		}
+		return [changedFiles, unchangedFiles];
+	}, [[], []] as [string[], string[]]);
+}
+
 export {
-  generateFileCoverageHtml
+	generateFileCoverageHtml
 };
