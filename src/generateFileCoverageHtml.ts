@@ -41,6 +41,10 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, fileCoverageMode, pu
 	let reportData: string = ''
 	
 	const [changedFiles, unchangedFiles] = splitFilesByChangeStatus(filePaths, pullChanges);
+	
+	if(fileCoverageMode === FileCoverageMode.Changes && changedFiles.length === 0) {
+		return `No changed files found.`
+	}
 
 	if (changedFiles.length > 0) {
 		reportData += `

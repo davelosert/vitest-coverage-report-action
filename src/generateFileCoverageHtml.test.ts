@@ -47,7 +47,7 @@ describe('generateFileCoverageHtml()', () => {
 		expect(getTableLine(4, html)).toContain('src/unchangedFile.ts');
 	});
 	
-	it('only renders unchanged files if the fileCoverageMode is set to All and unchanged files exist.', () => {
+	it('only renders unchanged files if the fileCoverageMode is set to All but only unchanged files exist.', () => {
 		const changedFileName = 'src/changedFile.ts'
 		const jsonSummary: JsonSummary = createMockJsonSummary({
 			[changedFileName]: createMockCoverageReport(),
@@ -61,6 +61,21 @@ describe('generateFileCoverageHtml()', () => {
 		});
 
 		expect(html).not.toContain('Unchanged Files');
+	});
+	
+	it('renders statement that no changed files were found if the fileCoverageMode is set to Changed but no changed files exist.', () => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			'src/unchangedFile.ts': createMockCoverageReport(),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.Changes,
+			pullChanges: []
+		});
+
+		expect(html).toContain('No changed files found.');
 	});
 	
 	it('renders the statements, branches, functions and line coverage-percentage of a file.', () => {
