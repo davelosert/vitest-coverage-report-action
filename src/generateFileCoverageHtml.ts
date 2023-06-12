@@ -78,7 +78,7 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, fileCoverageMode, pu
 function formatGroupLine (caption: string): string { 
 	return `
 		<tr>
-			<td align="left" rowspan="6"><b>${caption}</b></td>
+			<td align="left" colspan="6"><b>${caption}</b></td>
 		</tr>
 	`
 }
