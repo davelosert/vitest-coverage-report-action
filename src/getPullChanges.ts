@@ -48,12 +48,12 @@ export async function getPullChanges(fileCoverageMode: FileCoverageMode): Promis
 	catch(error) {
 		if (error instanceof RequestError && (error.status === 404 || error.status === 403)) {
 			core.warning(`Couldn't fetch changes of PR due to error:\n[${error.name}]\n${error.message}`)
+			return [];
 		} else {
 			throw error;
 		}
 	} finally {
 		core.endGroup()
-		return [];
 	}
 }
 
