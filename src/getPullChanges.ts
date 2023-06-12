@@ -1,5 +1,6 @@
 import * as github from '@actions/github';
 import * as core from '@actions/core';
+import { RequestError } from '@octokit/request-error'
 import { FileCoverageMode } from './FileCoverageMode'
 
 type Octokit =  ReturnType<typeof github.getOctokit>;
@@ -33,9 +34,6 @@ export async function getPullChanges(fileCoverageMode: FileCoverageMode): Promis
 		);
 
 		for await (const response of iterator) {
-			if (response.status !== 200) {
-				throw new Error(`Fetching list of changed files from GitHub API failed with error code ${response.status}`)
-			}
 			core.info(`Received ${response.data.length} items`)
 
 			for (const file of response.data) {
@@ -46,8 +44,16 @@ export async function getPullChanges(fileCoverageMode: FileCoverageMode): Promis
 			}
 		}
 		return paths
+	}
+	catch(error) {
+		if (error instanceof RequestError && (error.status === 404 || error.status === 403)) {
+			core.warning(`Couldn't fetch changes of PR due to error:\n[${error.name}]\n${error.message}`)
+		} else {
+			throw error;
+		}
 	} finally {
 		core.endGroup()
+		return [];
 	}
 }
 
