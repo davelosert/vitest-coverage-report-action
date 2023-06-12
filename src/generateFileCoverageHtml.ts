@@ -99,13 +99,14 @@ function createRangeURLs(uncoveredLines: LineRange[], url: string): string {
 }
 
 function splitFilesByChangeStatus(filePaths: string[], pullChanges: string[]): [string[], string[]] {
-	core.debug(`Checking all pullChange: ${JSON.stringify(pullChanges, null, 2)}`);
 	return filePaths.reduce(([changedFiles, unchangedFiles], filePath) => {
-		core.debug(`Checking if ${filePath} is in pull changes`);
-		if (pullChanges.includes(filePath)) {
-			changedFiles.push(filePath)
+		// Pull Changes has filePaths relative to the git repository, whereas the jsonSummary has filePaths relative to the workspace.
+		// So we have to convert the filePaths to be relative to the workspace.
+		const comparePath = path.relative(workspacePath, filePath);
+		if (pullChanges.includes(comparePath)) {
+			changedFiles.push(filePath);
 		} else {
-			unchangedFiles.push(filePath)
+			unchangedFiles.push(filePath);
 		}
 		return [changedFiles, unchangedFiles];
 	}, [[], []] as [string[], string[]]);

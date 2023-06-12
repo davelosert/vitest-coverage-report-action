@@ -6,7 +6,9 @@ import { JsonSummary } from './types/JsonSummary';
 import { createMockCoverageReport, createMockJsonSummary, createMockReportNumbers } from './types/JsonSummaryMockFactory';
 import { describe, it, expect } from 'vitest';
 import { FileCoverageMode } from './FileCoverageMode';
+import * as path from 'path';
 
+const workspacePath = process.cwd();
 describe('generateFileCoverageHtml()', () => {
 	it('renderes only the unchanged files if no changed files exist.', () => {
 		const jsonSummary: JsonSummary = createMockJsonSummary({
@@ -26,21 +28,21 @@ describe('generateFileCoverageHtml()', () => {
 	});
 
 	it('renders changed files before unchanged files.', () => {
-		const changedFileName = 'src/changedFile.ts'
+		const relativeChangedFilePath = 'src/changedFile.ts'
 		const jsonSummary: JsonSummary = createMockJsonSummary({
 			'src/unchangedFile.ts': createMockCoverageReport(),
-			[changedFileName]: createMockCoverageReport(),
+			[path.join(workspacePath, 'src', 'changedFile.ts')]: createMockCoverageReport(),
 		});
 
 		const html = generateFileCoverageHtml({
 			jsonSummary,
 			jsonFinal: {},
 			fileCoverageMode: FileCoverageMode.All,
-			pullChanges: [changedFileName]
+			pullChanges: [relativeChangedFilePath]
 		});
 
 		expect(getTableLine(1, html)).toContain('Changed Files');
-		expect(getTableLine(2, html)).toContain(changedFileName);
+		expect(getTableLine(2, html)).toContain(relativeChangedFilePath);
 		expect(getTableLine(3, html)).toContain('Unchanged Files');
 		expect(getTableLine(4, html)).toContain('src/unchangedFile.ts');
 	});
