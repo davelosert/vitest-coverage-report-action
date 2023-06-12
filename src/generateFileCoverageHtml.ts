@@ -1,4 +1,5 @@
 import * as path from 'path'
+import * as core from '@actions/core'
 import { generateBlobFileUrl } from './generateFileUrl'
 import { LineRange, getUncoveredLinesFromStatements } from './getUncoveredLinesFromStatements'
 import { JsonFinal } from './types/JsonFinal'
@@ -34,7 +35,6 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, fileCoverageMode, pu
         <td align="right">${coverageSummary.functions.pct}%</td>
         <td align="right">${coverageSummary.lines.pct}%</td>
         <td align="left">${createRangeURLs(uncoveredLines, url)}</td>
-		
       </tr>`
 	}
 
@@ -99,7 +99,9 @@ function createRangeURLs(uncoveredLines: LineRange[], url: string): string {
 }
 
 function splitFilesByChangeStatus(filePaths: string[], pullChanges: string[]): [string[], string[]] {
+	core.debug(`Checking all pullChange: ${JSON.stringify(pullChanges, null, 2)}`);
 	return filePaths.reduce(([changedFiles, unchangedFiles], filePath) => {
+		core.debug(`Checking if ${filePath} is in pull changes`);
 		if (pullChanges.includes(filePath)) {
 			changedFiles.push(filePath)
 		} else {
