@@ -95,12 +95,12 @@ describe('generateFileCoverageHtml()', () => {
 			pullChanges: []
 		});
 
-		const firstTableLine = getTableLine(2, html);
+		const tableLine = getTableLine(2, html);
 
-		expect(firstTableLine).toContain('70%');
-		expect(firstTableLine).toContain('80%');
-		expect(firstTableLine).toContain('90%');
-		expect(firstTableLine).toContain('100%');
+		expect(tableLine).toContain('70%');
+		expect(tableLine).toContain('80%');
+		expect(tableLine).toContain('90%');
+		expect(tableLine).toContain('100%');
 	});
 
 	it('renders the line-coverage in the same row as the coverage.', async (): Promise<void> => {
@@ -123,9 +123,64 @@ describe('generateFileCoverageHtml()', () => {
 			pullChanges: []
 		});
 
-		const firstTableLine = getTableLine(2, html);
+		const tableLine = getTableLine(2, html);
 		
-		expect(firstTableLine).toContain('70%');
-		expect(firstTableLine).toContain('1-2');
+		expect(tableLine).toContain('70%');
+		expect(tableLine).toContain('1-2');
+		expect(tableLine).toContain('#L1-L2');
+	});
+	
+	it('renders single line coverage without range.', async (): Promise<void> => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			'src/exampleFile.ts': createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 70, }),
+			}),
+		});
+		const jsonFinal: JsonFinal = {
+			...createJsonFinalEntry('src/exampleFile.ts', [
+				{ line: 2, covered: false }
+			]),
+		};
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonFinal,
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: []
+		});
+
+		const tableLine = getTableLine(2, html);
+		
+		expect(tableLine).toContain('2');
+		expect(tableLine).toContain('#L2');
+	});
+	
+	it('renders non adjacent line coverage with multiple links.', async (): Promise<void> => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			'src/exampleFile.ts': createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 70, }),
+			}),
+		});
+		const jsonFinal: JsonFinal = {
+			...createJsonFinalEntry('src/exampleFile.ts', [
+				{ line: 2, covered: false },
+				{ line: 3, covered: true },
+				{ line: 4, covered: true },
+				{ line: 5, covered: false },
+				{ line: 6, covered: false }
+			]),
+		};
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonFinal,
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: []
+		});
+
+		const tableLine = getTableLine(2, html);
+		
+		expect(tableLine).toContain('#L2');
+		expect(tableLine).toContain('#L5-L6');
 	});
 });
