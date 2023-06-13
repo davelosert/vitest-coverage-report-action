@@ -89,15 +89,15 @@ function formatGroupLine (caption: string): string {
 
 function createRangeURLs(uncoveredLines: LineRange[], url: string): string {
 	return uncoveredLines.map((range) => {
-			let end = '';
-			let endUrl = '';
+			let linkText = `${range.start}`;
+			let urlHash = `#L${range.start}`;
 
 			if (range.start !== range.end) {
-				end = `-${range.end}`;
-				endUrl = `-L${range.end}`;
+				linkText += `-${range.end}`;
+				urlHash += `-L${range.end}`;
 			}
 
-			return `<a href="${url}${endUrl}" class="text-red">${range.start}${end}</a>`;
+			return `<a href="${url}${urlHash}" class="text-red">${linkText}</a>`;
 		})
 		.join(', ');
 }
