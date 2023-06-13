@@ -1,52 +1,66 @@
-import * as path from 'path';
-import { generateBlobFileUrl } from './generateFileUrl';
-import { getUncoveredLinesFromStatements } from './getUncoveredLinesFromStatements';
-import { JsonFinal } from './types/JsonFinal';
-import { JsonSummary } from './types/JsonSummary';
-import { Thresholds } from './types/Threshold';
-import { oneLine } from 'common-tags';
+import * as path from 'path'
+import * as core from '@actions/core'
+import { generateBlobFileUrl } from './generateFileUrl'
+import { LineRange, getUncoveredLinesFromStatements } from './getUncoveredLinesFromStatements'
+import { JsonFinal } from './types/JsonFinal'
+import { JsonSummary } from './types/JsonSummary'
+import { oneLine } from 'common-tags'
+import { FileCoverageMode } from './FileCoverageMode'
 
-type Sources = {
-  jsonSummary: JsonSummary;
-  jsonFinal: JsonFinal;
+type FileCoverageInputs = {
+	jsonSummary: JsonSummary;
+	jsonFinal: JsonFinal;
+	fileCoverageMode: FileCoverageMode;
+	pullChanges: string[];
 }
 
 const workspacePath = process.cwd();
-const generateFileCoverageHtml = ({ jsonSummary, jsonFinal }: Sources) => {
-  const filePaths = Object.keys(jsonSummary).filter((key) => key !== 'total');
-  const reportData: string = filePaths.map((filePath) => {
-    const coverageSummary = jsonSummary[filePath];
-    const lineCoverage = jsonFinal[filePath];
+const generateFileCoverageHtml = ({ jsonSummary, jsonFinal, fileCoverageMode, pullChanges }: FileCoverageInputs) => {
+	const filePaths = Object.keys(jsonSummary).filter((key) => key !== 'total');
 
-    // LineCoverage might be empty if coverage-final.json was not provided.
-    const uncoveredLines = lineCoverage ? getUncoveredLinesFromStatements(jsonFinal[filePath]) : [];
-    const relativeFilePath = path.relative(workspacePath, filePath);
-    const url = generateBlobFileUrl(relativeFilePath);
-    
-    return `
+	const formatFileLine = (filePath: string) => {
+		const coverageSummary = jsonSummary[filePath];
+		const lineCoverage = jsonFinal[filePath];
+
+		// LineCoverage might be empty if coverage-final.json was not provided.
+		const uncoveredLines = lineCoverage ? getUncoveredLinesFromStatements(jsonFinal[filePath]) : [];
+		const relativeFilePath = path.relative(workspacePath, filePath);
+		const url = generateBlobFileUrl(relativeFilePath);
+
+		return `
       <tr>
         <td align="left"><a href="${url}">${relativeFilePath}</a></td>
         <td align="right">${coverageSummary.statements.pct}%</td>
         <td align="right">${coverageSummary.branches.pct}%</td>
         <td align="right">${coverageSummary.functions.pct}%</td>
         <td align="right">${coverageSummary.lines.pct}%</td>
-        <td align="left">${uncoveredLines.map((range) => {
-          let end = '';
-          let endUrl = '';
-
-          if(range.start !== range.end) {
-            end = `-${range.end}`;
-            endUrl = `-L${range.end}`;
-          }
-          
-          const rangeUrl = `${url}#L${range.start}${endUrl}`;
-
-          return `<a href="${rangeUrl}">${range.start}${end}</a>`;
-        }).join(', ')}</td>
+        <td align="left">${createRangeURLs(uncoveredLines, url)}</td>
       </tr>`
-    }).join('');
+	}
 
-  return oneLine`
+	let reportData: string = ''
+	
+	const [changedFiles, unchangedFiles] = splitFilesByChangeStatus(filePaths, pullChanges);
+	
+	if(fileCoverageMode === FileCoverageMode.Changes && changedFiles.length === 0) {
+		return `No changed files found.`
+	}
+
+	if (changedFiles.length > 0) {
+		reportData += `
+			${formatGroupLine('Changed Files')} 
+			${changedFiles.map(formatFileLine).join('')}
+		`
+	};
+	
+	if(fileCoverageMode === FileCoverageMode.All && unchangedFiles.length > 0) {
+		reportData += `
+			${formatGroupLine('Unchanged Files')}
+			${unchangedFiles.map(formatFileLine).join('')}
+		`
+	}
+
+	return oneLine`
     <table>
       <thead>
         <tr>
@@ -59,12 +73,49 @@ const generateFileCoverageHtml = ({ jsonSummary, jsonFinal }: Sources) => {
         </tr>
       </thead>
       <tbody>
-      ${ reportData }
+      ${reportData}
       </tbody>
     </table>
   `
 }
 
+function formatGroupLine (caption: string): string { 
+	return `
+		<tr>
+			<td align="left" colspan="6"><b>${caption}</b></td>
+		</tr>
+	`
+}
+
+function createRangeURLs(uncoveredLines: LineRange[], url: string): string {
+	return uncoveredLines.map((range) => {
+			let end = '';
+			let endUrl = '';
+
+			if (range.start !== range.end) {
+				end = `-${range.end}`;
+				endUrl = `-L${range.end}`;
+			}
+
+			return `<a href="${url}${endUrl}" class="text-red">${range.start}${end}</a>`;
+		})
+		.join(', ');
+}
+
+function splitFilesByChangeStatus(filePaths: string[], pullChanges: string[]): [string[], string[]] {
+	return filePaths.reduce(([changedFiles, unchangedFiles], filePath) => {
+		// Pull Changes has filePaths relative to the git repository, whereas the jsonSummary has filePaths relative to the workspace.
+		// So we have to convert the filePaths to be relative to the workspace.
+		const comparePath = path.relative(workspacePath, filePath);
+		if (pullChanges.includes(comparePath)) {
+			changedFiles.push(filePath);
+		} else {
+			unchangedFiles.push(filePath);
+		}
+		return [changedFiles, unchangedFiles];
+	}, [[], []] as [string[], string[]]);
+}
+
 export {
-  generateFileCoverageHtml
+	generateFileCoverageHtml
 };
