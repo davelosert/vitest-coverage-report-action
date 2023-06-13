@@ -1,7 +1,6 @@
-name: 'Build and Test'
-on: 
+name: "Build and Test"
+on:
   pull_request:
-
 
 jobs:
   build-and-test:
@@ -9,25 +8,27 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: 'Install Node'
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16.x'
-    - name: 'Install Deps'
-      run: npm install
-    - name: 'Build'
-      run: npm run build
-    - name: 'Test'
-      run: npm run test:coverage
-      # Remove node_modules to see if this action runs entirely compiled
-    - name: 'Remove Node Modules'
-      run: rm -rf node_modules
-    - name: 'Test Working Directory Option'
-      uses: ./
-      with:
-        working-directory: './test/mockReports'
-    - name: 'Test Default Action'
-      # run step also on failure of the previous step
-      if: always()
-      uses: ./
+      - uses: actions/checkout@v3
+      - name: "Install Node"
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+      - name: "Install Deps"
+        run: npm install
+      - name: "Build"
+        run: npm run build
+      - name: "Test"
+        run: npm run test:coverage
+        # Remove node_modules to see if this action runs entirely compiled
+      - name: "Remove Node Modules"
+        run: rm -rf node_modules
+      - name: "Test Working Directory Option"
+        uses: ./
+        with:
+          working-directory: "./test/mockReports"
+      - name: "Test Default Action"
+        # run step also on failure of the previous step
+        if: always()
+        uses: ./
+        with:
+          file-coverage-mode: "all"
