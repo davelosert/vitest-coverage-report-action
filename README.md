@@ -63,7 +63,6 @@ jobs:
 
 This action requires permissions set to `pull-request: write` in order for it to be able to add a comment to your pull-request. If you are using the default `GITHUB_TOKEN`, make sure to include the permissions together with `contents: read` to the the job, so that the `actions/checkout` action is allowed to checkout the repository. This is especially important for new repositories created after [GitHub's announcement](https://github.blog/changelog/2023-02-02-github-actions-updating-the-default-github_token-permissions-to-read-only/) to change the default permissions to `read-only` for all new `GITHUB_TOKEN`s.
 
-
 ### Options
 
 | Option              | Description                                                                                     | Default                            |
@@ -73,7 +72,7 @@ This action requires permissions set to `pull-request: write` in order for it to
 | `vite-config-path`  | The path to the vite config file. Will check the same paths as vite and vitest                  | Checks pattern `vite[st].config.{t|mt|ct|j|mj|cj}s`               |
 | `github-token`      | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`). | `${{ github.token }}`              |
 | `working-directory` | Run action within a custom directory (for monorepos).                                           | `./`                               |
-| `file-coverage-mode`| Decide how to showcase file-based coverage. Possible values are `all`, `changes` or `none`.                          | `changes`                              |
+| `file-coverage-mode`| Defines how file-based coverage is reported. Possible values are `all`, `changes` or `none`.                          | `changes`                              |
 
 ### File Coverage Mode
 
