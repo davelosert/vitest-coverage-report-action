@@ -70,7 +70,6 @@ async function readOptions() {
 	const workingDirectory = core.getInput('working-directory');
 
 	const fileCoverageModeRaw = core.getInput('file-coverage-mode'); // all/changes/none
-	core.debug(`fileCoverageModeRaw: ${fileCoverageModeRaw}`);
 	const fileCoverageMode = getCoverageModeFrom(fileCoverageModeRaw);
 
 	const jsonSummaryPath = path.resolve(workingDirectory, core.getInput('json-summary-path'));
