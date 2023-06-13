@@ -1,6 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import path from 'path';
 import { parseCoverageThresholds } from './parseCoverageThresholds';
+
+// Avoid logging warnings to the console during tests by stubbing the warning functions.
+vi.mock('@actions/core', async (importOriginal) => ({
+	...importOriginal,
+	warning: vi.fn(),
+}));
 
 describe('generateTableData', () => {
   const mockConfigPath = path.resolve(__dirname, '..', 'test', 'mockConfig');

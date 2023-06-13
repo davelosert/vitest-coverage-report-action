@@ -1,4 +1,5 @@
 import path from 'node:path';
+import * as core from '@actions/core';
 import { promises as fs } from 'fs';
 import { Thresholds } from './types/Threshold';
 
@@ -35,10 +36,8 @@ const parseCoverageThresholds = async (vitestConfigPath: string): Promise<Thresh
       functions: functions ? parseInt(functions[1]) : undefined,
       statements: statements ? parseInt(statements[1]) : undefined,
     }
-  } catch (err) {
-    console.warn('Could not read vite config file for tresholds due to an error:', {
-      error: err
-    });
+  } catch (err: unknown) {
+    core.warning(`Could not read vite config file for tresholds due to an error:\n ${err}`);
     return {};
   }
 }
