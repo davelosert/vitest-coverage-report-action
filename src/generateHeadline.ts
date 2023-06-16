@@ -5,7 +5,7 @@ type HeadlineArgs = {
 }
 
 function generateHeadline(options: HeadlineArgs) {
-	if(options.name && options.workingDirectory) {
+	if(options.name && options.workingDirectory !== './') {
 		return `Coverage Report for ${options.name} (${options.workingDirectory})`;
 	}
 
@@ -13,7 +13,7 @@ function generateHeadline(options: HeadlineArgs) {
 		return `Coverage Report for ${options.name}`;
 	}
 	
-	if(options.workingDirectory) {
+	if(options.workingDirectory !== './') {
 		return `Coverage Report for ${options.workingDirectory}`;
 	}
 

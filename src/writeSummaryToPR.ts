@@ -2,7 +2,7 @@ import * as github from '@actions/github';
 import * as core from '@actions/core';
 
 
-const COMMENT_MARKER = (markerPostfix = '') => `<!-- vitest-coverage-report-marker${markerPostfix} -->`;
+const COMMENT_MARKER = (markerPostfix = 'root') => `<!-- vitest-coverage-report-marker-${markerPostfix} -->`;
 type Octokit =  ReturnType<typeof github.getOctokit>;
 
 const writeSummaryToPR = async ({ summary, markerPostfix }: { 

@@ -38,7 +38,7 @@ const run = async () => {
 	try {
 		await writeSummaryToPR({ 
 			summary,
-			markerPostfix: name ?? workingDirectory ?? ''
+			markerPostfix: getMarkerPostfix({ name, workingDirectory })
 		});
 	} catch (error) {
 		if (error instanceof RequestError && (error.status === 404 || error.status === 403)) {
@@ -56,6 +56,13 @@ const run = async () => {
 
 	await summary.write();
 };
+
+function getMarkerPostfix({ name, workingDirectory }: { name: string, workingDirectory: string }) {
+	if(name) return name;
+	if(workingDirectory !== './') return workingDirectory;
+	return 'root'
+}
+
 
 run().then(() => {
 	core.info('Report generated successfully.');
