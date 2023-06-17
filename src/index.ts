@@ -25,7 +25,8 @@ const run = async () => {
 	const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds);
 	const summary = core.summary
 		.addHeading(generateHeadline({ workingDirectory, name }), 2)
-		.addRaw(`${getWorkflowSummaryURL()}`)
+		.addRaw(`Generated in workflow`)
+		.addLink(`${github.context.runNumber}`, getWorkflowSummaryURL())
 		.addRaw(tableData)
 
 	if (fileCoverageMode !== FileCoverageMode.None) {
@@ -68,7 +69,7 @@ function getMarkerPostfix({ name, workingDirectory }: { name: string, workingDir
 function getWorkflowSummaryURL() {
 	const { owner, repo  } = github.context.repo;
 	const { runId } = github.context;
-	return `Generated in workflow [#${github.context.runNumber}](${github.context.serverUrl}/${owner}/${repo}/actions/runs/${runId})`
+	return `${github.context.serverUrl}/${owner}/${repo}/actions/runs/${runId}`
 }
 
 
