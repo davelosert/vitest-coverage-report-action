@@ -37,7 +37,7 @@ const run = async () => {
 	}
 
 	summary
-		.addRaw(`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>${github.context.runNumber}</a></em>`)
+		.addRaw(`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a></em>`)
 
 	try {
 		await writeSummaryToPR({
