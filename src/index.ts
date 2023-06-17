@@ -37,12 +37,11 @@ const run = async () => {
 	}
 
 	summary
-		.addBreak()
 		.addRaw(`Generated in workflow `)
 		.addLink(`#${github.context.runNumber}`, getWorkflowSummaryURL())
 
 	try {
-		await writeSummaryToPR({ 
+		await writeSummaryToPR({
 			summary,
 			markerPostfix: getMarkerPostfix({ name, workingDirectory })
 		});
@@ -53,7 +52,7 @@ const run = async () => {
 				 Original Error was: [${error.name}] - ${error.message}
 				`
 			)
-			
+
 		} else {
 			// Rethrow to handle it in the catch block of the run()-call.
 			throw error;
@@ -64,13 +63,13 @@ const run = async () => {
 };
 
 function getMarkerPostfix({ name, workingDirectory }: { name: string, workingDirectory: string }) {
-	if(name) return name;
-	if(workingDirectory !== './') return workingDirectory;
+	if (name) return name;
+	if (workingDirectory !== './') return workingDirectory;
 	return 'root'
 }
 
 function getWorkflowSummaryURL() {
-	const { owner, repo  } = github.context.repo;
+	const { owner, repo } = github.context.repo;
 	const { runId } = github.context;
 	return `${github.context.serverUrl}/${owner}/${repo}/actions/runs/${runId}`
 }
