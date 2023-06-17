@@ -2,6 +2,7 @@ import { generateSummaryTableHtml } from './generateSummaryTableHtml.js';
 import { parseVitestJsonFinal, parseVitestJsonSummary } from './parseJsonReports.js';
 import { writeSummaryToPR } from './writeSummaryToPR.js';
 import * as core from '@actions/core';
+import * as github from '@actions/github';
 import { RequestError } from '@octokit/request-error'
 import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
 import { getPullChanges } from './getPullChanges.js';
@@ -24,6 +25,7 @@ const run = async () => {
 	const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds);
 	const summary = core.summary
 		.addHeading(generateHeadline({ workingDirectory, name }), 2)
+		.addRaw(`${getWorkflowSummaryURL()}`)
 		.addRaw(tableData)
 
 	if (fileCoverageMode !== FileCoverageMode.None) {
@@ -61,6 +63,12 @@ function getMarkerPostfix({ name, workingDirectory }: { name: string, workingDir
 	if(name) return name;
 	if(workingDirectory !== './') return workingDirectory;
 	return 'root'
+}
+
+function getWorkflowSummaryURL() {
+	const { owner, repo  } = github.context.repo;
+	const { runId } = github.context;
+	return `Generated in workflow [#${github.context.runNumber}](${github.context.serverUrl}/${owner}/${repo}/actions/runs/${runId})`
 }
 
 
