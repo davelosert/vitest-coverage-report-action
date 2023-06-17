@@ -2,6 +2,7 @@ import { generateSummaryTableHtml } from './generateSummaryTableHtml.js';
 import { parseVitestJsonFinal, parseVitestJsonSummary } from './parseJsonReports.js';
 import { writeSummaryToPR } from './writeSummaryToPR.js';
 import * as core from '@actions/core';
+import * as github from '@actions/github';
 import { RequestError } from '@octokit/request-error'
 import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
 import { getPullChanges } from './getPullChanges.js';
@@ -35,8 +36,11 @@ const run = async () => {
 		summary.addDetails('File Coverage', fileTable)
 	}
 
+	summary
+		.addRaw(`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a></em>`)
+
 	try {
-		await writeSummaryToPR({ 
+		await writeSummaryToPR({
 			summary,
 			markerPostfix: getMarkerPostfix({ name, workingDirectory })
 		});
@@ -47,7 +51,7 @@ const run = async () => {
 				 Original Error was: [${error.name}] - ${error.message}
 				`
 			)
-			
+
 		} else {
 			// Rethrow to handle it in the catch block of the run()-call.
 			throw error;
@@ -58,9 +62,15 @@ const run = async () => {
 };
 
 function getMarkerPostfix({ name, workingDirectory }: { name: string, workingDirectory: string }) {
-	if(name) return name;
-	if(workingDirectory !== './') return workingDirectory;
+	if (name) return name;
+	if (workingDirectory !== './') return workingDirectory;
 	return 'root'
+}
+
+function getWorkflowSummaryURL() {
+	const { owner, repo } = github.context.repo;
+	const { runId } = github.context;
+	return `${github.context.serverUrl}/${owner}/${repo}/actions/runs/${runId}`
 }
 
 
