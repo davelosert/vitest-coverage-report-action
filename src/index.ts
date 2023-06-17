@@ -25,8 +25,6 @@ const run = async () => {
 	const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds);
 	const summary = core.summary
 		.addHeading(generateHeadline({ workingDirectory, name }), 2)
-		.addRaw(`Generated in workflow`)
-		.addLink(`${github.context.runNumber}`, getWorkflowSummaryURL())
 		.addRaw(tableData)
 
 	if (fileCoverageMode !== FileCoverageMode.None) {
@@ -56,6 +54,11 @@ const run = async () => {
 			throw error;
 		}
 	}
+
+	summary
+		.addBreak()
+		.addRaw(`Generated in workflow `)
+		.addLink(`#${github.context.runNumber}`, getWorkflowSummaryURL())
 
 	await summary.write();
 };
