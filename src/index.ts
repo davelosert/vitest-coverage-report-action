@@ -36,6 +36,11 @@ const run = async () => {
 		summary.addDetails('File Coverage', fileTable)
 	}
 
+	summary
+		.addBreak()
+		.addRaw(`Generated in workflow `)
+		.addLink(`#${github.context.runNumber}`, getWorkflowSummaryURL())
+
 	try {
 		await writeSummaryToPR({ 
 			summary,
@@ -54,11 +59,6 @@ const run = async () => {
 			throw error;
 		}
 	}
-
-	summary
-		.addBreak()
-		.addRaw(`Generated in workflow `)
-		.addLink(`#${github.context.runNumber}`, getWorkflowSummaryURL())
 
 	await summary.write();
 };
