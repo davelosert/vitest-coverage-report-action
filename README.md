@@ -9,6 +9,7 @@ It will create a high-level coverage summary for all coverage-category as well a
 ## Usage
 
 This action requires you to use `vitest` to create a coverage report with the following reporters:
+
 - `json-summary` (required): Will add a high-level summary of your overall coverage
 - `json` (optional): If provided, will add file-specific coverage reports for any file of your project
 
@@ -58,7 +59,7 @@ jobs:
       run: npx vitest --coverage
     - name: 'Report Coverage'
       if: always() # Also generate the report if tests are failing
-      uses:  davelosert/vitest-coverage-report-action@v1
+      uses:  davelosert/vitest-coverage-report-action@v2
 ```
 
 ### Required Permissions
@@ -131,19 +132,3 @@ the report would look like this:
 ![Coverage Threshold Report](./docs/coverage-report-threshold.png)
 
 If there are no thresholds defined, the status will be '🔵'.
-
-## Current Status
-
-This is a work in progress project. Currently, it will only take an already created `json-summary` and `json`-report, convert it to markdown and export it to:
-
-1. a comment within an associated pull-request (if there is one)
-2. the [GitHub Step Summary](https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables) of the current action
-
-### Future Plans
-
-- [x] Make summary file configurable
-- [x] Also report detailed file-coverage (coverage per file and unconvered lines) based on the `json`-Reporter
-- [ ] Invoke 'vitest' directly from the action
-- [ ] Also provide test results (failed tests etc.) in the generated markdown reports
-- [ ] Also report test results themselves
-- [x] Beatufiy the report with better markdown
