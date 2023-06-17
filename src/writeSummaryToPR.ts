@@ -2,10 +2,13 @@ import * as github from '@actions/github';
 import * as core from '@actions/core';
 
 
-const COMMENT_MARKER = '<!-- vitest-coverage-report-marker -->';
+const COMMENT_MARKER = (markerPostfix = 'root') => `<!-- vitest-coverage-report-marker-${markerPostfix} -->`;
 type Octokit =  ReturnType<typeof github.getOctokit>;
 
-const writeSummaryToPR = async (summary: typeof core.summary) => {
+const writeSummaryToPR = async ({ summary, markerPostfix }: { 
+	summary: typeof core.summary; 
+	markerPostfix?: string;
+}) => {
   if (!github.context.payload.pull_request) {
     core.info('[vitest-coverage-report] Not in the context of a pull request. Skipping comment creation.');
     return;
@@ -14,8 +17,8 @@ const writeSummaryToPR = async (summary: typeof core.summary) => {
   const gitHubToken = core.getInput('github-token').trim();
   const octokit: Octokit = github.getOctokit(gitHubToken);
   
-  const commentBody = `${summary.stringify()}\n\n${COMMENT_MARKER}`;
-  const existingComment = await findCommentByBody(octokit, COMMENT_MARKER);
+  const commentBody = `${summary.stringify()}\n\n${COMMENT_MARKER(markerPostfix)}`;
+  const existingComment = await findCommentByBody(octokit, COMMENT_MARKER(markerPostfix));
 
   if (existingComment) {
     await octokit.rest.issues.updateComment({

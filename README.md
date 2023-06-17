@@ -74,13 +74,36 @@ This action requires permissions set to `pull-request: write` in order for it to
 | `vite-config-path`  | The path to the vite config file. Will check the same paths as vite and vitest                  | Checks pattern `vite[st].config.{t|mt|ct|j|mj|cj}s`               |
 | `github-token`      | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`). | `${{ github.token }}`              |
 | `working-directory` | Run action within a custom directory (for monorepos).                                           | `./`                               |
+| `name` | Give the report a name. This is useful if you want multiple reports for different test suites within the same PR. Needs to be unique. | '' |
 | `file-coverage-mode`| Defines how file-based coverage is reported. Possible values are `all`, `changes` or `none`.                          | `changes`                              |
 
-### File Coverage Mode
+#### File Coverage Mode
 
 * `changes` - show Files coverage only for project files changed in that pull request (works only with `pull_request`, `pull_request_review`, `pull_request_review_comment` actions)
 * `all` - show it grouped by changed and not changed files in that pull request (works only with `pull_request`, `pull_request_review`, `pull_request_review_comment` actions)
 * `none` - do not show any File coverage details (only total Summary)
+
+#### Name
+
+If you have multiple test-suites but want to report the coverage in a single PR, you have to provide a unique `name` for each action-step that parses a summary-report, e.g.:
+
+```yml
+## ...
+    - name: 'Report Frontend Coverage'
+      if: always() # Also generate the report if tests are failing
+      uses:  davelosert/vitest-coverage-report-action@v2
+      with:
+        name: 'Frontend'
+        json-summary-path: './coverage/coverage-summary-frontend.json'
+        json-final-path: './coverage/coverage-final-frontend.json
+    - name: 'Report Backend Coverage'
+      if: always() # Also generate the report if tests are failing
+      uses:  davelosert/vitest-coverage-report-action@v2
+      with:
+        name: 'Backend'
+        json-summary-path: './coverage/coverage-summary-backend.json'
+        json-final-path: './coverage/coverage-final-backend.json'
+```
 
 ### Coverage Thresholds
 

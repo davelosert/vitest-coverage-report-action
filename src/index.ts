@@ -1,34 +1,29 @@
 import { generateSummaryTableHtml } from './generateSummaryTableHtml.js';
-import path from 'node:path';
 import { parseVitestJsonFinal, parseVitestJsonSummary } from './parseJsonReports.js';
 import { writeSummaryToPR } from './writeSummaryToPR.js';
 import * as core from '@actions/core';
 import { RequestError } from '@octokit/request-error'
-import { parseCoverageThresholds } from './parseCoverageThresholds.js';
 import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
-import { getViteConfigPath } from './getViteConfigPath.js';
 import { getPullChanges } from './getPullChanges.js';
-import { FileCoverageMode, getCoverageModeFrom } from './FileCoverageMode.js'
+import { FileCoverageMode } from './FileCoverageMode.js'
+import { readOptions } from './options.js';
+import { generateHeadline } from './generateHeadline.js';
 
 const run = async () => {
 	const {
-		workingDirectory,
 		fileCoverageMode,
-		jsonSummaryPath,
 		jsonFinalPath,
-		thresholds
+		jsonSummaryPath,
+		name,
+		thresholds,
+		workingDirectory
 	} = await readOptions();
 
+
 	const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
-
-	let summaryHeading = "Coverage Summary";
-	if (workingDirectory !== './') {
-		summaryHeading += ` for \`${workingDirectory}\``;
-	}
-
 	const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds);
 	const summary = core.summary
-		.addHeading(summaryHeading, 2)
+		.addHeading(generateHeadline({ workingDirectory, name }), 2)
 		.addRaw(tableData)
 
 	if (fileCoverageMode !== FileCoverageMode.None) {
@@ -41,7 +36,10 @@ const run = async () => {
 	}
 
 	try {
-		await writeSummaryToPR(summary);
+		await writeSummaryToPR({ 
+			summary,
+			markerPostfix: getMarkerPostfix({ name, workingDirectory })
+		});
 	} catch (error) {
 		if (error instanceof RequestError && (error.status === 404 || error.status === 403)) {
 			core.warning(
@@ -59,31 +57,15 @@ const run = async () => {
 	await summary.write();
 };
 
+function getMarkerPostfix({ name, workingDirectory }: { name: string, workingDirectory: string }) {
+	if(name) return name;
+	if(workingDirectory !== './') return workingDirectory;
+	return 'root'
+}
+
+
 run().then(() => {
 	core.info('Report generated successfully.');
 }).catch((err) => {
 	core.error(err);
 });
-
-async function readOptions() {
-	// Working directory can be used to modify all default/provided paths (for monorepos, etc)
-	const workingDirectory = core.getInput('working-directory');
-
-	const fileCoverageModeRaw = core.getInput('file-coverage-mode'); // all/changes/none
-	const fileCoverageMode = getCoverageModeFrom(fileCoverageModeRaw);
-
-	const jsonSummaryPath = path.resolve(workingDirectory, core.getInput('json-summary-path'));
-	const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
-
-	const thresholds = await parseCoverageThresholds(viteConfigPath);
-
-	const jsonFinalPath = path.resolve(workingDirectory, core.getInput('json-final-path'));
-	
-	return {
-		workingDirectory,
-		fileCoverageMode,
-		jsonSummaryPath,
-		thresholds,
-		jsonFinalPath
-	}
-}
