@@ -37,7 +37,7 @@
     "@semantic-release/exec": "6.0.3",
     "@types/common-tags": "1.8.1",
     "@types/node": "20.3.1",
-    "@vitest/coverage-v8": "0.32.2",
+    "@vitest/coverage-v8": "0.32.4",
     "esbuild": "0.18.9",
     "semantic-release": "21.0.5",
     "semantic-release-github-actions-tags": "1.0.3",
