@@ -9,3 +9,20 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    groups:
+      deps:
+        patterns:
+          - "@actions/*"
+          - "common-tags"
+      vite:
+        build-deps:
+          - "@vitest/*"
+          - "vite*"
+          - "esbuild"
+          - "typescript"
+          - "@types/node"
+      semantic-release:
+        patterns:
+          - "semantic-release*"
+          - "@semantic-release/*"
+      
