@@ -14,8 +14,8 @@ updates:
         patterns:
           - "@actions/*"
           - "common-tags"
-      vite:
-        build-deps:
+      build-deps:
+        patterns:
           - "@vitest/*"
           - "vite*"
           - "esbuild"
