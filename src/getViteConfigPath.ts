@@ -34,16 +34,17 @@ const getViteConfigPath = async (workingDirectory: string, input: string) => {
     
     return await testFilePath(workingDirectory, input);
   } catch (error) {
-    core.setFailed(stripIndent`
-          Failed to read vite config file"${workingDirectory}/${input}" or any of the default locations.
+    const searchPath = input ? 
+      `"${workingDirectory}/${input}"` : 
+      `any default location in "${workingDirectory}"`;
+
+    core.warning(stripIndent`
+          Failed to read vite config file at ${searchPath}. 
           Make sure you provide the vite-config-path option if you're using a non-default location or name of your config file.
+          
+          Will not include thresholds in the final report.
       `);
-    throw new Error(
-      `Unable to find config file "${workingDirectory}/${input}".`,
-      {
-        cause: error,
-      }
-    );
+    return null;
   }
 };
 

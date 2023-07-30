@@ -23,10 +23,10 @@ describe("getViteConfigPath", () => {
     );
   });
 
-  it("rejects if config file can not be found", async (): Promise<void> => {
-    vi.spyOn(core, 'setFailed').mockImplementationOnce(() => { })
+  it("returns null if config file can not be found", async (): Promise<void> => {
+    vi.spyOn(core, 'warning').mockImplementationOnce(() => { })
     await expect(
       getViteConfigPath(mockWorkingDirectory, "doesNotExist")
-    ).rejects.toThrow(/unable to find config file/i);
+    ).resolves.toBeNull();
   });
 });

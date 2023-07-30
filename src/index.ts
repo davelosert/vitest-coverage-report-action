@@ -20,7 +20,6 @@ const run = async () => {
 		workingDirectory
 	} = await readOptions();
 
-
 	const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
 	const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds);
 	const summary = core.summary
