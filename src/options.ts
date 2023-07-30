@@ -12,12 +12,13 @@ async function readOptions() {
 	const fileCoverageMode = getCoverageModeFrom(fileCoverageModeRaw);
 
 	const jsonSummaryPath = path.resolve(workingDirectory, core.getInput('json-summary-path'));
-	const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
-
-	const thresholds = await parseCoverageThresholds(viteConfigPath);
-
 	const jsonFinalPath = path.resolve(workingDirectory, core.getInput('json-final-path'));
+
 	const name = core.getInput('name');
+
+  // ViteConfig is optional, as it is only required for thresholds. If no vite config is provided, we will not include thresholds in the final report.
+	const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
+	const thresholds = viteConfigPath ? await parseCoverageThresholds(viteConfigPath) : {};
 	
 	return {
 		fileCoverageMode,
