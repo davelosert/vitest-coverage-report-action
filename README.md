@@ -132,3 +132,27 @@ the report would look like this:
 ![Coverage Threshold Report](./docs/coverage-report-threshold.png)
 
 If there are no thresholds defined, the status will be '🔵'.
+
+### Workspaces
+
+If you are using a monorepo with [Vitest Workspaces](https://vitest.dev/guide/workspace.html) and you run Vitest from the root of your project, Vitest will ignore the `coverage`-property of the individual project-level `vite.config.js`-files. This is because some of the [configuration options](https://vitest.dev/guide/workspace.html#configuration) are not allowed in a project config, for example coverage is done for the whole workspace.
+
+In this case, you can create a `vite.config.js`-file in the root of your project next to your `vitest.workspace.js`-file to configure coverage for the whole workspace:
+
+```js
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  test: {
+    coverage: {
+      // you can include other reporters, but 'json-summary' is required, json is recommended
+      reporter: ['text', 'json-summary', 'json'],
+    }
+  }
+});
+```
+
+Alternatively, you can provide [coverage options](https://vitest.dev/config/#coverage) to CLI with dot notation:
+```sh
+npx vitest --coverage.enabled --coverage.provider=v8 --coverage.reporter=json-summary --coverage.reporter=json
+```
