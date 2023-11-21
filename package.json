@@ -39,7 +39,7 @@
     "@types/node": "20.9.3",
     "@vitest/coverage-v8": "0.34.6",
     "esbuild": "0.19.7",
-    "semantic-release": "22.0.7",
+    "semantic-release": "22.0.8",
     "semantic-release-github-actions-tags": "1.0.3",
     "typescript": "5.3.2",
     "vite": "5.0.0",
