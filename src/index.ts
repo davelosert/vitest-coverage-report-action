@@ -17,8 +17,7 @@ const run = async () => {
 		jsonSummaryPath,
 		name,
 		thresholds,
-		workingDirectory,
-    pullRequestNumber
+		workingDirectory
 	} = await readOptions();
 
 	const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
@@ -42,8 +41,7 @@ const run = async () => {
 	try {
 		await writeSummaryToPR({
 			summary,
-			markerPostfix: getMarkerPostfix({ name, workingDirectory }),
-      pullRequestNumber
+			markerPostfix: getMarkerPostfix({ name, workingDirectory })
 		});
 	} catch (error) {
 		if (error instanceof RequestError && (error.status === 404 || error.status === 403)) {
