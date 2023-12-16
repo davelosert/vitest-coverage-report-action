@@ -5,12 +5,13 @@ import * as core from '@actions/core';
 const COMMENT_MARKER = (markerPostfix = 'root') => `<!-- vitest-coverage-report-marker-${markerPostfix} -->`;
 type Octokit =  ReturnType<typeof github.getOctokit>;
 
-const writeSummaryToPR = async ({ summary, markerPostfix }: { 
+const writeSummaryToPR = async ({ summary, markerPostfix, pullRequestNumber }: { 
 	summary: typeof core.summary; 
 	markerPostfix?: string;
+  pullRequestNumber: number;
 }) => {
-  if (!github.context.payload.pull_request) {
-    core.info('[vitest-coverage-report] Not in the context of a pull request. Skipping comment creation.');
+  if (!github.context.payload.pull_request || !pullRequestNumber) {
+    core.info('[vitest-coverage-report] No pull-request-number found or not in the context of a pull-request. Skipping comment creation.');
     return;
   }
   
@@ -35,8 +36,6 @@ const writeSummaryToPR = async ({ summary, markerPostfix }: {
       body: commentBody,
     });
   }
-
-
 }
 
 async function findCommentByBody(octokit: Octokit, commentBodyIncludes: string) {

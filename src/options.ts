@@ -16,6 +16,9 @@ async function readOptions() {
 
 	const name = core.getInput('name');
 
+  const pullRequestNumberStr = core.getInput('pull-request-number');
+  const pullRequestNumber = parseInt(pullRequestNumberStr);
+
   // ViteConfig is optional, as it is only required for thresholds. If no vite config is provided, we will not include thresholds in the final report.
 	const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
 	const thresholds = viteConfigPath ? await parseCoverageThresholds(viteConfigPath) : {};
@@ -26,7 +29,8 @@ async function readOptions() {
 		jsonSummaryPath,
 		name,
 		thresholds,
-		workingDirectory
+		workingDirectory,
+    pullRequestNumber
 	}
 }
 
