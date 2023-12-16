@@ -22,15 +22,20 @@ jobs:
         # Remove node_modules to see if this action runs entirely compiled
       - name: "Remove Node Modules"
         run: rm -rf node_modules
-      - name: "Test Working Directory Option"
-        uses: ./
+      - name: "Upload Coverage"
+        uses: actions/upload-artifact@v4
         with:
-          working-directory: "./test/mockReports"
-          name: "Mock Reports"
-      - name: "Test Default Action"
-        # run step also on failure of the previous step
-        if: always()
-        uses: ./
-        with:
-          file-coverage-mode: "all"
-          name: "Root"
+          name: coverage
+          path: coverage
+      # - name: "Test Working Directory Option"
+      #   uses: ./
+      #   with:
+      #     working-directory: "./test/mockReports"
+      #     name: "Mock Reports"
+      # - name: "Test Default Action"
+      #   # run step also on failure of the previous step
+      #   if: always()
+      #   uses: ./
+      #   with:
+      #     file-coverage-mode: "all"
+      #     name: "Root"

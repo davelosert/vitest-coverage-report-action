@@ -1,0 +1,19 @@
+name: Report Coverage
+
+on:
+  workflow_run:
+    workflows: ["Build and Test"]
+    types:
+      - completed
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          # Name of the artifact to download.
+          # Optional. If unspecified, all artifacts for the run are downloaded.
+          name: coverage
+          run-id: ${{ github.event.workflow_run.id }}
+      - run: ls -l
