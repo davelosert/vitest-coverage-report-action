@@ -58,7 +58,7 @@ jobs:
     - name: 'Install Deps'
       run: npm install
     - name: 'Test'
-      run: npx vitest --coverage
+      run: npx vitest --coverage.enabled true
     - name: 'Report Coverage'
       # Set if: always() to also generate the report if tests are failing
       # Only works if you set `reportOnFailure: true` in your vite config as specified above
@@ -213,7 +213,7 @@ It will then automatically locate the appropriate pull request to comment on.
           - name: "Install Deps"
             run: npm install
           - name: "Test"
-            run: npx vitest --coverage
+            run: npx vitest --coverage.enabled true
 
           - name: "Upload Coverage"
             uses: actions/upload-artifact@v4
