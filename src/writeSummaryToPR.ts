@@ -1,45 +1,25 @@
 import * as github from '@actions/github';
 import * as core from '@actions/core';
 
-
-
+const gitHubToken = core.getInput('github-token').trim();
+const octokit: Octokit = github.getOctokit(gitHubToken);
 const COMMENT_MARKER = (markerPostfix = 'root') => `<!-- vitest-coverage-report-marker-${markerPostfix} -->`;
+
 type Octokit =  ReturnType<typeof github.getOctokit>;
 const writeSummaryToPR = async ({ summary, markerPostfix }: { 
 	summary: typeof core.summary; 
 	markerPostfix?: string;
 }) => {
-  const gitHubToken = core.getInput('github-token').trim();
-  const octokit: Octokit = github.getOctokit(gitHubToken);
-  
   // If in the context of a pull-request, get the pull-request number
   let pullRequestNumber = github.context.payload.pull_request?.number;
 
-  // If in the context of a workflow run, get the origin workflow_run id and use it to query the original workflow to get the pull_request number
+  // This is to allow commenting on pull_request from forks
   if (github.context.eventName === 'workflow_run') {
-    core.info('Trying to get triggering workflow to find pull-request Id to comment on...')
-    const originalWorkflowRunId = github.context.payload.workflow_run?.id;
-    if (!originalWorkflowRunId) {
-      core.info('[vitest-coverage-report] No original workflow run id found. Skipping comment creation.');
-      return;
-    }
-    const originalWorkflowRun = await octokit.rest.actions.getWorkflowRun({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      run_id: originalWorkflowRunId,
-    });
-    
-    if(!originalWorkflowRun.data.pull_requests || originalWorkflowRun.data.pull_requests.length === 0) {
-      core.info('[vitest-coverage-report] No pull-request found in the original workflow run. Skipping comment creation.');
-      return;
-    }
-
-    pullRequestNumber = originalWorkflowRun.data.pull_requests[0].number;
+    pullRequestNumber = await getPullRequestNumberFromTriggeringWorkflow(octokit);
   }
 
-
   if (!pullRequestNumber) {
-    core.info('[vitest-coverage-report] No pull-request-number found. Skipping comment creation.');
+    core.info('No pull-request-number found. Skipping comment creation.');
     return;
   }
 
@@ -78,6 +58,63 @@ async function findCommentByBody(octokit: Octokit, commentBodyIncludes: string, 
     if (comment) return comment;
   }
 
+  return;
+}
+
+async function getPullRequestNumberFromTriggeringWorkflow(octokit: Octokit): Promise<number | undefined> {
+  core.info('Trying to get the triggering workflow in order to find the pull-request-number to comment the results on...')
+  const originalWorkflowRunId = github.context.payload.workflow_run!.id;
+
+  const { data: originalWorkflowRun } = await octokit.rest.actions.getWorkflowRun({
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
+    run_id: originalWorkflowRunId,
+  });
+
+  if(originalWorkflowRun.event !== 'pull_request') {
+    core.info('The triggering workflow is not a pull-request. Skipping comment creation.');
+    return undefined;
+  }
+
+  // When the actual pull-request is not coming from a fork, the pull_request object is correctly populated and we can shortcut here
+  if(originalWorkflowRun.pull_requests && originalWorkflowRun.pull_requests.length > 0) {
+    return originalWorkflowRun.pull_requests[0].number;
+  }
+
+  // When the actual pull-request is coming from a fork, the pull_request object is not populated (see https://github.com/orgs/community/discussions/25220)
+  core.info(`Trying to find the pull-request for the triggering workflow run with id: ${originalWorkflowRunId} (${originalWorkflowRun.url}) with HEAD_SHA ${originalWorkflowRun.head_sha}...`)
+  
+  // The way to find the pull-request in this scenario is to query all existing pull_requests on the target repository and find the one with the same HEAD_SHA as the original workflow run
+  const pullRequest = await findPullRequest(octokit, originalWorkflowRun.head_sha);
+
+  if(!pullRequest) {
+    core.info('Could not find the pull-request for the triggering workflow run. Skipping comment creation.');
+    return undefined;
+  }
+
+  return pullRequest.number;
+}
+
+
+async function findPullRequest(octokit: Octokit, headSha: string) {
+  core.startGroup(`Querying REST API for Pull-Requests.`);
+  const pullRequestsIterator = octokit.paginate.iterator(
+    octokit.rest.pulls.list, {
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      per_page: 30
+  });
+  
+  for await (const { data: pullRequests } of pullRequestsIterator) {
+    core.info(`Found ${pullRequests.length} pull-requests in this page.`)
+    for (const pullRequest of pullRequests) {
+      core.debug(`Comparing: ${pullRequest.number} sha: ${pullRequest.head.sha} with expected: ${headSha}.`)
+      if (pullRequest.head.sha === headSha) {
+        return pullRequest
+      }
+    }
+  }
+  core.endGroup();
   return undefined;
 }
 
