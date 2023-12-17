@@ -1,19 +1,19 @@
 # vitest-coverage-report-action
 
-A GitHub Action to report [vitest](https://vitest.dev/) coverage results as a GitHub step-summary and pull request comment.
+This GitHub Action reports [vitest](https://vitest.dev/) coverage results as a GitHub step-summary and as a comment on a pull request.
 
 ![Coverage Report as Step Summary](./docs/coverage-report.png)
 
-It will create a high-level coverage summary for all coverage-category as well as a file-based report linking to the files itself and the uncovered lines for easy discovery.
+The action generates a high-level coverage summary for all coverage categories, as well as a detailed, file-based report. The report includes links to the files themselves and the uncovered lines for easy reference.
 
 ## Usage
 
-This action requires you to use `vitest` to create a coverage report with the following reporters:
+To use this action, you need to configure `vitest` to create a coverage report with the following reporters:
 
-- `json-summary` (required): Will add a high-level summary of your overall coverage
-- `json` (optional): If provided, will add file-specific coverage reports for any file of your project
+- `json-summary` (required): This reporter generates a high-level summary of your overall coverage.
+- `json` (optional): If provided, this reporter generates file-specific coverage reports for each file in your project.
 
-You can configure the reporters within the `vitest.config.js` file likes this:
+You can configure the reporters in your Vite configuration file (e.g., `vite.config.js`) as follows:
 
 ```js
 import { defineConfig } from 'vite';
@@ -23,7 +23,7 @@ export default defineConfig({
     coverage: {
       // you can include other reporters, but 'json-summary' is required, json is recommended
       reporter: ['text', 'json-summary', 'json'],
-      // If you want a coverage report even if your tests are failing, include this
+      // If you want a coverage reports even if your tests are failing, include the reportOnFailure option
       reportOnFailure: true,
     }
   }
@@ -61,29 +61,29 @@ jobs:
       run: npx vitest --coverage
     - name: 'Report Coverage'
       # Set if: always() to also generate the report if tests are failing
-      # Only works if you set `reportOnFailure: true` in your `vitest.config.js` as specified above
+      # Only works if you set `reportOnFailure: true` in your vite config as specified above
       if: always() 
       uses:  davelosert/vitest-coverage-report-action@v2
 ```
 
 > [!NOTE]
-> If you want to have comments on pull requests coming from forks, you will have to use the configuration as provided in the section [Working with pull requests from forks](#working-with-pull-requests-from-forks)
+> To enable comments on pull requests originating from forks, please refer to the configuration provided in the [Working with Pull Requests from Forks](#working-with-pull-requests-from-forks) section.
 
 ### Required Permissions
 
-This action requires permissions set to `pull-request: write` in order for it to be able to add a comment to your pull-request. If you are using the default `GITHUB_TOKEN`, make sure to include the permissions together with `contents: read` to the the job, so that the `actions/checkout` action is allowed to checkout the repository. This is especially important for new repositories created after [GitHub's announcement](https://github.blog/changelog/2023-02-02-github-actions-updating-the-default-github_token-permissions-to-read-only/) to change the default permissions to `read-only` for all new `GITHUB_TOKEN`s.
+This action requires the `pull-request: write` permission to add a comment to your pull request. If you're using the default `GITHUB_TOKEN`, ensure that you include both `pull-request: write` and `contents: read` permissions in the job. The `contents: read` permission is necessary for the `actions/checkout` action to checkout the repository. This is particularly important for new repositories created after GitHub's [announcement](https://github.blog/changelog/2023-02-02-github-actions-updating-the-default-github_token-permissions-to-read-only/) to change the default permissions to `read-only` for all new `GITHUB_TOKEN`s.
 
 ### Options
 
-| Option               | Description                                                                                                                           | Default                                                  |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| `json-summary-path`  | The path to the json summary file.                                                                                                    | `./coverage/coverage-summary.json`                       |
-| `json-final-path`    | The path to the json final file.                                                                                                      | `./coverage/coverage-final.json`                         |
-| `vite-config-path`   | The path to the vite config file. Will check the same paths as vite and vitest                                                        | Checks pattern `vite[st].config.{t\|mt\|ct\|j\|mj\|cj}s` |
-| `github-token`       | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`).                                       | `${{ github.token }}`                                    |
-| `working-directory`  | Run action within a custom directory (for monorepos).                                                                                 | `./`                                                     |
-| `name`               | Give the report a name. This is useful if you want multiple reports for different test suites within the same PR. Needs to be unique. | ''                                                       |
-| `file-coverage-mode` | Defines how file-based coverage is reported. Possible values are `all`, `changes` or `none`.                                          | `changes`                                                |
+| Option               | Description                                                                                                                                  | Default                                                                       |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `working-directory`  | The main path to search for coverage- and configuration files (adjusting this is especially useful in monorepos).                            | `./`                                                                          |
+| `json-summary-path`  | The path to the json summary file.                                                                                                           | `${working-directory}/coverage/coverage-summary.json`                         |
+| `json-final-path`    | The path to the json final file.                                                                                                             | `${working-directory}/coverage/coverage-final.json`                           |
+| `vite-config-path`   | The path to the vite config file. Will check the same paths as vite and vitest                                                               | Checks pattern `${working-directory}/vite[st].config.{t\|mt\|ct\|j\|mj\|cj}s` |
+| `github-token`       | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`).                                              | `${{ github.token }}`                                                         |
+| `file-coverage-mode` | Defines how file-based coverage is reported. Possible values are `all`, `changes` or `none`.                                                 | `changes`                                                                     |
+| `name`               | Give the report a custom name. This is useful if you want multiple reports for different test suites within the same PR. Needs to be unique. | ''                                                                            |
 
 #### File Coverage Mode
 
