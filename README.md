@@ -23,6 +23,8 @@ export default defineConfig({
     coverage: {
       // you can include other reporters, but 'json-summary' is required, json is recommended
       reporter: ['text', 'json-summary', 'json'],
+      // If you want a coverage report even if your tests are failing, include this
+      reportOnFailure: true,
     }
   }
 });
@@ -58,7 +60,9 @@ jobs:
     - name: 'Test'
       run: npx vitest --coverage
     - name: 'Report Coverage'
-      if: always() # Also generate the report if tests are failing
+      # Set if: always() to also generate the report if tests are failing
+      # Only works if you set `reportOnFailure: true` in your `vitest.config.js` as specified above
+      if: always() 
       uses:  davelosert/vitest-coverage-report-action@v2
 ```
 
