@@ -29,10 +29,6 @@ inputs:
       required: false
       description: 'The name of the coverage report. Can be used to execute this action multiple times. '
       default: ''
-  pull-request-number:
-      required: false
-      description: 'The pull request number. Uses the current pull request by default.'
-      default: ${{ github.event.number }}
 runs:
   using: 'node16'
   main: 'dist/index.js'
