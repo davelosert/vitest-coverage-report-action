@@ -30,7 +30,7 @@ inputs:
       description: 'The name of the coverage report. Can be used to execute this action multiple times. '
       default: ''
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: 'check-circle'
