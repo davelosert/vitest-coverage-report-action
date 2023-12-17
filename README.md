@@ -30,7 +30,7 @@ export default defineConfig({
 });
 ```
 
-Then execute `npx vitest --coverage` in a step before this action.
+Then execute `npx vitest --coverage.enabled true` in a step before this action.
 
 ### Example Workflow
 

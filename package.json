@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "test": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage.enabled true",
     "build": "rm -rf dist && node esbuild.cjs",
     "start": "npm run build && node dist/index.js",
     "typecheck": "npx tsc --noEmit"
@@ -37,12 +37,12 @@
     "@semantic-release/exec": "6.0.3",
     "@types/common-tags": "1.8.4",
     "@types/node": "20.10.3",
-    "@vitest/coverage-v8": "0.34.6",
+    "@vitest/coverage-v8": "1.0.4",
     "esbuild": "0.19.8",
     "semantic-release": "22.0.10",
     "semantic-release-github-actions-tags": "1.0.3",
     "typescript": "5.3.2",
     "vite": "5.0.5",
-    "vitest": "0.34.6"
+    "vitest": "1.0.4"
   }
 }
