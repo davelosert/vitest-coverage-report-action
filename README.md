@@ -50,11 +50,11 @@ jobs:
       pull-requests: write
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: 'Install Node'
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
-        node-version: '16.x'
+        node-version: '20.x'
     - name: 'Install Deps'
       run: npm install
     - name: 'Test'
@@ -125,10 +125,12 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   test: {
     coverage: {
-      lines: 60,
-      branches: 60,
-      functions: 60,
-      statements: 60
+      thresholds: {
+        lines: 60,
+        branches: 60,
+        functions: 60,
+        statements: 60
+      }
     }
   }
 });
@@ -209,7 +211,7 @@ It will then automatically locate the appropriate pull request to comment on.
           - name: "Install Node"
             uses: actions/setup-node@v4
             with:
-              node-version: "18.x"
+              node-version: "20.x"
           - name: "Install Deps"
             run: npm install
           - name: "Test"
