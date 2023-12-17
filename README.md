@@ -175,7 +175,7 @@ However, you can circumvent this limitation by dividing your workflow into two s
 2. **Reporting Workflow**: This workflow is triggered upon the completion of the **Testing Workflow** using the `workflow_runs` event. It downloads and parses the coverage report, and posts a comment on the pull request.
 
 > [!IMPORTANT]
-> The **Reporting Workflow** must reside within your default branch (as specifien in [GitHub's workflow_run documentation](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run))
+> The **Reporting Workflow** must reside within your default branch (as specified in [GitHub's workflow_run documentation](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run))
 
 This action will automatically detect:
 
