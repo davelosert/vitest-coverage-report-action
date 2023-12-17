@@ -171,7 +171,7 @@ For more information on why this is the case, refer to the following article:
 However, you can circumvent this limitation by dividing your workflow into two separate workflows (see examples below):
 
 1. **Testing Workflow**: This workflow runs tests in response to the `pull_request` trigger, within the context of the actual pull request, and uploads the coverage reports as artifacts.
-    > ![IMPORTANT]
+    > [!IMPORTANT]
     > This workflow must reside within your default branch (`main`)!
 2. **Reporting Workflow**: This workflow is triggered upon the completion of the **Testing Workflow** using the `workflow_runs` event. It downloads and parses the coverage report, and posts a comment on the pull request.
 
@@ -244,7 +244,7 @@ It will then automatically locate the appropriate pull request to comment on.
             uses: davelosert/vitest-coverage-report-action@v2
     ```
 
-> ![NOTE]
+> [!NOTE]
 > This configuration also works for pull requests originating from your own repository (not forks), so it can be used generally.
 
 #### Limitations & Considerations
