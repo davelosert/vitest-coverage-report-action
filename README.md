@@ -93,7 +93,7 @@ This action requires the `pull-request: write` permission to add a comment to yo
 
 #### Name
 
-If you have multiple test-suites but want to report the coverage in a single PR, you have to provide a unique `name` for each action-step that parses a summary-report, e.g.:
+If your project includes multiple test suites and you want to consolidate their coverage reports into a single pull request comment, you must assign a unique `name` to each action step that parses a summary report. For example:
 
 ```yml
 ## ...
@@ -115,9 +115,9 @@ If you have multiple test-suites but want to report the coverage in a single PR,
 
 ### Coverage Thresholds
 
-This action will read the coverage thresholds defined in the `coverage`-property of the `vite.config.js`-file and mark the status of the generated report accordingly.
+This action reads the coverage thresholds specified in the `coverage` property of the Vite configuration file. It then uses these thresholds to determine the status of the generated report.
 
-E.g. with a config like this:
+For instance, consider the following configuration:
 
 ```typescript
 import { defineConfig } from 'vite';
@@ -134,17 +134,17 @@ export default defineConfig({
 });
 ```
 
-the report would look like this:
+With the above configuration, the report would appear as follows:
 
 ![Coverage Threshold Report](./docs/coverage-report-threshold.png)
 
-If there are no thresholds defined, the status will be '🔵'.
+If no thresholds are defined, the status will display as '🔵'.
 
 ### Workspaces
 
-If you are using a monorepo with [Vitest Workspaces](https://vitest.dev/guide/workspace.html) and you run Vitest from the root of your project, Vitest will ignore the `coverage`-property of the individual project-level `vite.config.js`-files. This is because some of the [configuration options](https://vitest.dev/guide/workspace.html#configuration) are not allowed in a project config, for example coverage is done for the whole workspace.
+If you're using a monorepo with [Vitest Workspaces](https://vitest.dev/guide/workspace.html) and running Vitest from your project's root, Vitest will disregard the `coverage` property in individual project-level Vite configuration files. This is because some [configuration options](https://vitest.dev/guide/workspace.html#configuration), such as coverage, apply to the entire workspace and are not allowed in a project config.
 
-In this case, you can create a `vite.config.js`-file in the root of your project next to your `vitest.workspace.js`-file to configure coverage for the whole workspace:
+In such cases, you can create a Vite configuration file at the root of your project, alongside your `vitest.workspace.js` file, to configure coverage for the entire workspace:
 
 ```js
 import { defineConfig } from 'vite';
@@ -159,7 +159,7 @@ export default defineConfig({
 });
 ```
 
-Alternatively, you can provide [coverage options](https://vitest.dev/config/#coverage) to CLI with dot notation:
+Alternatively, you can supply [coverage options](https://vitest.dev/config/#coverage) directly to the CLI using dot notation:
 
 ```sh
 npx vitest --coverage.enabled --coverage.provider=v8 --coverage.reporter=json-summary --coverage.reporter=json
