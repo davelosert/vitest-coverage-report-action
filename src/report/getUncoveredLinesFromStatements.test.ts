@@ -1,6 +1,6 @@
 import { describe, it, expect} from 'vitest';
 import { getUncoveredLinesFromStatements } from './getUncoveredLinesFromStatements';
-import { StatementCoverageReport } from './types/JsonFinal';
+import { StatementCoverageReport } from '../types/JsonFinal';
 
 describe('getUncoveredLinesFromStatements()', () => {
   it('returns a single line range for only one untested line.', () => {

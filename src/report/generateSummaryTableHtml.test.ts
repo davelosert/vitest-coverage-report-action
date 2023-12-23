@@ -1,8 +1,8 @@
 import { generateSummaryTableHtml } from './generateSummaryTableHtml';
-import { getTableLine } from '../test/queryHelper';
-import { icons } from './icons';
-import { Thresholds } from './types/Threshold';
-import { createMockCoverageReport, createMockReportNumbers } from './types/JsonSummaryMockFactory';
+import { getTableLine } from '../../test/queryHelper';
+import { icons } from '../icons';
+import { Thresholds } from '../types/Threshold';
+import { createMockCoverageReport, createMockReportNumbers } from '../types/JsonSummaryMockFactory';
 import { describe, it, expect } from 'vitest';
 
 describe('generateSummaryTabelHtml()', () => {

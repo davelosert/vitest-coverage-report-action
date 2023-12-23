@@ -1,7 +1,7 @@
-import { icons } from './icons';
+import { icons } from '../icons';
 import { oneLine } from 'common-tags';
-import { Thresholds } from './types/Threshold';
-import { CoverageReport, ReportNumbers } from './types/JsonSummary';
+import { Thresholds } from '../types/Threshold';
+import { CoverageReport, ReportNumbers } from '../types/JsonSummary';
 
 const generateTableRow = ({ reportNumbers, category, threshold }: { reportNumbers: ReportNumbers; category: string; threshold?: number; }): string => {
   

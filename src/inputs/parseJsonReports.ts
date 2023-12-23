@@ -1,8 +1,8 @@
 import { readFile } from 'node:fs/promises';
 import * as core from '@actions/core';
 import path from 'node:path';
-import { JsonFinal } from './types/JsonFinal';
-import { JsonSummary } from './types/JsonSummary';
+import { JsonFinal } from '../types/JsonFinal';
+import { JsonSummary } from '../types/JsonSummary';
 import { stripIndent } from 'common-tags';
 
 const parseVitestCoverageReport = async <type extends JsonSummary | JsonFinal>(jsonPath: string): Promise<type> => {

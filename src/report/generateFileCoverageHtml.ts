@@ -1,11 +1,10 @@
 import * as path from 'path'
-import * as core from '@actions/core'
 import { generateBlobFileUrl } from './generateFileUrl'
 import { LineRange, getUncoveredLinesFromStatements } from './getUncoveredLinesFromStatements'
-import { JsonFinal } from './types/JsonFinal'
-import { JsonSummary } from './types/JsonSummary'
+import { JsonFinal } from '../types/JsonFinal'
+import { JsonSummary } from '../types/JsonSummary'
 import { oneLine } from 'common-tags'
-import { FileCoverageMode } from './FileCoverageMode'
+import { FileCoverageMode } from '../inputs/FileCoverageMode'
 
 type FileCoverageInputs = {
 	jsonSummary: JsonSummary;

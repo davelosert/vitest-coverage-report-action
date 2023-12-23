@@ -1,7 +1,7 @@
 import path from 'node:path';
 import * as core from '@actions/core';
 import { promises as fs } from 'fs';
-import { Thresholds } from './types/Threshold';
+import { Thresholds } from '../types/Threshold';
 
 const regex100 = /100"?\s*:\s*true/;
 const regexStatements = /statements\s*:\s*(\d+)/;
