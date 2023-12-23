@@ -9,7 +9,7 @@ vi.mock('@actions/core', async (importOriginal) => ({
 }));
 
 describe('generateTableData', () => {
-  const mockConfigPath = path.resolve(__dirname, '..', 'test', 'mockConfig');
+  const mockConfigPath = path.resolve(__dirname, '..', '..', 'test', 'mockConfig');
   const getConfig = (configName: string) => path.resolve(mockConfigPath, configName)
     
   it('returns no thresholds if config file can not be found.', async (): Promise<void> => {

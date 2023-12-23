@@ -15,13 +15,20 @@ const run = async () => {
 		fileCoverageMode,
 		jsonFinalPath,
 		jsonSummaryPath,
+		jsonSummaryComparePath,
 		name,
 		thresholds,
 		workingDirectory
 	} = await readOptions();
 
 	const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
-	const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds);
+  
+	let jsonSummaryCompare;
+	if(jsonSummaryComparePath) {
+		jsonSummaryCompare = await parseVitestJsonSummary(jsonSummaryComparePath);
+	}
+
+	const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds, jsonSummaryCompare?.total);
 	const summary = core.summary
 		.addHeading(generateHeadline({ workingDirectory, name }), 2)
 		.addRaw(tableData)
