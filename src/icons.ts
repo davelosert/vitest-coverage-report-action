@@ -4,7 +4,8 @@ const icons = {
   blue: '🔵',
 	increase: '⬆️',
 	decrease: '⬇️',
-	equal: '🟰'
+	equal: '🟰',
+	target: '🎯'
 }
 
 export {
