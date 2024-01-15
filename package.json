@@ -36,13 +36,13 @@
   "devDependencies": {
     "@semantic-release/exec": "6.0.3",
     "@types/common-tags": "1.8.4",
-    "@types/node": "20.10.6",
-    "@vitest/coverage-v8": "1.1.1",
+    "@types/node": "20.11.2",
+    "@vitest/coverage-v8": "1.2.0",
     "esbuild": "0.19.11",
     "semantic-release": "22.0.12",
     "semantic-release-github-actions-tags": "1.0.3",
     "typescript": "5.3.3",
-    "vite": "5.0.10",
-    "vitest": "1.1.1"
+    "vite": "5.0.11",
+    "vitest": "1.2.0"
   }
 }
