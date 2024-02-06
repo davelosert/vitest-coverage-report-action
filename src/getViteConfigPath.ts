@@ -34,8 +34,8 @@ const getViteConfigPath = async (workingDirectory: string, input: string) => {
 
     return await testFilePath(workingDirectory, input);
   } catch (error) {
-    const searchPath = input ?
-      path.resolve(workingDirectory, input)
+    const searchPath = input
+      ? path.resolve(workingDirectory, input)
       : `any default location in "${workingDirectory}"`;
 
     core.warning(stripIndent`
