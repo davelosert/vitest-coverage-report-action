@@ -36,7 +36,7 @@
   "devDependencies": {
     "@semantic-release/exec": "6.0.3",
     "@types/common-tags": "1.8.4",
-    "@types/node": "20.11.10",
+    "@types/node": "20.11.16",
     "@vitest/coverage-v8": "1.2.2",
     "esbuild": "0.20.0",
     "semantic-release": "23.0.0",
