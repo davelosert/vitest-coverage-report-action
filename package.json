@@ -7,6 +7,7 @@
   "scripts": {
     "test": "vitest",
     "test:coverage": "vitest run --coverage.enabled true",
+    "test:export": "npx ts-node test/exportTestTable.ts",
     "build": "rm -rf dist && node esbuild.cjs",
     "start": "npm run build && node dist/index.js",
     "typecheck": "npx tsc --noEmit"

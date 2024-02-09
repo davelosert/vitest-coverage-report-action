@@ -52,20 +52,20 @@ function generateTableRow({
   let percent = `${reportNumbers.pct}%`; 
 
   if(threshold) {
-		category = `${category} (${icons.target} ${threshold}%)`;
+		percent = `${percent} (${icons.target} ${threshold}%)`;
     status = reportNumbers.pct >= threshold ? icons.green : icons.red;
   }
 	
 	if(reportCompareNumbers) {
 		const percentDiff = reportNumbers.pct - reportCompareNumbers.pct;
 		const compareString = getCompareString(percentDiff);
-		percent = `${percent} (${compareString})`;
+		percent = `${percent}<br/>${compareString}`;
 	}
   
   return `
     <td align="center">${status}</td>
     <td align="left">${category}</td>
-    <td align="left">${percent}</td>
+		<td align="right">${percent}</td>
     <td align="right">${reportNumbers.covered} / ${reportNumbers.total}</td>
   `;
 }
@@ -76,11 +76,11 @@ function getCompareString(percentDiff: number): string {
 	}
 
 	if(percentDiff > 0) {
-		return `${icons.increase} <em>+${percentDiff}%</em>`;
+		return `${icons.increase} <em>+${percentDiff.toFixed(2)}%</em>`;
 	}
 	
 	// The - char is already included in a negative number
-	return `${icons.decrease} <em>${percentDiff}%</em>`;
+	return `${icons.decrease} <em>${percentDiff.toFixed(2)}%</em>`;
 }
 
 export {
