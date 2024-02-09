@@ -92,8 +92,8 @@ describe('generateSummaryTabelHtml()', () => {
     });
 
     const summaryHtml = generateSummaryTableHtml(mockReport, thresholds, undefined);
-    
-    expect(getTableLine(1, summaryHtml)).toContain('Lines (🎯 100%)');
+
+    expect(getTableLine(1, summaryHtml)).toContain('80% (🎯 100%)');
   });
 	
 	it('if compare report is given and coverage decreased, provides the difference in the percentage column.', async (): Promise<void> => {
@@ -110,7 +110,7 @@ describe('generateSummaryTabelHtml()', () => {
 
 		const summaryHtml = generateSummaryTableHtml(mockReport, undefined, mockCompareReport);
 		
-		expect(getTableLine(1, summaryHtml)).toContain('80% (⬇️ <em>-10%</em>)');
+		expect(getTableLine(1, summaryHtml)).toContain('80%<br/>⬇️ <em>-10.00%</em>');
 	});
 	
 	it('if compare report is given and coverage increased, provides the difference in the percentage column.', async (): Promise<void> => {
@@ -127,7 +127,7 @@ describe('generateSummaryTabelHtml()', () => {
 
 		const summaryHtml = generateSummaryTableHtml(mockReport, undefined, mockCompareReport);
 		
-		expect(getTableLine(1, summaryHtml)).toContain('90% (⬆️ <em>+10%</em>)');
+		expect(getTableLine(1, summaryHtml)).toContain('90%<br/>⬆️ <em>+10.00%</em>');
 	});
 	
 	it('if compare report is given and coverage stayed the same, provides the difference in the percentage column.', async (): Promise<void> => {
@@ -144,6 +144,6 @@ describe('generateSummaryTabelHtml()', () => {
 
 		const summaryHtml = generateSummaryTableHtml(mockReport, undefined, mockCompareReport);
 		
-		expect(getTableLine(1, summaryHtml)).toContain('90% (🟰 <em>±0%</em>)');
+		expect(getTableLine(1, summaryHtml)).toContain('90%<br/>🟰 <em>±0%</em>');
 	});
 });
