@@ -29,5 +29,9 @@ describe("getViteConfigPath", () => {
     await expect(
       getViteConfigPath(mockWorkingDirectory, "doesNotExist")
     ).resolves.toBeNull();
+
+    expect(core.warning).toHaveBeenCalledOnce();
+    const warningMessage = vi.mocked(core.warning).mock.calls[0][0];
+    expect(warningMessage).toContain(`${mockWorkingDirectory}/doesNotExist`);
   });
 });

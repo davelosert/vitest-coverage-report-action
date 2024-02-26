@@ -30,13 +30,13 @@ const getViteConfigPath = async (workingDirectory: string, input: string) => {
       return await Promise.any(
         defaultPaths.map((filePath) => testFilePath(workingDirectory, filePath))
       );
-    } 
-    
+    }
+
     return await testFilePath(workingDirectory, input);
   } catch (error) {
-    const searchPath = input ? 
-      `"${workingDirectory}/${input}"` : 
-      `any default location in "${workingDirectory}"`;
+    const searchPath = input
+      ? path.resolve(workingDirectory, input)
+      : `any default location in "${workingDirectory}"`;
 
     core.warning(stripIndent`
           Failed to read vite config file at ${searchPath}. 
