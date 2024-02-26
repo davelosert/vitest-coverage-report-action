@@ -143,6 +143,69 @@ With the above configuration, the report would appear as follows:
 
 If no thresholds are defined, the status will display as '🔵'.
 
+### Coverage Trend Indicator
+
+By using the `json-summary-compare-path` option, the action will display both a trend indicator and the coverage difference in the summary. This feature is particularly useful for tracking changes between the main branch and a previous run.
+
+![Screenshot of the action-result showcasing the trend indicator](./docs/coverage-report-trend-indicator.png)
+
+The most straightforward method to obtain the comparison file within a pull request is to run the tests and generate the coverage for the target branch within a matrix job:
+
+```yml
+name: "Test"
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch:
+          - ${{ github.head_ref }}
+          - "main"
+
+    permissions:
+      # Required to checkout the code
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+      - name: "Install Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+      - name: "Install Deps"
+        run: npm install
+      - name: "Test"
+        run: npx vitest --coverage.enabled true
+      - name: "Upload Coverage"
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.branch }}
+          path: coverage
+
+  report-coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Download Coverage Artifacts"
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-${{ github.head_ref }}
+          path: coverage
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage-main
+          path: coverage-main
+      - name: "Report Coverage"
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          json-summary-compare-path: coverage-main/coverage-summary.json
+```
+
 ### Workspaces
 
 If you're using a monorepo with [Vitest Workspaces](https://vitest.dev/guide/workspace.html) and running Vitest from your project's root, Vitest will disregard the `coverage` property in individual project-level Vite configuration files. This is because some [configuration options](https://vitest.dev/guide/workspace.html#configuration), such as coverage, apply to the entire workspace and are not allowed in a project config.
