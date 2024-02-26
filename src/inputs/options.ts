@@ -14,6 +14,13 @@ async function readOptions() {
 	const jsonSummaryPath = path.resolve(workingDirectory, core.getInput('json-summary-path'));
 	const jsonFinalPath = path.resolve(workingDirectory, core.getInput('json-final-path'));
 
+
+  const jsonSummaryCompareInput = core.getInput('json-summary-compare-path');
+	let jsonSummaryComparePath;
+	if(jsonSummaryCompareInput) {
+		jsonSummaryComparePath = path.resolve(workingDirectory, jsonSummaryCompareInput);
+	}
+
 	const name = core.getInput('name');
 
   // ViteConfig is optional, as it is only required for thresholds. If no vite config is provided, we will not include thresholds in the final report.
@@ -24,9 +31,10 @@ async function readOptions() {
 		fileCoverageMode,
 		jsonFinalPath,
 		jsonSummaryPath,
+		jsonSummaryComparePath,
 		name,
 		thresholds,
-		workingDirectory
+		workingDirectory,
 	}
 }
 

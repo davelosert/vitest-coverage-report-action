@@ -1,4 +1,4 @@
-import { StatementCoverageReport } from './types/JsonFinal';
+import { StatementCoverageReport } from '../types/JsonFinal';
 
 type LineRange = {
   start: number,

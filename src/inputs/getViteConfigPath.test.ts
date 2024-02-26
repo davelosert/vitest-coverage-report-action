@@ -7,6 +7,7 @@ describe("getViteConfigPath", () => {
   const mockWorkingDirectory = path.resolve(
     __dirname,
     "..",
+		'..',
     "test",
     "mockConfig"
   );

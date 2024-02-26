@@ -75,15 +75,16 @@ This action requires the `pull-request: write` permission to add a comment to yo
 
 ### Options
 
-| Option               | Description                                                                                                                                  | Default                                                                       |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `working-directory`  | The main path to search for coverage- and configuration files (adjusting this is especially useful in monorepos).                            | `./`                                                                          |
-| `json-summary-path`  | The path to the json summary file.                                                                                                           | `${working-directory}/coverage/coverage-summary.json`                         |
-| `json-final-path`    | The path to the json final file.                                                                                                             | `${working-directory}/coverage/coverage-final.json`                           |
-| `vite-config-path`   | The path to the vite config file. Will check the same paths as vite and vitest                                                               | Checks pattern `${working-directory}/vite[st].config.{t\|mt\|ct\|j\|mj\|cj}s` |
-| `github-token`       | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`).                                              | `${{ github.token }}`                                                         |
-| `file-coverage-mode` | Defines how file-based coverage is reported. Possible values are `all`, `changes` or `none`.                                                 | `changes`                                                                     |
-| `name`               | Give the report a custom name. This is useful if you want multiple reports for different test suites within the same PR. Needs to be unique. | ''                                                                            |
+| Option                      | Description                                                                                                                                                                | Default                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `working-directory`         | The main path to search for coverage- and configuration files (adjusting this is especially useful in monorepos).                                                          | `./`                                                                          |
+| `json-summary-path`         | The path to the json summary file.                                                                                                                                         | `${working-directory}/coverage/coverage-summary.json`                         |
+| `json-final-path`           | The path to the json final file.                                                                                                                                           | `${working-directory}/coverage/coverage-final.json`                           |
+| `vite-config-path`          | The path to the vite config file. Will check the same paths as vite and vitest                                                                                             | Checks pattern `${working-directory}/vite[st].config.{t\|mt\|ct\|j\|mj\|cj}s` |
+| `github-token`              | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`).                                                                            | `${{ github.token }}`                                                         |
+| `file-coverage-mode`        | Defines how file-based coverage is reported. Possible values are `all`, `changes` or `none`.                                                                               | `changes`                                                                     |
+| `name`                      | Give the report a custom name. This is useful if you want multiple reports for different test suites within the same PR. Needs to be unique.                               | ''                                                                            |
+| `json-summary-compare-path` | The path to the json summary file to compare against. If given, will display a trend indicator and the difference in the summary. Respects the `working-directory` option. | undefined                                                                     |
 
 #### File Coverage Mode
 
@@ -141,6 +142,69 @@ With the above configuration, the report would appear as follows:
 ![Coverage Threshold Report](./docs/coverage-report-threshold.png)
 
 If no thresholds are defined, the status will display as '🔵'.
+
+### Coverage Trend Indicator
+
+By using the `json-summary-compare-path` option, the action will display both a trend indicator and the coverage difference in the summary. This feature is particularly useful for tracking changes between the main branch and a previous run.
+
+![Screenshot of the action-result showcasing the trend indicator](./docs/coverage-report-trend-indicator.png)
+
+The most straightforward method to obtain the comparison file within a pull request is to run the tests and generate the coverage for the target branch within a matrix job:
+
+```yml
+name: "Test"
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch:
+          - ${{ github.head_ref }}
+          - "main"
+
+    permissions:
+      # Required to checkout the code
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+      - name: "Install Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+      - name: "Install Deps"
+        run: npm install
+      - name: "Test"
+        run: npx vitest --coverage.enabled true
+      - name: "Upload Coverage"
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.branch }}
+          path: coverage
+
+  report-coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Download Coverage Artifacts"
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-${{ github.head_ref }}
+          path: coverage
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage-main
+          path: coverage-main
+      - name: "Report Coverage"
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          json-summary-compare-path: coverage-main/coverage-summary.json
+```
 
 ### Workspaces
 

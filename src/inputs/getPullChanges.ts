@@ -56,4 +56,3 @@ export async function getPullChanges(fileCoverageMode: FileCoverageMode): Promis
 		core.endGroup()
 	}
 }
-

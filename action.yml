@@ -13,14 +13,17 @@ inputs:
       required: false
       description: 'The path to the json summary file. Uses "coverage/coverage-summary.json" by default.'
       default: coverage/coverage-summary.json
-  file-coverage-mode:
+  json-summary-compare-path:
       required: false
-      description: 'How to show summary for files coverage. Uses "changes" by default.'
-      default: changes
+      description: 'The path to the json summary file of the previous run to get trend indicators.'
   json-final-path:
       required: false
       description: 'The path to the json final file. Uses "coverage/coverage-final.json" by default.'
       default: coverage/coverage-final.json
+  file-coverage-mode:
+      required: false
+      description: 'How to show summary for files coverage. Uses "changes" by default.'
+      default: changes
   working-directory:
       required: false
       description: 'Custom working directory'

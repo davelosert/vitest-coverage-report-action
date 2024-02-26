@@ -1,0 +1,164 @@
+{
+  "total": {
+    "lines": {
+      "total": 145,
+      "covered": 69,
+      "skipped": 0,
+      "pct": 47.58
+    },
+    "statements": {
+      "total": 150,
+      "covered": 74.4,
+      "skipped": 0,
+      "pct": 49.6
+    },
+    "functions": {
+      "total": 29,
+      "covered": 17.1,
+      "skipped": 0,
+      "pct": 58.96
+    },
+    "branches": {
+      "total": 58,
+      "covered": 20.7,
+      "skipped": 0,
+      "pct": 35.68
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": "Unknown"
+    }
+  },
+  "/absolute/path/src/constants.js": {
+    "lines": {
+      "total": 1,
+      "covered": 1.15,
+      "skipped": 0,
+      "pct": 115
+    },
+    "functions": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 95
+    },
+    "statements": {
+      "total": 1,
+      "covered": 1.2,
+      "skipped": 0,
+      "pct": 120
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 90
+    }
+  },
+  "/absolute/path/src/format.js": {
+    "lines": {
+      "total": 33,
+      "covered": 27.6,
+      "skipped": 0,
+      "pct": 83.63
+    },
+    "functions": {
+      "total": 10,
+      "covered": 7.6,
+      "skipped": 0,
+      "pct": 76
+    },
+    "statements": {
+      "total": 33,
+      "covered": 28.8,
+      "skipped": 0,
+      "pct": 87.26
+    },
+    "branches": {
+      "total": 15,
+      "covered": 7.2,
+      "skipped": 0,
+      "pct": 48
+    }
+  },
+  "/absolute/path/src/index.js": {
+    "lines": {
+      "total": 69,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "functions": {
+      "total": 8,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "statements": {
+      "total": 72,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "branches": {
+      "total": 24,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    }
+  },
+  "/absolute/path/src/parse.js": {
+    "lines": {
+      "total": 20,
+      "covered": 17.25,
+      "skipped": 0,
+      "pct": 86.25
+    },
+    "functions": {
+      "total": 3,
+      "covered": 1.9,
+      "skipped": 0,
+      "pct": 63.33
+    },
+    "statements": {
+      "total": 20,
+      "covered": 18,
+      "skipped": 0,
+      "pct": 90
+    },
+    "branches": {
+      "total": 5,
+      "covered": 2.7,
+      "skipped": 0,
+      "pct": 54
+    }
+  },
+  "/absolute/path/src/utils.js": {
+    "lines": {
+      "total": 22,
+      "covered": 23,
+      "skipped": 0,
+      "pct": 104.54
+    },
+    "functions": {
+      "total": 8,
+      "covered": 7.6,
+      "skipped": 0,
+      "pct": 95
+    },
+    "statements": {
+      "total": 24,
+      "covered": 26.4,
+      "skipped": 0,
+      "pct": 110
+    },
+    "branches": {
+      "total": 14,
+      "covered": 10.8,
+      "skipped": 0,
+      "pct": 77.14
+    }
+  }
+}

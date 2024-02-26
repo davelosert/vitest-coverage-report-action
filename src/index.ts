@@ -1,27 +1,34 @@
-import { generateSummaryTableHtml } from './generateSummaryTableHtml.js';
-import { parseVitestJsonFinal, parseVitestJsonSummary } from './parseJsonReports.js';
+import { FileCoverageMode } from './inputs/FileCoverageMode.js'
+import { generateFileCoverageHtml } from './report/generateFileCoverageHtml.js';
+import { generateHeadline } from './report/generateHeadline.js';
+import { generateSummaryTableHtml } from './report/generateSummaryTableHtml.js';
+import { getPullChanges } from './inputs/getPullChanges.js';
+import { parseVitestJsonFinal, parseVitestJsonSummary } from './inputs/parseJsonReports.js';
+import { readOptions } from './inputs/options.js';
+import { RequestError } from '@octokit/request-error'
 import { writeSummaryToPR } from './writeSummaryToPR.js';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { RequestError } from '@octokit/request-error'
-import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
-import { getPullChanges } from './getPullChanges.js';
-import { FileCoverageMode } from './FileCoverageMode.js'
-import { readOptions } from './options.js';
-import { generateHeadline } from './generateHeadline.js';
 
 const run = async () => {
 	const {
 		fileCoverageMode,
 		jsonFinalPath,
 		jsonSummaryPath,
+		jsonSummaryComparePath,
 		name,
 		thresholds,
 		workingDirectory
 	} = await readOptions();
 
 	const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
-	const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds);
+  
+	let jsonSummaryCompare;
+	if(jsonSummaryComparePath) {
+		jsonSummaryCompare = await parseVitestJsonSummary(jsonSummaryComparePath);
+	}
+
+	const tableData = generateSummaryTableHtml(jsonSummary.total, thresholds, jsonSummaryCompare?.total);
 	const summary = core.summary
 		.addHeading(generateHeadline({ workingDirectory, name }), 2)
 		.addRaw(tableData)
