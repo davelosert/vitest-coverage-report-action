@@ -43,7 +43,7 @@
     "semantic-release": "23.0.8",
     "semantic-release-github-actions-tags": "1.0.3",
     "typescript": "5.4.5",
-    "vite": "5.2.8",
+    "vite": "5.2.10",
     "vitest": "1.5.0"
   }
 }
