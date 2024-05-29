@@ -18,13 +18,14 @@ const run = async () => {
 		jsonSummaryComparePath,
 		name,
 		thresholds,
-		workingDirectory
+		workingDirectory,
+		prNumber
 	} = await readOptions();
 
 	const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
-  
+
 	let jsonSummaryCompare;
-	if(jsonSummaryComparePath) {
+	if (jsonSummaryComparePath) {
 		jsonSummaryCompare = await parseVitestJsonSummary(jsonSummaryComparePath);
 	}
 
@@ -45,10 +46,16 @@ const run = async () => {
 	summary
 		.addRaw(`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a></em>`)
 
+	let processedPrNumber: number | undefined = Number(prNumber);
+	if (!Number.isSafeInteger(processedPrNumber) || processedPrNumber <= 0) {
+		processedPrNumber = undefined;
+	}
+
 	try {
 		await writeSummaryToPR({
 			summary,
-			markerPostfix: getMarkerPostfix({ name, workingDirectory })
+			markerPostfix: getMarkerPostfix({ name, workingDirectory }),
+			userDefinedPrNumber: processedPrNumber
 		});
 	} catch (error) {
 		if (error instanceof RequestError && (error.status === 404 || error.status === 403)) {

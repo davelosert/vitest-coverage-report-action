@@ -32,6 +32,10 @@ inputs:
       required: false
       description: 'The name of the coverage report. Can be used to execute this action multiple times. '
       default: ''
+  pr-number:
+      required: false
+      description: 'An optional, user-defined pull request number.'
+      default: ''
 runs:
   using: 'node20'
   main: 'dist/index.js'
