@@ -19,7 +19,7 @@ const writeSummaryToPR = async ({ summary, markerPostfix, userDefinedPrNumber }:
     pullRequestNumber = await getPullRequestNumberFromTriggeringWorkflow(octokit);
   }
 
-  if (userDefinedPrNumber) {
+  if (!pullRequestNumber && userDefinedPrNumber) {
     pullRequestNumber = userDefinedPrNumber;
   }
 
