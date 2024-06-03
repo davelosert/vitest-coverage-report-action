@@ -47,6 +47,8 @@ const run = async () => {
 		.addRaw(`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a></em>`)
 
 	let processedPrNumber: number | undefined = Number(prNumber);
+	core.info(`Received pull-request number: ${prNumber}`);
+
 	if (!Number.isSafeInteger(processedPrNumber) || processedPrNumber <= 0) {
 		processedPrNumber = undefined;
 	}

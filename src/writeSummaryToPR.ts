@@ -20,6 +20,7 @@ const writeSummaryToPR = async ({ summary, markerPostfix, userDefinedPrNumber }:
   }
 
   if (!pullRequestNumber && userDefinedPrNumber) {
+    core.info(`User-defined pull-request number: ${userDefinedPrNumber}`);
     pullRequestNumber = userDefinedPrNumber;
   }
 
