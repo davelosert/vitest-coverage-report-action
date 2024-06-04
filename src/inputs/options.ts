@@ -22,7 +22,16 @@ async function readOptions() {
 	}
 
 	const name = core.getInput('name');
+
+	// Get the user-defined pull-request number and perform input validation
 	const prNumber = core.getInput('pr-number');
+	let processedPrNumber: number | undefined = Number(prNumber);
+	if (!Number.isSafeInteger(processedPrNumber) || processedPrNumber <= 0) {
+		processedPrNumber = undefined;
+	}
+	if (processedPrNumber) {
+		core.info(`Received pull-request number: ${processedPrNumber}`);
+	}
 
 	// ViteConfig is optional, as it is only required for thresholds. If no vite config is provided, we will not include thresholds in the final report.
 	const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
@@ -36,7 +45,7 @@ async function readOptions() {
 		name,
 		thresholds,
 		workingDirectory,
-		prNumber,
+		processedPrNumber,
 	}
 }
 

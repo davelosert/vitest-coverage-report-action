@@ -11,17 +11,17 @@ const writeSummaryToPR = async ({ summary, markerPostfix, userDefinedPrNumber }:
   markerPostfix?: string;
   userDefinedPrNumber?: number;
 }) => {
-  // If in the context of a pull-request, get the pull-request number
-  let pullRequestNumber = github.context.payload.pull_request?.number;
+  // The user-defined pull request number takes precedence
+  let pullRequestNumber = userDefinedPrNumber;
 
-  // This is to allow commenting on pull_request from forks
-  if (github.context.eventName === 'workflow_run') {
-    pullRequestNumber = await getPullRequestNumberFromTriggeringWorkflow(octokit);
-  }
+  if (!pullRequestNumber) {
+    // If in the context of a pull-request, get the pull-request number
+    pullRequestNumber = github.context.payload.pull_request?.number;
 
-  if (!pullRequestNumber && userDefinedPrNumber) {
-    core.info(`User-defined pull-request number: ${userDefinedPrNumber}`);
-    pullRequestNumber = userDefinedPrNumber;
+    // This is to allow commenting on pull_request from forks
+    if (github.context.eventName === 'workflow_run') {
+      pullRequestNumber = await getPullRequestNumberFromTriggeringWorkflow(octokit);
+    }
   }
 
   if (!pullRequestNumber) {
