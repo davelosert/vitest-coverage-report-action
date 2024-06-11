@@ -18,13 +18,14 @@ const run = async () => {
 		jsonSummaryComparePath,
 		name,
 		thresholds,
-		workingDirectory
+		workingDirectory,
+		processedPrNumber
 	} = await readOptions();
 
 	const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
-  
+
 	let jsonSummaryCompare;
-	if(jsonSummaryComparePath) {
+	if (jsonSummaryComparePath) {
 		jsonSummaryCompare = await parseVitestJsonSummary(jsonSummaryComparePath);
 	}
 
@@ -48,7 +49,8 @@ const run = async () => {
 	try {
 		await writeSummaryToPR({
 			summary,
-			markerPostfix: getMarkerPostfix({ name, workingDirectory })
+			markerPostfix: getMarkerPostfix({ name, workingDirectory }),
+			userDefinedPrNumber: processedPrNumber
 		});
 	} catch (error) {
 		if (error instanceof RequestError && (error.status === 404 || error.status === 403)) {

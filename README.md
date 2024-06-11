@@ -85,6 +85,7 @@ This action requires the `pull-request: write` permission to add a comment to yo
 | `file-coverage-mode`        | Defines how file-based coverage is reported. Possible values are `all`, `changes` or `none`.                                                                               | `changes`                                                                     |
 | `name`                      | Give the report a custom name. This is useful if you want multiple reports for different test suites within the same PR. Needs to be unique.                               | ''                                                                            |
 | `json-summary-compare-path` | The path to the json summary file to compare against. If given, will display a trend indicator and the difference in the summary. Respects the `working-directory` option. | undefined                                                                     |
+| `pr-number`                 | The number of the PR to post a comment to (if any)                                                                                                                             | If in the context of a PR, the number of that PR.<br/> If in the context of a triggered workflow, the PR of the triggering workflow.                                                                    <br/>If no PR context is found, it defaults to `undefined` |
 
 #### File Coverage Mode
 

@@ -15,18 +15,28 @@ async function readOptions() {
 	const jsonFinalPath = path.resolve(workingDirectory, core.getInput('json-final-path'));
 
 
-  const jsonSummaryCompareInput = core.getInput('json-summary-compare-path');
+	const jsonSummaryCompareInput = core.getInput('json-summary-compare-path');
 	let jsonSummaryComparePath;
-	if(jsonSummaryCompareInput) {
+	if (jsonSummaryCompareInput) {
 		jsonSummaryComparePath = path.resolve(workingDirectory, jsonSummaryCompareInput);
 	}
 
 	const name = core.getInput('name');
 
-  // ViteConfig is optional, as it is only required for thresholds. If no vite config is provided, we will not include thresholds in the final report.
+	// Get the user-defined pull-request number and perform input validation
+	const prNumber = core.getInput('pr-number');
+	let processedPrNumber: number | undefined = Number(prNumber);
+	if (!Number.isSafeInteger(processedPrNumber) || processedPrNumber <= 0) {
+		processedPrNumber = undefined;
+	}
+	if (processedPrNumber) {
+		core.info(`Received pull-request number: ${processedPrNumber}`);
+	}
+
+	// ViteConfig is optional, as it is only required for thresholds. If no vite config is provided, we will not include thresholds in the final report.
 	const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
 	const thresholds = viteConfigPath ? await parseCoverageThresholds(viteConfigPath) : {};
-	
+
 	return {
 		fileCoverageMode,
 		jsonFinalPath,
@@ -35,6 +45,7 @@ async function readOptions() {
 		name,
 		thresholds,
 		workingDirectory,
+		processedPrNumber,
 	}
 }
 
