@@ -10,6 +10,9 @@ const testFilePath = async (workingDirectory: string, filePath: string) => {
 };
 
 const defaultPaths = [
+  "vitest.config.ts",
+  "vitest.config.mts",
+  "vitest.config.cts",
   "vitest.config.js",
   "vitest.config.mjs",
   "vitest.config.cjs",
