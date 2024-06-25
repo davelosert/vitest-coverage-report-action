@@ -10,15 +10,6 @@ const testFilePath = async (workingDirectory: string, filePath: string) => {
 };
 
 const defaultPaths = [
-  "vitest.config.ts",
-  "vitest.config.mts",
-  "vitest.config.cts",
-  "vitest.config.js",
-  "vitest.config.mjs",
-  "vitest.config.cjs",
-  "vitest.config.ts",
-  "vitest.config.mts",
-  "vitest.config.cts",
   "vitest.config.js",
   "vitest.config.mjs",
   "vitest.config.cjs",
@@ -28,6 +19,15 @@ const defaultPaths = [
   "vite.config.js",
   "vite.config.mjs",
   "vite.config.cjs",
+  "vitest.workspace.ts",
+  "vitest.workspace.mts",
+  "vitest.workspace.cts",
+  "vitest.workspace.js",
+  "vitest.workspace.mjs",
+  "vitest.workspace.cjs",
+  "vitest.workspace.ts",
+  "vitest.workspace.mts",
+  "vitest.workspace.cts",
 ];
 
 const getViteConfigPath = async (workingDirectory: string, input: string) => {
