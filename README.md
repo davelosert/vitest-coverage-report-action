@@ -36,13 +36,13 @@ Then execute `npx vitest --coverage.enabled true` in a step before this action.
 
 ```yml
 name: 'Test'
-on:
+on: 
   pull_request:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    
     permissions:
       # Required to checkout the code
       contents: read
@@ -62,7 +62,7 @@ jobs:
     - name: 'Report Coverage'
       # Set if: always() to also generate the report if tests are failing
       # Only works if you set `reportOnFailure: true` in your vite config as specified above
-      if: always()
+      if: always() 
       uses:  davelosert/vitest-coverage-report-action@v2
 ```
 
