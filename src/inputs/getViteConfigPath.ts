@@ -28,9 +28,6 @@ const defaultPaths = [
   "vitest.workspace.js",
   "vitest.workspace.mjs",
   "vitest.workspace.cjs",
-  "vitest.workspace.ts",
-  "vitest.workspace.mts",
-  "vitest.workspace.cts",
 ];
 
 const getViteConfigPath = async (workingDirectory: string, input: string) => {
