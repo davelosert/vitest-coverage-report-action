@@ -34,4 +34,10 @@ describe("getViteConfigPath", () => {
     const warningMessage = vi.mocked(core.warning).mock.calls[0][0];
     expect(warningMessage).toContain(`${mockWorkingDirectory}/doesNotExist`);
   });
+
+  it("resolves Vitest workspace file", async (): Promise<void> => {
+    await expect(
+      getViteConfigPath(mockWorkingDirectory, "vitest.workspace.js")
+    ).resolves.toMatch('test/mockConfig/vitest.workspace.js');
+  });
 });

@@ -22,6 +22,12 @@ const defaultPaths = [
   "vite.config.js",
   "vite.config.mjs",
   "vite.config.cjs",
+  "vitest.workspace.ts",
+  "vitest.workspace.mts",
+  "vitest.workspace.cts",
+  "vitest.workspace.js",
+  "vitest.workspace.mjs",
+  "vitest.workspace.cjs",
 ];
 
 const getViteConfigPath = async (workingDirectory: string, input: string) => {
@@ -39,9 +45,9 @@ const getViteConfigPath = async (workingDirectory: string, input: string) => {
       : `any default location in "${workingDirectory}"`;
 
     core.warning(stripIndent`
-          Failed to read vite config file at ${searchPath}. 
+          Failed to read vite config file at ${searchPath}.
           Make sure you provide the vite-config-path option if you're using a non-default location or name of your config file.
-          
+
           Will not include thresholds in the final report.
       `);
     return null;
