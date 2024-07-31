@@ -104,3 +104,6 @@ typings/
 
 !test/mockReports/coverage
 tmp
+
+# IntelliJ Files
+.idea
