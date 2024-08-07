@@ -1,16 +1,25 @@
 import { createJsonFinalEntry } from '../types/JsonFinalMockFactory';
 import { generateFileCoverageHtml } from './generateFileCoverageHtml';
 import { getTableLine } from '../../test/queryHelper';
-import { JsonFinal } from '../types/JsonFinal';
-import { JsonSummary } from '../types/JsonSummary';
+import type { JsonFinal } from '../types/JsonFinal';
+import type { JsonSummary } from '../types/JsonSummary';
 import { createMockCoverageReport, createMockJsonSummary, createMockReportNumbers } from '../types/JsonSummaryMockFactory';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { FileCoverageMode } from '../inputs/FileCoverageMode';
 import * as path from 'path';
 
 const workspacePath = process.cwd();
 describe('generateFileCoverageHtml()', () => {
-	it('renderes only the unchanged files if no changed files exist.', () => {
+	beforeEach(() => {
+		vi.stubEnv('GITHUB_REPOSITORY', 'owner/repo');
+	});
+	
+	afterEach(() => {
+		vi.unstubAllEnvs();
+		vi.clearAllMocks();
+	});
+
+	it('renders only the unchanged files if no changed files exist.', () => {
 		const jsonSummary: JsonSummary = createMockJsonSummary({
 			'src/generateFileCoverageHtml.ts': createMockCoverageReport(),
 		});
