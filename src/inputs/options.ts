@@ -3,6 +3,8 @@ import { getCoverageModeFrom } from './FileCoverageMode';
 import * as path from 'node:path';
 import { getViteConfigPath } from './getViteConfigPath';
 import { parseCoverageThresholds } from './parseCoverageThresholds';
+import { parseViteConfigReporters } from "./parseViteConfigReporters";
+
 
 async function readOptions() {
 	// Working directory can be used to modify all default/provided paths (for monorepos, etc)
@@ -36,6 +38,7 @@ async function readOptions() {
 	// ViteConfig is optional, as it is only required for thresholds. If no vite config is provided, we will not include thresholds in the final report.
 	const viteConfigPath = await getViteConfigPath(workingDirectory, core.getInput("vite-config-path"));
 	const thresholds = viteConfigPath ? await parseCoverageThresholds(viteConfigPath) : {};
+	const providers = viteConfigPath ? await parseViteConfigReporters(viteConfigPath) : [];
 
 	return {
 		fileCoverageMode,
