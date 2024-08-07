@@ -8,6 +8,9 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage.enabled true",
     "test:export": "npx ts-node test/exportTestTable.ts",
+    "lint": "biome check",
+    "lint:write": "biome check --write",
+    "lint:ci": "biome ci",
     "build": "rm -rf dist && node esbuild.cjs",
     "start": "npm run build && node dist/index.js",
     "typecheck": "npx tsc --noEmit"
@@ -33,6 +36,7 @@
     "common-tags": "1.8.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.8.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/github": "10.1.3",
