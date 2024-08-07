@@ -1,37 +1,38 @@
 type StatementMap = {
-  [statementNumber: string]: {
-      "start": {
-        "line": number,
-        "column": number
-      },
-      "end": {
-        "line": number,
-        "column": number
-      }
-  }
+	[statementNumber: string]: {
+		start: {
+			line: number;
+			column: number;
+		};
+		end: {
+			line: number;
+			column: number;
+		};
+	};
 };
 
-type StatementCoverage =  {
-  [statementNumber: string]: number
+type StatementCoverage = {
+	[statementNumber: string]: number;
 };
 
 type StatementCoverageReport = {
-  statementMap: StatementMap,
-  s: StatementCoverage
+	statementMap: StatementMap;
+	s: StatementCoverage;
 };
 
 type FileCoverageReport = StatementCoverageReport & {
-  path: string;
-  all: boolean;
+	path: string;
+	all: boolean;
 };
 
 type JsonFinal = {
-  [path: string]: FileCoverageReport
-}
+	[path: string]: FileCoverageReport;
+};
 
 export type {
-  JsonFinal,
-  FileCoverageReport,
-  StatementCoverageReport,
-  StatementMap
+	JsonFinal,
+	FileCoverageReport,
+	StatementCoverageReport,
+	StatementCoverage,
+	StatementMap,
 };

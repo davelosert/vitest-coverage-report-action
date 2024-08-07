@@ -1,40 +1,36 @@
-import { StatementCoverageReport } from '../types/JsonFinal';
+import type { StatementCoverageReport } from "../types/JsonFinal";
 
 type LineRange = {
-  start: number,
-  end: number
+	start: number;
+	end: number;
 };
 
-const getUncoveredLinesFromStatements = ({ s, statementMap }: StatementCoverageReport): LineRange[] => {
-  const keys = Object.keys(statementMap);
-  
-  const uncoveredLineRanges = keys.reduce<LineRange[]>((acc, key) => {
-    if(s[key] === 0) {
-      const lastRange = acc.at(-1);
+const getUncoveredLinesFromStatements = ({
+	s,
+	statementMap,
+}: StatementCoverageReport): LineRange[] => {
+	const keys = Object.keys(statementMap);
 
-      if(lastRange && lastRange.end === statementMap[key].start.line - 1) {
-         lastRange.end = statementMap[key].end.line;
-         return acc;
-      }
-      
-      return [
-        ...acc, 
-        {
-          start: statementMap[key].start.line,
-          end: statementMap[key].end.line
-        }
-    ]
-    }
-    return acc;
-  }, [])
+	const uncoveredLineRanges = keys.reduce<LineRange[]>((acc, key) => {
+		if (s[key] === 0) {
+			const lastRange = acc.at(-1);
 
-  return uncoveredLineRanges;
-}
+			if (lastRange && lastRange.end === statementMap[key].start.line - 1) {
+				lastRange.end = statementMap[key].end.line;
+				return acc;
+			}
 
-export {
-  getUncoveredLinesFromStatements
+			acc.push({
+				start: statementMap[key].start.line,
+				end: statementMap[key].end.line,
+			});
+		}
+		return acc;
+	}, []);
+
+	return uncoveredLineRanges;
 };
 
-export type {
-	LineRange
-};
+export { getUncoveredLinesFromStatements };
+
+export type { LineRange };
