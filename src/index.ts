@@ -13,8 +13,11 @@ import { generateHeadline } from "./report/generateHeadline.js";
 import { generateSummaryTableHtml } from "./report/generateSummaryTableHtml.js";
 import type { JsonSummary } from "./types/JsonSummary.js";
 import { writeSummaryToPR } from "./writeSummaryToPR.js";
+import { createOctokit } from './octokit.js';
 
 const run = async () => {
+	const octokit = createOctokit();
+
 	const {
 		fileCoverageMode,
 		jsonFinalPath,
@@ -23,8 +26,8 @@ const run = async () => {
 		name,
 		thresholds,
 		workingDirectory,
-		processedPrNumber,
-	} = await readOptions();
+		prNumber,
+	} = await readOptions(octokit);
 
 	const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
 
@@ -63,9 +66,10 @@ const run = async () => {
 
 	try {
 		await writeSummaryToPR({
+			octokit,
 			summary,
 			markerPostfix: getMarkerPostfix({ name, workingDirectory }),
-			userDefinedPrNumber: processedPrNumber,
+			prNumber,
 		});
 	} catch (error) {
 		if (
