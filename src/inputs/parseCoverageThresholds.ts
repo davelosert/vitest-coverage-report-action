@@ -43,7 +43,7 @@ const parseCoverageThresholds = async (
 		};
 	} catch (err: unknown) {
 		core.warning(
-			`Could not read vite config file for tresholds due to an error:\n ${err}`,
+			`Could not read vite config file for thresholds due to an error:\n ${err}`,
 		);
 		return {};
 	}
