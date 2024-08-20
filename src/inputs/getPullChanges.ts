@@ -5,21 +5,25 @@ import { FileCoverageMode } from "./FileCoverageMode";
 
 type Octokit = ReturnType<typeof github.getOctokit>;
 
-export async function getPullChanges(
-	fileCoverageMode: FileCoverageMode,
-): Promise<string[]> {
+interface Params {
+	fileCoverageMode: FileCoverageMode;
+	prNumber?: number;
+}
+
+export async function getPullChanges({
+	fileCoverageMode,
+	prNumber = github.context.payload.pull_request?.number,
+}: Params): Promise<string[]> {
 	// Skip Changes collection if we don't need it
 	if (fileCoverageMode === FileCoverageMode.None) {
 		return [];
 	}
 
-	// Skip Changes collection if we can't do it
-	if (!github.context.payload?.pull_request) {
+	if (!prNumber) {
 		return [];
 	}
 
 	const gitHubToken = core.getInput("github-token").trim();
-	const prNumber = github.context.payload.pull_request.number;
 	try {
 		const octokit: Octokit = github.getOctokit(gitHubToken);
 		const paths: string[] = [];
