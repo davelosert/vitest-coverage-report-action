@@ -14,6 +14,7 @@ type FileCoverageInputs = {
 	jsonFinal: JsonFinal;
 	fileCoverageMode: FileCoverageMode;
 	pullChanges: string[];
+	commitSHA: string;
 };
 
 const workspacePath = process.cwd();
@@ -22,6 +23,7 @@ const generateFileCoverageHtml = ({
 	jsonFinal,
 	fileCoverageMode,
 	pullChanges,
+	commitSHA,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
 
@@ -34,7 +36,7 @@ const generateFileCoverageHtml = ({
 			? getUncoveredLinesFromStatements(jsonFinal[filePath])
 			: [];
 		const relativeFilePath = path.relative(workspacePath, filePath);
-		const url = generateBlobFileUrl(relativeFilePath);
+		const url = generateBlobFileUrl(relativeFilePath, commitSHA);
 
 		return `
       <tr>

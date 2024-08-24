@@ -87,6 +87,4 @@ async function findPullRequest(octokit: Octokit, headSha: string) {
 	return undefined;
 }
 
-export {
-	getPullRequestNumberFromTriggeringWorkflow,
-};
+export { getPullRequestNumberFromTriggeringWorkflow };
