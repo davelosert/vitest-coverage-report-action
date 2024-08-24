@@ -1,12 +1,12 @@
 import * as path from "node:path";
 import * as core from "@actions/core";
 import * as github from "@actions/github";
+import type { Octokit } from "../octokit";
+import type { Thresholds } from "../types/Threshold";
 import { type FileCoverageMode, getCoverageModeFrom } from "./FileCoverageMode";
+import { getPullRequestNumberFromTriggeringWorkflow } from "./getPullRequestNumber";
 import { getViteConfigPath } from "./getViteConfigPath";
 import { parseCoverageThresholds } from "./parseCoverageThresholds";
-import type { Thresholds } from "../types/Threshold";
-import type { Octokit } from "../octokit";
-import { getPullRequestNumberFromTriggeringWorkflow } from "./getPullRequerstNumber";
 
 type Options = {
 	fileCoverageMode: FileCoverageMode;
@@ -17,6 +17,7 @@ type Options = {
 	thresholds: Thresholds;
 	workingDirectory: string;
 	prNumber: number | undefined;
+	commitSHA: string;
 };
 
 async function readOptions(octokit: Octokit): Promise<Options> {
@@ -47,9 +48,6 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 
 	const name = core.getInput("name");
 
-	// Get the user-defined pull-request number and perform input validation
-	const prNumber = await getPrNumber(octokit);
-
 	// ViteConfig is optional, as it is only required for thresholds. If no vite config is provided, we will not include thresholds in the final report.
 	const viteConfigPath = await getViteConfigPath(
 		workingDirectory,
@@ -60,6 +58,10 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		? await parseCoverageThresholds(viteConfigPath)
 		: {};
 
+	// Get the user-defined pull-request number and perform input validation
+	const prNumber = await getPrNumber(octokit);
+	const commitSHA = getCommitSHA();
+
 	return {
 		fileCoverageMode,
 		jsonFinalPath,
@@ -69,6 +71,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		thresholds,
 		workingDirectory,
 		prNumber,
+		commitSHA,
 	};
 }
 
@@ -86,19 +89,35 @@ async function getPrNumber(octokit: Octokit) {
 		core.info(`Received pull-request number: ${processedPrNumber}`);
 	}
 
-	if(github.context.payload.pull_request) {
+	if (github.context.payload.pull_request) {
 		return github.context.payload.pull_request.number;
 	}
 
-	if(github.context.eventName === "workflow_run") {
+	if (github.context.eventName === "workflow_run") {
 		// Workflow_runs triggered from non-forked PRs will have the PR number in the payload
-		if(github.context.payload.workflow_run.pull_requests.length > 0) {
+		if (github.context.payload.workflow_run.pull_requests.length > 0) {
 			return github.context.payload.workflow_run.pull_requests[0].number;
 		}
 
 		// ... in all other cases, we have to call the API to get a matching PR number
 		return await getPullRequestNumberFromTriggeringWorkflow(octokit);
 	}
+}
+
+function getCommitSHA(): string {
+	if (
+		github.context.eventName === "pull_request" ||
+		github.context.eventName === "pull_request_target" ||
+		github.context.eventName === "push"
+	) {
+		return github.context.sha;
+	}
+
+	if (github.context.eventName === "workflow_run") {
+		return github.context.payload.workflow_run.head_commit.id;
+	}
+
+	return github.context.sha;
 }
 
 export { readOptions };

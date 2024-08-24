@@ -8,12 +8,12 @@ import {
 	parseVitestJsonFinal,
 	parseVitestJsonSummary,
 } from "./inputs/parseJsonReports.js";
+import { createOctokit } from "./octokit.js";
 import { generateFileCoverageHtml } from "./report/generateFileCoverageHtml.js";
 import { generateHeadline } from "./report/generateHeadline.js";
 import { generateSummaryTableHtml } from "./report/generateSummaryTableHtml.js";
 import type { JsonSummary } from "./types/JsonSummary.js";
 import { writeSummaryToPR } from "./writeSummaryToPR.js";
-import { createOctokit } from './octokit.js';
 
 const run = async () => {
 	const octokit = createOctokit();
@@ -27,6 +27,7 @@ const run = async () => {
 		thresholds,
 		workingDirectory,
 		prNumber,
+		commitSHA,
 	} = await readOptions(octokit);
 
 	const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
@@ -41,6 +42,7 @@ const run = async () => {
 		thresholds,
 		jsonSummaryCompare?.total,
 	);
+
 	const summary = core.summary
 		.addHeading(generateHeadline({ workingDirectory, name }), 2)
 		.addRaw(tableData);
@@ -48,20 +50,23 @@ const run = async () => {
 	if (fileCoverageMode !== FileCoverageMode.None) {
 		const pullChanges = await getPullChanges({
 			fileCoverageMode,
-			prNumber: processedPrNumber,
+			prNumber,
 		});
+
 		const jsonFinal = await parseVitestJsonFinal(jsonFinalPath);
 		const fileTable = generateFileCoverageHtml({
 			jsonSummary,
 			jsonFinal,
 			fileCoverageMode,
 			pullChanges,
+			commitSHA,
 		});
 		summary.addDetails("File Coverage", fileTable);
 	}
 
 	summary.addRaw(
-		`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a></em>`,
+		`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a> for commit ${commitSHA.substring(0, 7)} by the <a href="https://github.com/davelosert/vitest-coverage-report-action">Vitest Coverage Report Action</a></em>
+		`,
 	);
 
 	try {
