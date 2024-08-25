@@ -80,8 +80,9 @@ async function getPrNumber(octokit: Octokit): Promise<number | undefined> {
 	const prNumberFromInput = core.getInput("pr-number");
 	const processedPrNumber: number | undefined = Number(prNumberFromInput);
 
-	// The user defined Number will always take precedence
-	if (Number.isSafeInteger(processedPrNumber) && processedPrNumber <= 0) {
+	// Check if it is a full integer. Check for non-null as qhen the option is not set, the parsed input will be an empty string 
+	// which becomes 0 when parsed to a number.
+	if (Number.isSafeInteger(processedPrNumber) && processedPrNumber !== 0) {
 		core.debug(`Received pull-request number: ${processedPrNumber}`);
 		return processedPrNumber;
 	}
