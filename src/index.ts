@@ -14,6 +14,7 @@ import { generateHeadline } from "./report/generateHeadline.js";
 import { generateSummaryTableHtml } from "./report/generateSummaryTableHtml.js";
 import type { JsonSummary } from "./types/JsonSummary.js";
 import { writeSummaryToPR } from "./writeSummaryToPR.js";
+import { generateCommitSHAUrl } from "./report/generateCommitSHAUrl.js";
 
 const run = async () => {
 	const octokit = createOctokit();
@@ -30,12 +31,6 @@ const run = async () => {
 		);
 	}
 
-	const tableData = generateSummaryTableHtml(
-		jsonSummary.total,
-		options.thresholds,
-		jsonSummaryCompare?.total,
-	);
-
 	const summary = core.summary
 		.addHeading(
 			generateHeadline({
@@ -44,13 +39,19 @@ const run = async () => {
 			}),
 			2,
 		)
-		.addRaw(tableData);
+		.addRaw(
+			generateSummaryTableHtml(
+				jsonSummary.total,
+				options.thresholds,
+				jsonSummaryCompare?.total,
+			),
+		);
 
 	if (options.fileCoverageMode !== FileCoverageMode.None) {
 		const pullChanges = await getPullChanges({
 			fileCoverageMode: options.fileCoverageMode,
 			prNumber: options.prNumber,
-			octokit
+			octokit,
 		});
 
 		const jsonFinal = await parseVitestJsonFinal(options.jsonFinalPath);
@@ -64,9 +65,10 @@ const run = async () => {
 		summary.addDetails("File Coverage", fileTable);
 	}
 
+	const commitSHAUrl = generateCommitSHAUrl(options.commitSHA);
+
 	summary.addRaw(
-		`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a> for commit ${options.commitSHA.substring(0, 7)} by the <a href="https://github.com/davelosert/vitest-coverage-report-action">Vitest Coverage Report Action</a></em>
-			`,
+		`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a> for commit <a href="${commitSHAUrl}">${options.commitSHA.substring(0, 7)}</a> by the <a href="https://github.com/davelosert/vitest-coverage-report-action">Vitest Coverage Report Action</a></em>`,
 	);
 
 	try {
