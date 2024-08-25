@@ -50,6 +50,7 @@ const run = async () => {
 		const pullChanges = await getPullChanges({
 			fileCoverageMode: options.fileCoverageMode,
 			prNumber: options.prNumber,
+			octokit
 		});
 
 		const jsonFinal = await parseVitestJsonFinal(options.jsonFinalPath);
