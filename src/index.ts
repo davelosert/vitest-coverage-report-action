@@ -18,63 +18,65 @@ import { writeSummaryToPR } from "./writeSummaryToPR.js";
 const run = async () => {
 	const octokit = createOctokit();
 
-	const {
-		fileCoverageMode,
-		jsonFinalPath,
-		jsonSummaryPath,
-		jsonSummaryComparePath,
-		name,
-		thresholds,
-		workingDirectory,
-		prNumber,
-		commitSHA,
-	} = await readOptions(octokit);
+	const options = await readOptions(octokit);
+	core.info(`Using options: ${JSON.stringify(options, null, 2)}`);
 
-	const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
+	const jsonSummary = await parseVitestJsonSummary(options.jsonSummaryPath);
 
 	let jsonSummaryCompare: JsonSummary | undefined;
-	if (jsonSummaryComparePath) {
-		jsonSummaryCompare = await parseVitestJsonSummary(jsonSummaryComparePath);
+	if (options.jsonSummaryComparePath) {
+		jsonSummaryCompare = await parseVitestJsonSummary(
+			options.jsonSummaryComparePath,
+		);
 	}
 
 	const tableData = generateSummaryTableHtml(
 		jsonSummary.total,
-		thresholds,
+		options.thresholds,
 		jsonSummaryCompare?.total,
 	);
 
 	const summary = core.summary
-		.addHeading(generateHeadline({ workingDirectory, name }), 2)
+		.addHeading(
+			generateHeadline({
+				workingDirectory: options.workingDirectory,
+				name: options.name,
+			}),
+			2,
+		)
 		.addRaw(tableData);
 
-	if (fileCoverageMode !== FileCoverageMode.None) {
+	if (options.fileCoverageMode !== FileCoverageMode.None) {
 		const pullChanges = await getPullChanges({
-			fileCoverageMode,
-			prNumber,
+			fileCoverageMode: options.fileCoverageMode,
+			prNumber: options.prNumber,
 		});
 
-		const jsonFinal = await parseVitestJsonFinal(jsonFinalPath);
+		const jsonFinal = await parseVitestJsonFinal(options.jsonFinalPath);
 		const fileTable = generateFileCoverageHtml({
 			jsonSummary,
 			jsonFinal,
-			fileCoverageMode,
+			fileCoverageMode: options.fileCoverageMode,
 			pullChanges,
-			commitSHA,
+			commitSHA: options.commitSHA,
 		});
 		summary.addDetails("File Coverage", fileTable);
 	}
 
 	summary.addRaw(
-		`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a> for commit ${commitSHA.substring(0, 7)} by the <a href="https://github.com/davelosert/vitest-coverage-report-action">Vitest Coverage Report Action</a></em>
-		`,
+		`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a> for commit ${options.commitSHA.substring(0, 7)} by the <a href="https://github.com/davelosert/vitest-coverage-report-action">Vitest Coverage Report Action</a></em>
+			`,
 	);
 
 	try {
 		await writeSummaryToPR({
 			octokit,
 			summary,
-			markerPostfix: getMarkerPostfix({ name, workingDirectory }),
-			prNumber,
+			markerPostfix: getMarkerPostfix({
+				name: options.name,
+				workingDirectory: options.workingDirectory,
+			}),
+			prNumber: options.prNumber,
 		});
 	} catch (error) {
 		if (
@@ -83,8 +85,8 @@ const run = async () => {
 		) {
 			core.warning(
 				`Couldn't write a comment to the pull-request. Please make sure your job has the permission 'pull-request: write'.
-				 Original Error was: [${error.name}] - ${error.message}
-				`,
+							 Original Error was: [${error.name}] - ${error.message}
+							`,
 			);
 		} else {
 			// Rethrow to handle it in the catch block of the run()-call.
