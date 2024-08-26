@@ -4,7 +4,7 @@ import * as github from "@actions/github";
 import type { Octokit } from "../octokit";
 import type { Thresholds } from "../types/Threshold";
 import { type FileCoverageMode, getCoverageModeFrom } from "./FileCoverageMode";
-import { getPullRequestNumberFromTriggeringWorkflow } from "./getPullRequestNumber";
+import { getPullRequestNumber } from "./getPullRequestNumber";
 import { getViteConfigPath } from "./getViteConfigPath";
 import { parseCoverageThresholds } from "./parseCoverageThresholds";
 
@@ -58,9 +58,9 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		? await parseCoverageThresholds(viteConfigPath)
 		: {};
 
-	// Get the user-defined pull-request number and perform input validation
-	const prNumber = await getPrNumber(octokit);
 	const commitSHA = getCommitSHA();
+	// Get the user-defined pull-request number and perform input validation
+	const prNumber = await getPullRequestNumber(octokit);
 
 	return {
 		fileCoverageMode,
@@ -73,45 +73,6 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		prNumber,
 		commitSHA,
 	};
-}
-
-async function getPrNumber(octokit: Octokit): Promise<number | undefined> {
-	// Get the user-defined pull-request number and perform input validation
-	const prNumberFromInput = core.getInput("pr-number");
-	const processedPrNumber: number | undefined = Number(prNumberFromInput);
-
-	// Check if it is a full integer. Check for non-null as qhen the option is not set, the parsed input will be an empty string 
-	// which becomes 0 when parsed to a number.
-	if (Number.isSafeInteger(processedPrNumber) && processedPrNumber !== 0) {
-		core.debug(`Received pull-request number: ${processedPrNumber}`);
-		return processedPrNumber;
-	}
-
-	if (github.context.payload.pull_request) {
-		core.debug(
-			`Found pull-request number in payload.pull_request context: ${github.context.payload.pull_request.number}`,
-		);
-		return github.context.payload.pull_request.number;
-	}
-
-	if (github.context.eventName === "workflow_run") {
-		// Workflow_runs triggered from non-forked PRs will have the PR number in the payload
-		if (github.context.payload.workflow_run.pull_requests.length > 0) {
-			core.debug(
-				`Found pull-request number in payload.workflow_run context: ${github.context.payload.workflow_run.pull_requests[0].number}`,
-			);
-			return github.context.payload.workflow_run.pull_requests[0].number;
-		}
-
-		// ... in all other cases, we have to call the API to get a matching PR number
-		core.debug(
-			"Trying to find pull-request number in payload.workflow_run context by calling the API",
-		);
-		return await getPullRequestNumberFromTriggeringWorkflow(octokit);
-	}
-
-	core.debug("No pull-request number found.");
-	return undefined;
 }
 
 function getCommitSHA(): string {

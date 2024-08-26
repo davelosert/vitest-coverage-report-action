@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { generateCommitSHAUrl } from "./generateCommitSHAUrl";
 
 const mockContext = vi.hoisted(() => ({
@@ -6,7 +6,7 @@ const mockContext = vi.hoisted(() => ({
 		owner: "owner",
 		repo: "repo",
 	},
-  serverUrl: "https://github.com",
+	serverUrl: "https://github.com",
 	payload: {},
 }));
 vi.mock("@actions/github", () => ({

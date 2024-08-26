@@ -1,8 +1,8 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 import { RequestError } from "@octokit/request-error";
-import { FileCoverageMode } from "./FileCoverageMode";
 import type { Octokit } from "../octokit";
+import { FileCoverageMode } from "./FileCoverageMode";
 
 interface Params {
 	fileCoverageMode: FileCoverageMode;
@@ -13,7 +13,7 @@ interface Params {
 export async function getPullChanges({
 	fileCoverageMode,
 	prNumber,
-	octokit
+	octokit,
 }: Params): Promise<string[]> {
 	// Skip Changes collection if we don't need it
 	if (fileCoverageMode === FileCoverageMode.None) {

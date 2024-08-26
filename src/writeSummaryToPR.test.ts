@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, vi, Mock } from "vitest";
 import * as core from "@actions/core";
 import * as github from "@actions/github";
-import { writeSummaryToPR } from "./writeSummaryToPR";
+import { Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Octokit } from "./octokit";
+import { writeSummaryToPR } from "./writeSummaryToPR";
 
 vi.mock("@actions/core");
 

@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it, vi, Mock } from "vitest";
+import { Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import type { Octokit } from "../octokit";
 import { FileCoverageMode } from "./FileCoverageMode";
 import { getPullChanges } from "./getPullChanges";
-import type { Octokit } from "../octokit";
 
 // Avoid logs
 vi.mock("@actions/core");
