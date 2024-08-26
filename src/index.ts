@@ -9,12 +9,12 @@ import {
 	parseVitestJsonSummary,
 } from "./inputs/parseJsonReports.js";
 import { createOctokit } from "./octokit.js";
+import { generateCommitSHAUrl } from "./report/generateCommitSHAUrl.js";
 import { generateFileCoverageHtml } from "./report/generateFileCoverageHtml.js";
 import { generateHeadline } from "./report/generateHeadline.js";
 import { generateSummaryTableHtml } from "./report/generateSummaryTableHtml.js";
 import type { JsonSummary } from "./types/JsonSummary.js";
 import { writeSummaryToPR } from "./writeSummaryToPR.js";
-import { generateCommitSHAUrl } from "./report/generateCommitSHAUrl.js";
 
 const run = async () => {
 	const octokit = createOctokit();
