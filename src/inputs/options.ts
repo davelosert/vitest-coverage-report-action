@@ -1,12 +1,12 @@
 import * as path from "node:path";
 import * as core from "@actions/core";
-import * as github from "@actions/github";
 import type { Octokit } from "../octokit";
 import type { Thresholds } from "../types/Threshold";
 import { type FileCoverageMode, getCoverageModeFrom } from "./FileCoverageMode";
 import { getPullRequestNumber } from "./getPullRequestNumber";
 import { getViteConfigPath } from "./getViteConfigPath";
 import { parseCoverageThresholds } from "./parseCoverageThresholds";
+import { getCommitSHA } from "./getCommitSHA";
 
 type Options = {
 	fileCoverageMode: FileCoverageMode;
@@ -73,22 +73,6 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		prNumber,
 		commitSHA,
 	};
-}
-
-function getCommitSHA(): string {
-	if (
-		github.context.eventName === "pull_request" ||
-		github.context.eventName === "pull_request_target" ||
-		github.context.eventName === "push"
-	) {
-		return github.context.sha;
-	}
-
-	if (github.context.eventName === "workflow_run") {
-		return github.context.payload.workflow_run.head_commit.id;
-	}
-
-	return github.context.sha;
 }
 
 export { readOptions };
