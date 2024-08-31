@@ -70,3 +70,4 @@ jobs:
         with:
           file-coverage-mode: "all"
           json-summary-compare-path: coverage-main/coverage-summary.json
+          comment-on: 'commit'
