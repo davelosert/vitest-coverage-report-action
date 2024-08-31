@@ -14,6 +14,7 @@ import { generateFileCoverageHtml } from "./report/generateFileCoverageHtml.js";
 import { generateHeadline } from "./report/generateHeadline.js";
 import { generateSummaryTableHtml } from "./report/generateSummaryTableHtml.js";
 import type { JsonSummary } from "./types/JsonSummary.js";
+import { writeSummaryToCommit } from "./writeSummaryToComment.js";
 import { writeSummaryToPR } from "./writeSummaryToPR.js";
 
 const run = async () => {
@@ -72,22 +73,36 @@ const run = async () => {
 	);
 
 	try {
-		await writeSummaryToPR({
-			octokit,
-			summary,
-			markerPostfix: getMarkerPostfix({
-				name: options.name,
-				workingDirectory: options.workingDirectory,
-			}),
-			prNumber: options.prNumber,
-		});
+		if (options.commentOn === "pr") {
+			await writeSummaryToPR({
+				octokit,
+				summary,
+				markerPostfix: getMarkerPostfix({
+					name: options.name,
+					workingDirectory: options.workingDirectory,
+				}),
+				prNumber: options.prNumber,
+			});
+		}
+
+		if (options.commentOn === "commit") {
+			await writeSummaryToCommit({
+				octokit,
+				summary,
+				commitSha: options.commitSHA,
+			});
+		}
 	} catch (error) {
 		if (
 			error instanceof RequestError &&
 			(error.status === 404 || error.status === 403)
 		) {
+			const item = options.commentOn === "pr" ? "pull request" : "commit";
+			const requiredPermission =
+				options.commentOn === "pr" ? "pull-request: write" : "contents: read";
+
 			core.warning(
-				`Couldn't write a comment to the pull-request. Please make sure your job has the permission 'pull-request: write'.
+				`Couldn't write a comment to the ${item}. Please make sure your job has the permission '${requiredPermission}'.
 							 Original Error was: [${error.name}] - ${error.message}
 							`,
 			);

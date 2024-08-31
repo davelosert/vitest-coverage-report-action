@@ -3,10 +3,10 @@ import * as core from "@actions/core";
 import type { Octokit } from "../octokit";
 import type { Thresholds } from "../types/Threshold";
 import { type FileCoverageMode, getCoverageModeFrom } from "./FileCoverageMode";
+import { getCommitSHA } from "./getCommitSHA";
 import { getPullRequestNumber } from "./getPullRequestNumber";
 import { getViteConfigPath } from "./getViteConfigPath";
 import { parseCoverageThresholds } from "./parseCoverageThresholds";
-import { getCommitSHA } from "./getCommitSHA";
 
 type Options = {
 	fileCoverageMode: FileCoverageMode;
@@ -18,6 +18,7 @@ type Options = {
 	workingDirectory: string;
 	prNumber: number | undefined;
 	commitSHA: string;
+	commentOn: "pr" | "commit";
 };
 
 async function readOptions(octokit: Octokit): Promise<Options> {
@@ -48,6 +49,15 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 
 	const name = core.getInput("name");
 
+	let commentOn = core.getInput("comment-on") as Options["commentOn"];
+
+	if (commentOn !== "pr" && commentOn !== "commit") {
+		core.warning(
+			`Invalid option for comment-on: ${commentOn}. Falling back to default value "pr".`,
+		);
+		commentOn = "pr";
+	}
+
 	// ViteConfig is optional, as it is only required for thresholds. If no vite config is provided, we will not include thresholds in the final report.
 	const viteConfigPath = await getViteConfigPath(
 		workingDirectory,
@@ -72,6 +82,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		workingDirectory,
 		prNumber,
 		commitSHA,
+		commentOn,
 	};
 }
 
