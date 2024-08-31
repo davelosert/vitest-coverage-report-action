@@ -3,34 +3,70 @@ on:
   pull_request:
 
 jobs:
-  build-and-test:
+  test:
     permissions:
       pull-requests: write
+
+    strategy:
+      matrix:
+        branch:
+          - ${{ github.head_ref }}
+          - "main"
+
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+          ## Set repository to correctly checkout from forks
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: "Install Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+      - name: "Install Deps"
+        run: npm ci
+      - name: "Test"
+        run: npm run test:coverage
+      - name: "Upload Coverage"
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.branch }}
+          path: coverage
+
+  build-and-report:
+    runs-on: ubuntu-latest
+    needs: test
     steps:
       - uses: actions/checkout@v4
       - name: "Install Node"
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
+          cache: "npm"
       - name: "Install Deps"
-        run: npm install
+        run: npm ci
       - name: "Build"
         run: npm run build
-      - name: "Test"
-        run: npm run test:coverage
-        # Remove node_modules to see if this action runs entirely compiled
+      # Remove node_modules to see if this action runs entirely compiled
       - name: "Remove Node Modules"
         run: rm -rf node_modules
-      - name: "Test Working Directory Option"
-        uses: ./
+
+      - name: "Download Coverage Artifacts for ${{ github.head_ref}}"
+        uses: actions/download-artifact@v4
         with:
-          working-directory: "./test/mockReports"
-          name: "Mock Reports"
-      - name: "Test Default Action"
-        # run step also on failure of the previous step
-        if: always()
+          name: coverage-${{ github.head_ref }}
+          path: coverage 
+
+      - name: "Download Coverage Artifacts for main"
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-main
+          path: coverage-main
+
+      - name: "Test Action by genearting coverage"
         uses: ./
         with:
           file-coverage-mode: "all"
-          name: "Root"
+          json-summary-compare-path: coverage-main/coverage-summary.json

@@ -179,6 +179,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.branch }}
+          ## Set repository to correctly checkout from forks
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: "Install Node"
         uses: actions/setup-node@v4
         with:

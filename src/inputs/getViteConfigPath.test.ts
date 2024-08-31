@@ -37,7 +37,7 @@ describe("getViteConfigPath", () => {
 
 	it("resolves Vitest workspace file", async (): Promise<void> => {
 		await expect(
-			getViteConfigPath(mockWorkingDirectory, "vitest.workspace.js"),
-		).resolves.toMatch("test/mockConfig/vitest.workspace.js");
+			getViteConfigPath(mockWorkingDirectory, "vitest.mock.workspace.js"),
+		).resolves.toMatch("test/mockConfig/vitest.mock.workspace.js");
 	});
 });

@@ -8,6 +8,8 @@ import {
 	parseVitestJsonFinal,
 	parseVitestJsonSummary,
 } from "./inputs/parseJsonReports.js";
+import { createOctokit } from "./octokit.js";
+import { generateCommitSHAUrl } from "./report/generateCommitSHAUrl.js";
 import { generateFileCoverageHtml } from "./report/generateFileCoverageHtml.js";
 import { generateHeadline } from "./report/generateHeadline.js";
 import { generateSummaryTableHtml } from "./report/generateSummaryTableHtml.js";
@@ -15,57 +17,69 @@ import type { JsonSummary } from "./types/JsonSummary.js";
 import { writeSummaryToPR } from "./writeSummaryToPR.js";
 
 const run = async () => {
-	const {
-		fileCoverageMode,
-		jsonFinalPath,
-		jsonSummaryPath,
-		jsonSummaryComparePath,
-		name,
-		thresholds,
-		workingDirectory,
-		processedPrNumber,
-	} = await readOptions();
+	const octokit = createOctokit();
 
-	const jsonSummary = await parseVitestJsonSummary(jsonSummaryPath);
+	const options = await readOptions(octokit);
+	core.info(`Using options: ${JSON.stringify(options, null, 2)}`);
+
+	const jsonSummary = await parseVitestJsonSummary(options.jsonSummaryPath);
 
 	let jsonSummaryCompare: JsonSummary | undefined;
-	if (jsonSummaryComparePath) {
-		jsonSummaryCompare = await parseVitestJsonSummary(jsonSummaryComparePath);
+	if (options.jsonSummaryComparePath) {
+		jsonSummaryCompare = await parseVitestJsonSummary(
+			options.jsonSummaryComparePath,
+		);
 	}
 
-	const tableData = generateSummaryTableHtml(
-		jsonSummary.total,
-		thresholds,
-		jsonSummaryCompare?.total,
-	);
 	const summary = core.summary
-		.addHeading(generateHeadline({ workingDirectory, name }), 2)
-		.addRaw(tableData);
+		.addHeading(
+			generateHeadline({
+				workingDirectory: options.workingDirectory,
+				name: options.name,
+			}),
+			2,
+		)
+		.addRaw(
+			generateSummaryTableHtml(
+				jsonSummary.total,
+				options.thresholds,
+				jsonSummaryCompare?.total,
+			),
+		);
 
-	if (fileCoverageMode !== FileCoverageMode.None) {
+	if (options.fileCoverageMode !== FileCoverageMode.None) {
 		const pullChanges = await getPullChanges({
-			fileCoverageMode,
-			prNumber: processedPrNumber,
+			fileCoverageMode: options.fileCoverageMode,
+			prNumber: options.prNumber,
+			octokit,
 		});
-		const jsonFinal = await parseVitestJsonFinal(jsonFinalPath);
+
+		const jsonFinal = await parseVitestJsonFinal(options.jsonFinalPath);
 		const fileTable = generateFileCoverageHtml({
 			jsonSummary,
 			jsonFinal,
-			fileCoverageMode,
+			fileCoverageMode: options.fileCoverageMode,
 			pullChanges,
+			commitSHA: options.commitSHA,
 		});
 		summary.addDetails("File Coverage", fileTable);
 	}
 
+	const commitSHAUrl = generateCommitSHAUrl(options.commitSHA);
+
 	summary.addRaw(
-		`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a></em>`,
+		`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a> for commit <a href="${commitSHAUrl}">${options.commitSHA.substring(0, 7)}</a> by the <a href="https://github.com/davelosert/vitest-coverage-report-action">Vitest Coverage Report Action</a></em>`,
 	);
 
 	try {
 		await writeSummaryToPR({
+			octokit,
 			summary,
-			markerPostfix: getMarkerPostfix({ name, workingDirectory }),
-			userDefinedPrNumber: processedPrNumber,
+			markerPostfix: getMarkerPostfix({
+				name: options.name,
+				workingDirectory: options.workingDirectory,
+			}),
+			prNumber: options.prNumber,
 		});
 	} catch (error) {
 		if (
@@ -74,8 +88,8 @@ const run = async () => {
 		) {
 			core.warning(
 				`Couldn't write a comment to the pull-request. Please make sure your job has the permission 'pull-request: write'.
-				 Original Error was: [${error.name}] - ${error.message}
-				`,
+							 Original Error was: [${error.name}] - ${error.message}
+							`,
 			);
 		} else {
 			// Rethrow to handle it in the catch block of the run()-call.

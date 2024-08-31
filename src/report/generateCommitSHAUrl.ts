@@ -1,14 +1,13 @@
 import * as github from "@actions/github";
 
-const generateBlobFileUrl = (relativeFilePath: string, commitSHA: string) => {
+const generateCommitSHAUrl = (commitSHA: string) => {
 	return [
 		github.context.serverUrl,
 		github.context.repo.owner,
 		github.context.repo.repo,
-		"blob",
+		"commit",
 		commitSHA,
-		relativeFilePath,
 	].join("/");
 };
 
-export { generateBlobFileUrl };
+export { generateCommitSHAUrl };
