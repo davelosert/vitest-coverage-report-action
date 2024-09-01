@@ -38,7 +38,7 @@ inputs:
       default: ''
   comment-on:
     required: false
-    description: 'Select wether you want a comment to appear on the PR (if it exists) or on the commit. Uses "pr" by default.'
+    description: 'Specify where you want a comment to appear: "pr" for pull-request (if one can be found), "commit" for the commit in which context the action was run, or "none" for no comments. You can provide a comma-separated list of "pr" and "commit" to comment on both. Uses "pr" by default.'
     default: pr
 runs:
   using: 'node20'
