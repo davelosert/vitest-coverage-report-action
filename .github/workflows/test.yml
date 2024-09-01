@@ -32,7 +32,8 @@ jobs:
       - name: "Upload Coverage"
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-${{ matrix.branch }}
+          ## We can't use the branch name as it can contain invalid characters (e.g. dependatbot hast forwared slashes in it's branch name)
+          name: "coverage-${{ matrix.branch == 'main' && 'main' || 'test-branch' }}"
           path: coverage
 
   build-and-report:
@@ -56,7 +57,7 @@ jobs:
       - name: "Download Coverage Artifacts for ${{ github.head_ref}}"
         uses: actions/download-artifact@v4
         with:
-          name: coverage-${{ github.head_ref }}
+          name: coverage-test-branch
           path: coverage 
 
       - name: "Download Coverage Artifacts for main"
@@ -70,3 +71,4 @@ jobs:
         with:
           file-coverage-mode: "all"
           json-summary-compare-path: coverage-main/coverage-summary.json
+          comment-on: 'pr,commit'

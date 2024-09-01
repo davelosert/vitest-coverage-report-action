@@ -34,8 +34,12 @@ inputs:
       default: ''
   pr-number:
       required: false
-      description: 'An optional, user-defined pull request number.'
+      description: 'An optional, user-defined pull request number to comment on.'
       default: ''
+  comment-on:
+    required: false
+    description: 'Specify where you want a comment to appear: "pr" for pull-request (if one can be found), "commit" for the commit in which context the action was run, or "none" for no comments. You can provide a comma-separated list of "pr" and "commit" to comment on both. Uses "pr" by default.'
+    default: pr
 runs:
   using: 'node20'
   main: 'dist/index.js'

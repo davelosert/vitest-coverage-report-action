@@ -3,10 +3,11 @@ import * as core from "@actions/core";
 import type { Octokit } from "../octokit";
 import type { Thresholds } from "../types/Threshold";
 import { type FileCoverageMode, getCoverageModeFrom } from "./FileCoverageMode";
+import { getCommitSHA } from "./getCommitSHA";
 import { getPullRequestNumber } from "./getPullRequestNumber";
 import { getViteConfigPath } from "./getViteConfigPath";
 import { parseCoverageThresholds } from "./parseCoverageThresholds";
-import { getCommitSHA } from "./getCommitSHA";
+import { getCommentOn, type CommentOn } from "./getCommentOn";
 
 type Options = {
 	fileCoverageMode: FileCoverageMode;
@@ -18,6 +19,7 @@ type Options = {
 	workingDirectory: string;
 	prNumber: number | undefined;
 	commitSHA: string;
+	commentOn: Array<CommentOn>;
 };
 
 async function readOptions(octokit: Octokit): Promise<Options> {
@@ -48,6 +50,8 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 
 	const name = core.getInput("name");
 
+	const commentOn = getCommentOn();
+
 	// ViteConfig is optional, as it is only required for thresholds. If no vite config is provided, we will not include thresholds in the final report.
 	const viteConfigPath = await getViteConfigPath(
 		workingDirectory,
@@ -72,7 +76,10 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		workingDirectory,
 		prNumber,
 		commitSHA,
+		commentOn,
 	};
 }
 
 export { readOptions };
+
+export type { Options };
