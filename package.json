@@ -39,7 +39,7 @@
     "@biomejs/biome": "1.8.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
-    "@semantic-release/github": "10.3.0",
+    "@semantic-release/github": "10.3.3",
     "@types/common-tags": "1.8.4",
     "@types/node": "22.5.4",
     "@vitest/coverage-v8": "2.0.5",
