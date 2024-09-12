@@ -66,7 +66,7 @@ describe("getPullRequestNumber()", () => {
 		expect(result).toBe(123);
 	});
 
-	it("returns the PR number from payload.pull_request context if found", async () => {
+	it("in context of pull-request, returns the PR number from the payload.pull_request.", async () => {
 		mockContext.payload = {
 			pull_request: {
 				number: 456,
@@ -77,7 +77,7 @@ describe("getPullRequestNumber()", () => {
 		expect(result).toBe(456);
 	});
 
-	it("returns the PR number from payload.workflow_run context if found", async () => {
+	it("in context of a workflow_run, returns the PR number from payload.workflow_run if found", async () => {
 		mockContext.eventName = "workflow_run";
 		mockContext.payload = {
 			workflow_run: {
@@ -90,12 +90,30 @@ describe("getPullRequestNumber()", () => {
 		expect(result).toBe(789);
 	});
 
-	it("calls the API to find PR number by the head_sha of the payload.workflow_run when called from a fork", async () => {
+	it("in context of a workflow_run from a fork, calls the API to find PR number by the head_sha of the payload.workflow_run when called from a fork", async () => {
 		mockContext.eventName = "workflow_run";
 		mockContext.payload = {
 			workflow_run: {
 				pull_requests: [],
 				head_sha: "testsha",
+			},
+		};
+
+		(mockOctokit.paginate.iterator as Mock).mockReturnValue([
+			{
+				data: [{ number: 101, head: { sha: "testsha" } }],
+			},
+		]);
+
+		const result = await getPullRequestNumber(mockOctokit);
+		expect(result).toBe(101);
+	});
+
+	it("in context of a push event, calls the API to find PR number by the head_sha of the payload.", async () => {
+		mockContext.eventName = "push";
+		mockContext.payload = {
+			head_commit: {
+				id: "testsha"
 			},
 		};
 

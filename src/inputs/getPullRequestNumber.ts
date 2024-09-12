@@ -23,18 +23,28 @@ async function getPullRequestNumber(
 		return github.context.payload.pull_request.number;
 	}
 
+	if (github.context.eventName === "push") {
+		const sha = github.context.payload.head_commit.id;
+		core.info(
+			`Trying to find a pull-request with a head commit matchting the SHA found in the action's "payload.head_commit.id" context (${sha}) from the GitHub API.`
+		);
+		
+		return await findPullRequestBySHA(octokit, sha);
+	}
+
 	if (github.context.eventName === "workflow_run") {
 		// Workflow_runs triggered from non-forked PRs will have the PR number in the payload
 		if (github.context.payload.workflow_run.pull_requests.length > 0) {
-			core.debug(
+			core.info(
 				`Found pull-request number in the action's "payload.workflow_run" context: ${github.context.payload.workflow_run.pull_requests[0].number}`,
 			);
 			return github.context.payload.workflow_run.pull_requests[0].number;
 		}
 
+		const sha = github.context.payload.workflow_run.head_sha;
 		// ... in all other cases, we have to call the API to get a matching PR number
-		core.debug(
-			"Trying to find pull-request number in payload.workflow_run context by calling the API",
+		core.info(
+			`Trying to find a pull-request with a head commit matchin the SHA found in the action's "payload.workflow_run.head_sha" context (${sha}) from the GitHub API.`,
 		);
 		return await findPullRequestBySHA(
 			octokit,
@@ -72,7 +82,7 @@ async function findPullRequestBySHA(
 		}
 	}
 	core.endGroup();
-	core.info(`Could not find the pull-request for commit "${headSha}".`);
+	core.info(`Could not find a pull-request for commit "${headSha}".`);
 	return undefined;
 }
 
