@@ -49,6 +49,9 @@ describe("getPullRequestNumber()", () => {
 				pulls: {
 					list: vi.fn(),
 				},
+				repos: {
+					listPullRequestsAssociatedWithCommit: vi.fn(),
+				},
 			},
 		} as unknown as Octokit;
 	});
@@ -109,13 +112,69 @@ describe("getPullRequestNumber()", () => {
 		expect(result).toBe(101);
 	});
 
-	it("in context of a push event, calls the API to find PR number by the head_sha of the payload.", async () => {
+	it("in context of a push event, when option PR-Number is undefined, returns undefined", async () => {
 		mockContext.eventName = "push";
 		mockContext.payload = {
 			head_commit: {
-				id: "testsha"
+				id: "test-sha",
 			},
 		};
+
+		(
+			mockOctokit.rest.repos
+				.listPullRequestsAssociatedWithCommit as unknown as Mock
+		).mockResolvedValue({
+			data: [
+				{
+					number: 101,
+				},
+			],
+		});
+
+		const result = await getPullRequestNumber(mockOctokit);
+		expect(result).toBeUndefined();
+	});
+
+	it("in context of a push event, when option PR-Number is set to auto, returns the number of a PR found through the 'listPullRequestsAssociatedWithCommit' endpoint.", async () => {
+		vi.stubEnv("INPUT_PR-NUMBER", "auto");
+
+		mockContext.eventName = "push";
+		mockContext.payload = {
+			head_commit: {
+				id: "test-sha",
+			},
+		};
+
+		(
+			mockOctokit.rest.repos
+				.listPullRequestsAssociatedWithCommit as unknown as Mock
+		).mockResolvedValue({
+			data: [
+				{
+					number: 101,
+				},
+			],
+		});
+
+		const result = await getPullRequestNumber(mockOctokit);
+		expect(result).toBe(101);
+	});
+	it("in context of a push event, when option PR-Number is set to auto, and the 'listPullRequestsAssociatedWithCommits' endpoint returns no PRs, returns a PR found in the 'pulls.list' endpoint.", async () => {
+		vi.stubEnv("INPUT_PR-NUMBER", "auto");
+
+		mockContext.eventName = "push";
+		mockContext.payload = {
+			head_commit: {
+				id: "testsha",
+			},
+		};
+
+		(
+			mockOctokit.rest.repos
+				.listPullRequestsAssociatedWithCommit as unknown as Mock
+		).mockResolvedValue({
+			data: [],
+		});
 
 		(mockOctokit.paginate.iterator as Mock).mockReturnValue([
 			{
@@ -125,6 +184,41 @@ describe("getPullRequestNumber()", () => {
 
 		const result = await getPullRequestNumber(mockOctokit);
 		expect(result).toBe(101);
+	});
+
+	it("in context of a push event, when option PR-Number is set to auto, and the 'listPullRequestsAssociatedWithCommits' endpoint returns no PRs, and the 'pulls.list' endpoint returns only non-matchin PRs, returns undefined.", async () => {
+		vi.stubEnv("INPUT_PR-NUMBER", "auto");
+		mockContext.eventName = "push";
+		mockContext.payload = {
+			head_commit: {
+				id: "testsha",
+			},
+		};
+
+		(
+			mockOctokit.rest.repos
+				.listPullRequestsAssociatedWithCommit as unknown as Mock
+		).mockResolvedValue({
+			data: [],
+		});
+
+		(mockOctokit.paginate.iterator as Mock).mockReturnValue([
+			{
+				data: [
+					{
+						number: 101,
+						head: { sha: "not-testsha" },
+					},
+					{
+						number: 102,
+						head: { sha: "not-testsha2" },
+					},
+				],
+			},
+		]);
+
+		const result = await getPullRequestNumber(mockOctokit);
+		expect(result).toBeUndefined();
 	});
 
 	it("returns undefined if no pr number is found", async () => {

@@ -23,13 +23,21 @@ async function getPullRequestNumber(
 		return github.context.payload.pull_request.number;
 	}
 
-	if (github.context.eventName === "push") {
+	if (github.context.eventName === "push" && prNumberFromInput === "auto") {
 		const sha = github.context.payload.head_commit.id;
 		core.info(
-			`Trying to find a pull-request with a head commit matchting the SHA found in the action's "payload.head_commit.id" context (${sha}) from the GitHub API.`
+			`Trying to find a pull-request with a head commit matching the SHA found in the action's "payload.head_commit.id" context (${sha}) from the GitHub API.`,
 		);
-		
-		return await findPullRequestBySHA(octokit, sha);
+
+		let prNumber = await fetchPRsByListingPRsForCommit(octokit, sha);
+		if (!prNumber) {
+			core.info(
+				"Couldn't find PR using the /commits/:commit_sha/pulls endpoint. Trying by listing all PRs for current repository...",
+			);
+			prNumber = await fetchPRsByListingAllPRs(octokit, sha);
+		}
+
+		return prNumber;
 	}
 
 	if (github.context.eventName === "workflow_run") {
@@ -46,7 +54,7 @@ async function getPullRequestNumber(
 		core.info(
 			`Trying to find a pull-request with a head commit matchin the SHA found in the action's "payload.workflow_run.head_sha" context (${sha}) from the GitHub API.`,
 		);
-		return await findPullRequestBySHA(
+		return await fetchPRsByListingAllPRs(
 			octokit,
 			github.context.payload.workflow_run.head_sha,
 		);
@@ -56,7 +64,7 @@ async function getPullRequestNumber(
 	return undefined;
 }
 
-async function findPullRequestBySHA(
+async function fetchPRsByListingAllPRs(
 	octokit: Octokit,
 	headSha: string,
 ): Promise<number | undefined> {
@@ -67,6 +75,8 @@ async function findPullRequestBySHA(
 			owner: github.context.repo.owner,
 			repo: github.context.repo.repo,
 			per_page: 30,
+			sort: "updated",
+			direction: "desc",
 		},
 	);
 
@@ -83,6 +93,30 @@ async function findPullRequestBySHA(
 	}
 	core.endGroup();
 	core.info(`Could not find a pull-request for commit "${headSha}".`);
+	return undefined;
+}
+
+async function fetchPRsByListingPRsForCommit(
+	octokit: Octokit,
+	headSha: string,
+): Promise<number | undefined> {
+	core.info(
+		"Trying to find pull-request using the /commits/:commit_sha/pulls endpoint...",
+	);
+	const { data: pullRequests } =
+		await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
+			owner: github.context.repo.owner,
+			repo: github.context.repo.repo,
+			commit_sha: headSha,
+		});
+
+	if (pullRequests.length > 0) {
+		core.info(
+			`Found ${pullRequests.length} pull-requests associated with commit "${headSha}".`,
+		);
+		return pullRequests[0].number;
+	}
+
 	return undefined;
 }
 
