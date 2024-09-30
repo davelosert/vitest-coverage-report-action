@@ -62,6 +62,13 @@ describe("getPullRequestNumber()", () => {
 		vi.unstubAllEnvs();
 	});
 
+	it("returns undefined if the input 'pr-number' is set to 'none'", async () => {
+		vi.stubEnv("INPUT_PR-NUMBER", "none");
+
+		const result = await getPullRequestNumber(mockOctokit);
+		expect(result).toBeUndefined();
+	});
+
 	it("returns the PR number from the input 'pr-number' if valid ", async () => {
 		vi.stubEnv("INPUT_PR-NUMBER", "123");
 

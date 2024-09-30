@@ -7,6 +7,12 @@ async function getPullRequestNumber(
 ): Promise<number | undefined> {
 	// Get the user-defined pull-request number and perform input validation
 	const prNumberFromInput = core.getInput("pr-number");
+
+	if (prNumberFromInput === "none") {
+		core.info("prNumber set to 'none'. Comment creation will be skipped!");
+		return undefined;
+	}
+
 	const processedPrNumber: number | undefined = Number(prNumberFromInput);
 
 	// Check if it is a full integer. Check for non-null as qhen the option is not set, the parsed input will be an empty string
