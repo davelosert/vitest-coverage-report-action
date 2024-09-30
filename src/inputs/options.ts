@@ -8,6 +8,7 @@ import { getPullRequestNumber } from "./getPullRequestNumber";
 import { getViteConfigPath } from "./getViteConfigPath";
 import { parseCoverageThresholds } from "./parseCoverageThresholds";
 import { getCommentOn, type CommentOn } from "./getCommentOn";
+import { report } from "node:process";
 
 type Options = {
 	fileCoverageMode: FileCoverageMode;
@@ -63,8 +64,12 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		: {};
 
 	const commitSHA = getCommitSHA();
-	// Get the user-defined pull-request number and perform input validation
-	const prNumber = await getPullRequestNumber(octokit);
+
+	let prNumber: number | undefined = undefined;
+	if (commentOn.includes("pr")) {
+		// Get the user-defined pull-request number and perform input validation
+		prNumber = await getPullRequestNumber(octokit);
+	}
 
 	return {
 		fileCoverageMode,

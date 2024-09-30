@@ -34,7 +34,7 @@ inputs:
       default: ''
   pr-number:
       required: false
-      description: 'An optional, user-defined pull request number to comment on.'
+      description: 'An optional, user-defined pull request number to comment on. When using "push" events, use "auto" to try to automatically find a matching PR.'
       default: ''
   comment-on:
     required: false
