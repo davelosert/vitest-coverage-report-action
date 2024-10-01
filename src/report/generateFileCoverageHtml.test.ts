@@ -11,6 +11,7 @@ import {
 	createMockReportNumbers,
 } from "../types/JsonSummaryMockFactory";
 import { generateFileCoverageHtml } from "./generateFileCoverageHtml";
+import { icons } from "../icons";
 
 const workspacePath = process.cwd();
 describe("generateFileCoverageHtml()", () => {
@@ -30,9 +31,11 @@ describe("generateFileCoverageHtml()", () => {
 
 		const html = generateFileCoverageHtml({
 			jsonSummary,
+			jsonSummaryCompare: undefined,
 			jsonFinal: {},
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [],
+			commitSHA: "test-sha",
 		});
 
 		const firstTableLine = getTableLine(1, html);
@@ -50,9 +53,11 @@ describe("generateFileCoverageHtml()", () => {
 
 		const html = generateFileCoverageHtml({
 			jsonSummary,
+			jsonSummaryCompare: undefined,
 			jsonFinal: {},
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [relativeChangedFilePath],
+			commitSHA: "test-sha",
 		});
 
 		expect(getTableLine(1, html)).toContain("Changed Files");
@@ -69,9 +74,11 @@ describe("generateFileCoverageHtml()", () => {
 
 		const html = generateFileCoverageHtml({
 			jsonSummary,
+			jsonSummaryCompare: undefined,
 			jsonFinal: {},
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [changedFileName],
+			commitSHA: "test-sha",
 		});
 
 		expect(html).not.toContain("Unchanged Files");
@@ -84,9 +91,11 @@ describe("generateFileCoverageHtml()", () => {
 
 		const html = generateFileCoverageHtml({
 			jsonSummary,
+			jsonSummaryCompare: undefined,
 			jsonFinal: {},
 			fileCoverageMode: FileCoverageMode.Changes,
 			pullChanges: [],
+			commitSHA: "test-sha",
 		});
 
 		expect(html).toContain("No changed files found.");
@@ -104,9 +113,11 @@ describe("generateFileCoverageHtml()", () => {
 
 		const html = generateFileCoverageHtml({
 			jsonSummary,
+			jsonSummaryCompare: undefined,
 			jsonFinal: {},
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [],
+			commitSHA: "test-sha",
 		});
 
 		const tableLine = getTableLine(2, html);
@@ -132,9 +143,11 @@ describe("generateFileCoverageHtml()", () => {
 
 		const html = generateFileCoverageHtml({
 			jsonSummary,
+			jsonSummaryCompare: undefined,
 			jsonFinal,
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [],
+			commitSHA: "test-sha",
 		});
 
 		const tableLine = getTableLine(2, html);
@@ -159,8 +172,10 @@ describe("generateFileCoverageHtml()", () => {
 		const html = generateFileCoverageHtml({
 			jsonSummary,
 			jsonFinal,
+			jsonSummaryCompare: undefined,
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [],
+			commitSHA: "test-sha",
 		});
 
 		const tableLine = getTableLine(2, html);
@@ -187,14 +202,46 @@ describe("generateFileCoverageHtml()", () => {
 
 		const html = generateFileCoverageHtml({
 			jsonSummary,
+			jsonSummaryCompare: undefined,
 			jsonFinal,
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [],
+			commitSHA: "test-sha",
 		});
 
 		const tableLine = getTableLine(2, html);
 
 		expect(tableLine).toContain("#L2");
 		expect(tableLine).toContain("#L5-L6");
+	});
+
+	it("renders an equal sign for files without changes to covergage", () => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"file1.ts": createMockCoverageReport(),
+		});
+
+		const jsonSummaryCompare: JsonSummary = createMockJsonSummary({
+			"file1.ts": createMockCoverageReport(),
+		});
+		const jsonFinal: JsonFinal = {
+			...createJsonFinalEntry("src/exampleFile.ts", [
+				{ line: 1, covered: true },
+			]),
+		};
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare,
+			jsonFinal,
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+		});
+
+		expect(html).toContain("file1.ts");
+		expect(html).toContain(icons.equal);
+		const equalSignCount = (html.match(new RegExp(icons.equal, "g")) || [])
+			.length;
+		expect(equalSignCount).toBe(4);
 	});
 });

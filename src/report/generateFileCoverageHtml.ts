@@ -2,15 +2,17 @@ import * as path from "node:path";
 import { oneLine } from "common-tags";
 import { FileCoverageMode } from "../inputs/FileCoverageMode";
 import type { JsonFinal } from "../types/JsonFinal";
-import type { JsonSummary } from "../types/JsonSummary";
+import type { CoverageReport, JsonSummary } from "../types/JsonSummary";
 import { generateBlobFileUrl } from "./generateFileUrl";
 import {
 	type LineRange,
 	getUncoveredLinesFromStatements,
 } from "./getUncoveredLinesFromStatements";
+import { icons } from "../icons";
 
 type FileCoverageInputs = {
 	jsonSummary: JsonSummary;
+	jsonSummaryCompare: JsonSummary | undefined;
 	jsonFinal: JsonFinal;
 	fileCoverageMode: FileCoverageMode;
 	pullChanges: string[];
@@ -20,6 +22,7 @@ type FileCoverageInputs = {
 const workspacePath = process.cwd();
 const generateFileCoverageHtml = ({
 	jsonSummary,
+	jsonSummaryCompare,
 	jsonFinal,
 	fileCoverageMode,
 	pullChanges,
@@ -29,6 +32,9 @@ const generateFileCoverageHtml = ({
 
 	const formatFileLine = (filePath: string) => {
 		const coverageSummary = jsonSummary[filePath];
+		const coverageSummaryCompare = jsonSummaryCompare
+			? jsonSummaryCompare[filePath]
+			: undefined;
 		const lineCoverage = jsonFinal[filePath];
 
 		// LineCoverage might be empty if coverage-final.json was not provided.
@@ -41,10 +47,10 @@ const generateFileCoverageHtml = ({
 		return `
       <tr>
         <td align="left"><a href="${url}">${relativeFilePath}</a></td>
-        <td align="right">${coverageSummary.statements.pct}%</td>
-        <td align="right">${coverageSummary.branches.pct}%</td>
-        <td align="right">${coverageSummary.functions.pct}%</td>
-        <td align="right">${coverageSummary.lines.pct}%</td>
+				<td align="right">${generateCoverageCell(coverageSummary, coverageSummaryCompare, "statements")}</td>
+				<td align="right">${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches")}</td>
+				<td align="right">${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions")}</td>
+				<td align="right">${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines")}</td>
         <td align="left">${createRangeURLs(uncoveredLines, url)}</td>
       </tr>`;
 	};
@@ -95,6 +101,15 @@ const generateFileCoverageHtml = ({
     </table>
   `;
 };
+
+function generateCoverageCell(
+	summary: CoverageReport,
+	summaryCompare: CoverageReport | undefined,
+	field: keyof CoverageReport,
+): string {
+	const icon = summaryCompare ? icons.equal : "";
+	return `<td align="right">${summary[field].pct}%<br/>${icon}</td>`;
+}
 
 function formatGroupLine(caption: string): string {
 	return `
