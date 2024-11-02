@@ -85,9 +85,9 @@ const generateFileCoverageHtml = ({
 				<tr>
 				 <th align="left">File</th>
 				 <th align="right">Stmts</th>
-				 <th align="right">% Branch</th>
-				 <th align="right">% Funcs</th>
-				 <th align="right">% Lines</th>
+				 <th align="right">Branches</th>
+				 <th align="right">Functions</th>
+				 <th align="right">Lines</th>
 				 <th align="left">Uncovered Lines</th>
 				</tr>
 			</thead>
