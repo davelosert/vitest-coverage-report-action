@@ -71,7 +71,7 @@ describe("getPullChanges()", () => {
 	it("handles RequestError with status 404 gracefully", async () => {
 		mockOctokit.paginate.iterator = vi
 			.fn()
-			// biome-ignore lint/correctness/useYield: <explanation>
+			// biome-ignore lint/correctness/useYield: Mock implementation for testing purposes
 			.mockImplementation(async function* () {
 				throw new RequestError("Not Found", 404, {
 					request: { headers: {}, method: "GET", url: "" },
@@ -90,7 +90,7 @@ describe("getPullChanges()", () => {
 	it("handles RequestError with status 403 gracefully", async () => {
 		mockOctokit.paginate.iterator = vi
 			.fn()
-			// biome-ignore lint/correctness/useYield: <explanation>
+			// biome-ignore lint/correctness/useYield: Mock implementation for testing purposes
 			.mockImplementation(async function* () {
 				throw new RequestError("Forbidden", 403, {
 					request: { headers: {}, method: "GET", url: "" },
@@ -109,7 +109,7 @@ describe("getPullChanges()", () => {
 	it("throws an error for other exceptions", async () => {
 		mockOctokit.paginate.iterator = vi
 			.fn()
-			// biome-ignore lint/correctness/useYield: <explanation>
+			// biome-ignore lint/correctness/useYield: Mock implementation for testing error handling
 			.mockImplementation(async function* () {
 				throw new Error("Unexpected error");
 			});
