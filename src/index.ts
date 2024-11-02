@@ -8,7 +8,7 @@ import {
 	parseVitestJsonFinal,
 	parseVitestJsonSummary,
 } from "./inputs/parseJsonReports.js";
-import { createOctokit, type Octokit } from "./octokit.js";
+import { type Octokit, createOctokit } from "./octokit.js";
 import { generateCommitSHAUrl } from "./report/generateCommitSHAUrl.js";
 import { generateFileCoverageHtml } from "./report/generateFileCoverageHtml.js";
 import { generateHeadline } from "./report/generateHeadline.js";

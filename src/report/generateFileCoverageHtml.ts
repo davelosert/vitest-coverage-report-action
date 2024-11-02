@@ -4,12 +4,11 @@ import { FileCoverageMode } from "../inputs/FileCoverageMode";
 import type { JsonFinal } from "../types/JsonFinal";
 import type { CoverageReport, JsonSummary } from "../types/JsonSummary";
 import { generateBlobFileUrl } from "./generateFileUrl";
+import { getCompareString } from "./getCompareString";
 import {
 	type LineRange,
 	getUncoveredLinesFromStatements,
 } from "./getUncoveredLinesFromStatements";
-import { icons } from "../icons";
-import { getCompareString } from "./getCompareString";
 
 type FileCoverageInputs = {
 	jsonSummary: JsonSummary;
@@ -21,6 +20,7 @@ type FileCoverageInputs = {
 };
 
 const workspacePath = process.cwd();
+
 const generateFileCoverageHtml = ({
 	jsonSummary,
 	jsonSummaryCompare,
@@ -30,31 +30,6 @@ const generateFileCoverageHtml = ({
 	commitSHA,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
-
-	const formatFileLine = (filePath: string) => {
-		const coverageSummary = jsonSummary[filePath];
-		const coverageSummaryCompare = jsonSummaryCompare
-			? jsonSummaryCompare[filePath]
-			: undefined;
-		const lineCoverage = jsonFinal[filePath];
-
-		// LineCoverage might be empty if coverage-final.json was not provided.
-		const uncoveredLines = lineCoverage
-			? getUncoveredLinesFromStatements(jsonFinal[filePath])
-			: [];
-		const relativeFilePath = path.relative(workspacePath, filePath);
-		const url = generateBlobFileUrl(relativeFilePath, commitSHA);
-
-		return `
-      <tr>
-        <td align="left"><a href="${url}">${relativeFilePath}</a></td>
-				${generateCoverageCell(coverageSummary, coverageSummaryCompare, "statements")}
-				${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches")}
-				${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions")}
-				${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines")}
-        <td align="left">${createRangeURLs(uncoveredLines, url)}</td>
-      </tr>`;
-	};
 
 	let reportData = "";
 
@@ -72,36 +47,87 @@ const generateFileCoverageHtml = ({
 
 	if (changedFiles.length > 0) {
 		reportData += `
-			${formatGroupLine("Changed Files")} 
-			${changedFiles.map(formatFileLine).join("")}
-		`;
+					${formatGroupLine("Changed Files")} 
+					${changedFiles
+						.map((filePath) =>
+							generateRow(
+								filePath,
+								jsonSummary,
+								jsonSummaryCompare,
+								jsonFinal,
+								commitSHA,
+							),
+						)
+						.join("")}
+				`;
 	}
 
 	if (fileCoverageMode === FileCoverageMode.All && unchangedFiles.length > 0) {
 		reportData += `
-			${formatGroupLine("Unchanged Files")}
-			${unchangedFiles.map(formatFileLine).join("")}
-		`;
+						${formatGroupLine("Unchanged Files")}
+						${unchangedFiles
+							.map((filePath) =>
+								generateRow(
+									filePath,
+									jsonSummary,
+									undefined,
+									jsonFinal,
+									commitSHA,
+								),
+							)
+							.join("")}
+				`;
 	}
 
 	return oneLine`
-    <table>
-      <thead>
-        <tr>
-         <th align="left">File</th>
-         <th align="right">Stmts</th>
-         <th align="right">% Branch</th>
-         <th align="right">% Funcs</th>
-         <th align="right">% Lines</th>
-         <th align="left">Uncovered Lines</th>
-        </tr>
-      </thead>
-      <tbody>
-      ${reportData}
-      </tbody>
-    </table>
-  `;
+		<table>
+			<thead>
+				<tr>
+				 <th align="left">File</th>
+				 <th align="right">Stmts</th>
+				 <th align="right">% Branch</th>
+				 <th align="right">% Funcs</th>
+				 <th align="right">% Lines</th>
+				 <th align="left">Uncovered Lines</th>
+				</tr>
+			</thead>
+			<tbody>
+			${reportData}
+			</tbody>
+		</table>
+	`;
 };
+
+function generateRow(
+	filePath: string,
+	jsonSummary: JsonSummary,
+	jsonSummaryCompare: JsonSummary | undefined,
+	jsonFinal: JsonFinal,
+	commitSHA: string,
+): string {
+	const coverageSummary = jsonSummary[filePath];
+	const coverageSummaryCompare = jsonSummaryCompare
+		? jsonSummaryCompare[filePath]
+		: undefined;
+	const lineCoverage = jsonFinal[filePath];
+
+	// LineCoverage might be empty if coverage-final.json was not provided.
+	const uncoveredLines = lineCoverage
+		? getUncoveredLinesFromStatements(jsonFinal[filePath])
+		: [];
+	const relativeFilePath = path.relative(workspacePath, filePath);
+	const url = generateBlobFileUrl(relativeFilePath, commitSHA);
+
+	return `
+			<tr>
+				<td align="left"><a href="${url}">${relativeFilePath}</a></td>
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "statements")}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches")}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions")}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines")}
+				<td align="left">${createRangeURLs(uncoveredLines, url)}</td>
+			</tr>`;
+}
 
 function generateCoverageCell(
 	summary: CoverageReport,
@@ -118,9 +144,9 @@ function generateCoverageCell(
 
 function formatGroupLine(caption: string): string {
 	return `
-		<tr>
-			<td align="left" colspan="6"><b>${caption}</b></td>
-		</tr>
+				<tr>
+					<td align="left" colspan="6"><b>${caption}</b></td>
+				</tr>
 	`;
 }
 

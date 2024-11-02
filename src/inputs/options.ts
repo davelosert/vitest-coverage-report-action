@@ -3,11 +3,11 @@ import * as core from "@actions/core";
 import type { Octokit } from "../octokit";
 import type { Thresholds } from "../types/Threshold";
 import { type FileCoverageMode, getCoverageModeFrom } from "./FileCoverageMode";
+import { type CommentOn, getCommentOn } from "./getCommentOn";
 import { getCommitSHA } from "./getCommitSHA";
 import { getPullRequestNumber } from "./getPullRequestNumber";
 import { getViteConfigPath } from "./getViteConfigPath";
 import { parseCoverageThresholds } from "./parseCoverageThresholds";
-import { getCommentOn, type CommentOn } from "./getCommentOn";
 
 type Options = {
 	fileCoverageMode: FileCoverageMode;

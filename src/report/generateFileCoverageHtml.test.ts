@@ -1,6 +1,7 @@
 import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getTableLine } from "../../test/queryHelper";
+import { icons } from "../icons";
 import { FileCoverageMode } from "../inputs/FileCoverageMode";
 import type { JsonFinal } from "../types/JsonFinal";
 import { createJsonFinalEntry } from "../types/JsonFinalMockFactory";
@@ -11,7 +12,6 @@ import {
 	createMockReportNumbers,
 } from "../types/JsonSummaryMockFactory";
 import { generateFileCoverageHtml } from "./generateFileCoverageHtml";
-import { icons } from "../icons";
 
 const workspacePath = process.cwd();
 describe("generateFileCoverageHtml()", () => {

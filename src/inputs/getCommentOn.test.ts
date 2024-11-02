@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as core from "@actions/core";
-import { getCommentOn, type CommentOn } from "./getCommentOn";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { type CommentOn, getCommentOn } from "./getCommentOn";
 
 vi.mock("@actions/core");
 
