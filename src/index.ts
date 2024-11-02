@@ -16,7 +16,6 @@ import { generateSummaryTableHtml } from "./report/generateSummaryTableHtml.js";
 import type { JsonSummary } from "./types/JsonSummary.js";
 import { writeSummaryToCommit } from "./writeSummaryToComment.js";
 import { writeSummaryToPR } from "./writeSummaryToPR.js";
-import { aw } from "vitest/dist/chunks/reporters.C_zwCd4j.js";
 
 type GitHubSummary = typeof core.summary;
 
@@ -61,6 +60,7 @@ const run = async () => {
 		const jsonFinal = await parseVitestJsonFinal(options.jsonFinalPath);
 		const fileTable = generateFileCoverageHtml({
 			jsonSummary,
+			jsonSummaryCompare,
 			jsonFinal,
 			fileCoverageMode: options.fileCoverageMode,
 			pullChanges,

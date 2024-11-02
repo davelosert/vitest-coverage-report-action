@@ -244,4 +244,72 @@ describe("generateFileCoverageHtml()", () => {
 			.length;
 		expect(equalSignCount).toBe(4);
 	});
+
+	it("renders a plus sign and the increased percentage for files with increased coverage", () => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"file1.ts": createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 70 }),
+			}),
+		});
+
+		const jsonSummaryCompare: JsonSummary = createMockJsonSummary({
+			"file1.ts": createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 60 }),
+			}),
+		});
+		const jsonFinal: JsonFinal = {
+			...createJsonFinalEntry("src/exampleFile.ts", [
+				{ line: 1, covered: true },
+			]),
+		};
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare,
+			jsonFinal,
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+		});
+
+		expect(html).toContain("file1.ts");
+		expect(html).toContain(`${icons.increase} <em>+10.00%</em>`);
+		const equalSignCount = (html.match(new RegExp(icons.increase, "g")) || [])
+			.length;
+		expect(equalSignCount).toBe(1);
+	});
+
+	it("renders a minus sign and the decreased percentage for files with decreased coverage", () => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"file1.ts": createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 70 }),
+			}),
+		});
+
+		const jsonSummaryCompare: JsonSummary = createMockJsonSummary({
+			"file1.ts": createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 80 }),
+			}),
+		});
+		const jsonFinal: JsonFinal = {
+			...createJsonFinalEntry("src/exampleFile.ts", [
+				{ line: 1, covered: true },
+			]),
+		};
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare,
+			jsonFinal,
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+		});
+
+		expect(html).toContain("file1.ts");
+		expect(html).toContain(`${icons.decrease} <em>-10.00%</em>`);
+		const equalSignCount = (html.match(new RegExp(icons.decrease, "g")) || [])
+			.length;
+		expect(equalSignCount).toBe(1);
+	});
 });

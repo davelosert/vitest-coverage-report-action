@@ -9,6 +9,7 @@ import {
 	getUncoveredLinesFromStatements,
 } from "./getUncoveredLinesFromStatements";
 import { icons } from "../icons";
+import { getCompareString } from "./getCompareString";
 
 type FileCoverageInputs = {
 	jsonSummary: JsonSummary;
@@ -47,10 +48,10 @@ const generateFileCoverageHtml = ({
 		return `
       <tr>
         <td align="left"><a href="${url}">${relativeFilePath}</a></td>
-				<td align="right">${generateCoverageCell(coverageSummary, coverageSummaryCompare, "statements")}</td>
-				<td align="right">${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches")}</td>
-				<td align="right">${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions")}</td>
-				<td align="right">${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines")}</td>
+				${generateCoverageCell(coverageSummary, coverageSummaryCompare, "statements")}
+				${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches")}
+				${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions")}
+				${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines")}
         <td align="left">${createRangeURLs(uncoveredLines, url)}</td>
       </tr>`;
 	};
@@ -107,8 +108,12 @@ function generateCoverageCell(
 	summaryCompare: CoverageReport | undefined,
 	field: keyof CoverageReport,
 ): string {
-	const icon = summaryCompare ? icons.equal : "";
-	return `<td align="right">${summary[field].pct}%<br/>${icon}</td>`;
+	let diffText = "";
+	if (summaryCompare) {
+		const diff = summary[field].pct - summaryCompare[field].pct;
+		diffText = `<br/>${getCompareString(diff)}`;
+	}
+	return `<td align="right">${summary[field].pct}%${diffText}</td>`;
 }
 
 function formatGroupLine(caption: string): string {
