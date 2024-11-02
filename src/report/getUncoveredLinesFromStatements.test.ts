@@ -99,4 +99,48 @@ describe("getUncoveredLinesFromStatements()", () => {
 			{ start: 3, end: 4 },
 		]);
 	});
+
+	it("returns a single range if statement numbers are not sequential.", () => {
+		const statements: StatementCoverageReport = {
+			statementMap: {
+				"0": {
+					start: { line: 1, column: 0 },
+					end: { line: 1, column: 0 },
+				},
+				"5": {
+					start: { line: 6, column: 0 },
+					end: { line: 6, column: 0 },
+				},
+				"6": {
+					start: { line: 7, column: 0 },
+					end: { line: 7, column: 0 },
+				},
+			},
+			s: { "0": 0, "5": 0, "6": 0 },
+		};
+
+		const uncoveredLines = getUncoveredLinesFromStatements(statements);
+
+		expect(uncoveredLines).toEqual([{ start: 1, end: 7 }]);
+	});
+
+	it("handles the case where the property in 's' is greater than 1.", () => {
+		const statements: StatementCoverageReport = {
+			statementMap: {
+				"0": {
+					start: { line: 1, column: 0 },
+					end: { line: 1, column: 0 },
+				},
+				"1": {
+					start: { line: 2, column: 0 },
+					end: { line: 2, column: 0 },
+				},
+			},
+			s: { "0": 2, "1": 8 },
+		};
+
+		const uncoveredLines = getUncoveredLinesFromStatements(statements);
+
+		expect(uncoveredLines).toEqual([]);
+	});
 });
