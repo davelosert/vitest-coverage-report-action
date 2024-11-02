@@ -234,7 +234,7 @@ describe("generateFileCoverageHtml()", () => {
 			jsonSummaryCompare,
 			jsonFinal,
 			fileCoverageMode: FileCoverageMode.All,
-			pullChanges: [],
+			pullChanges: ["file1.ts"],
 			commitSHA: "test-sha",
 		});
 
@@ -268,7 +268,7 @@ describe("generateFileCoverageHtml()", () => {
 			jsonSummaryCompare,
 			jsonFinal,
 			fileCoverageMode: FileCoverageMode.All,
-			pullChanges: [],
+			pullChanges: ["file1.ts"],
 			commitSHA: "test-sha",
 		});
 
@@ -302,7 +302,7 @@ describe("generateFileCoverageHtml()", () => {
 			jsonSummaryCompare,
 			jsonFinal,
 			fileCoverageMode: FileCoverageMode.All,
-			pullChanges: [],
+			pullChanges: ["file1.ts"],
 			commitSHA: "test-sha",
 		});
 

@@ -69,11 +69,14 @@ describe("getPullChanges()", () => {
 	});
 
 	it("handles RequestError with status 404 gracefully", async () => {
-		mockOctokit.paginate.iterator = vi.fn().mockImplementation(async () => {
-			throw new RequestError("Not Found", 404, {
-				request: { headers: {}, method: "GET", url: "" },
+		mockOctokit.paginate.iterator = vi
+			.fn()
+			// biome-ignore lint/correctness/useYield: <explanation>
+			.mockImplementation(async function* () {
+				throw new RequestError("Not Found", 404, {
+					request: { headers: {}, method: "GET", url: "" },
+				});
 			});
-		});
 
 		const result = await getPullChanges({
 			fileCoverageMode: FileCoverageMode.Changes,
@@ -85,11 +88,14 @@ describe("getPullChanges()", () => {
 	});
 
 	it("handles RequestError with status 403 gracefully", async () => {
-		mockOctokit.paginate.iterator = vi.fn().mockImplementation(async () => {
-			throw new RequestError("Forbidden", 403, {
-				request: { headers: {}, method: "GET", url: "" },
+		mockOctokit.paginate.iterator = vi
+			.fn()
+			// biome-ignore lint/correctness/useYield: <explanation>
+			.mockImplementation(async function* () {
+				throw new RequestError("Forbidden", 403, {
+					request: { headers: {}, method: "GET", url: "" },
+				});
 			});
-		});
 
 		const result = await getPullChanges({
 			fileCoverageMode: FileCoverageMode.Changes,
@@ -101,9 +107,12 @@ describe("getPullChanges()", () => {
 	});
 
 	it("throws an error for other exceptions", async () => {
-		mockOctokit.paginate.iterator = vi.fn().mockImplementation(async () => {
-			throw new Error("Unexpected error");
-		});
+		mockOctokit.paginate.iterator = vi
+			.fn()
+			// biome-ignore lint/correctness/useYield: <explanation>
+			.mockImplementation(async function* () {
+				throw new Error("Unexpected error");
+			});
 		await expect(
 			getPullChanges({
 				fileCoverageMode: FileCoverageMode.Changes,
