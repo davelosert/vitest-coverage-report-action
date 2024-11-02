@@ -5,8 +5,6 @@ type LineRange = {
 	end: number;
 };
 
-const IS_COVERED = 1;
-
 const getUncoveredLinesFromStatements = ({
 	s,
 	statementMap,
@@ -16,7 +14,7 @@ const getUncoveredLinesFromStatements = ({
 	const uncoveredLineRanges: LineRange[] = [];
 	let currentRange: LineRange | undefined = undefined;
 	for (const key of keys) {
-		if (s[key] === IS_COVERED) {
+		if (s[key] > 0) {
 			// If the statement is covered, we need to close the current range.
 			if (currentRange) {
 				uncoveredLineRanges.push(currentRange);
