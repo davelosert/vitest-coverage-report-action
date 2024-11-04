@@ -41,7 +41,7 @@
     "@semantic-release/git": "10.0.1",
     "@semantic-release/github": "11.0.0",
     "@types/common-tags": "1.8.4",
-    "@types/node": "22.8.1",
+    "@types/node": "22.8.7",
     "@vitest/coverage-v8": "2.1.4",
     "esbuild": "0.24.0",
     "semantic-release": "24.2.0",
