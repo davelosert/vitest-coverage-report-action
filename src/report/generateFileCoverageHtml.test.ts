@@ -36,6 +36,7 @@ describe("generateFileCoverageHtml()", () => {
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [],
 			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
 		});
 
 		const firstTableLine = getTableLine(1, html);
@@ -58,6 +59,7 @@ describe("generateFileCoverageHtml()", () => {
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [relativeChangedFilePath],
 			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
 		});
 
 		expect(getTableLine(1, html)).toContain("Changed Files");
@@ -79,6 +81,7 @@ describe("generateFileCoverageHtml()", () => {
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [changedFileName],
 			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
 		});
 
 		expect(html).not.toContain("Unchanged Files");
@@ -96,6 +99,7 @@ describe("generateFileCoverageHtml()", () => {
 			fileCoverageMode: FileCoverageMode.Changes,
 			pullChanges: [],
 			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
 		});
 
 		expect(html).toContain("No changed files found.");
@@ -118,6 +122,7 @@ describe("generateFileCoverageHtml()", () => {
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [],
 			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
 		});
 
 		const tableLine = getTableLine(2, html);
@@ -148,6 +153,7 @@ describe("generateFileCoverageHtml()", () => {
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [],
 			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
 		});
 
 		const tableLine = getTableLine(2, html);
@@ -176,6 +182,7 @@ describe("generateFileCoverageHtml()", () => {
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [],
 			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
 		});
 
 		const tableLine = getTableLine(2, html);
@@ -207,6 +214,7 @@ describe("generateFileCoverageHtml()", () => {
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: [],
 			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
 		});
 
 		const tableLine = getTableLine(2, html);
@@ -236,6 +244,7 @@ describe("generateFileCoverageHtml()", () => {
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: ["file1.ts"],
 			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
 		});
 
 		expect(html).toContain("file1.ts");
@@ -270,6 +279,7 @@ describe("generateFileCoverageHtml()", () => {
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: ["file1.ts"],
 			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
 		});
 
 		expect(html).toContain("file1.ts");
@@ -304,6 +314,7 @@ describe("generateFileCoverageHtml()", () => {
 			fileCoverageMode: FileCoverageMode.All,
 			pullChanges: ["file1.ts"],
 			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
 		});
 
 		expect(html).toContain("file1.ts");
@@ -311,5 +322,27 @@ describe("generateFileCoverageHtml()", () => {
 		const equalSignCount = (html.match(new RegExp(icons.decrease, "g")) || [])
 			.length;
 		expect(equalSignCount).toBe(1);
+	});
+
+	it("correctly handles a different workspacePath than the current working directory", () => {
+		const differentWorkspacePath = "/path/to/different/workspace";
+		const filePath = path.join(differentWorkspacePath, "src", "exampleFile.ts");
+		const relativeFilePath = "src/exampleFile.ts";
+
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			[filePath]: createMockCoverageReport(),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [relativeFilePath],
+			commitSHA: "test-sha",
+			workspacePath: differentWorkspacePath,
+		});
+
+		expect(html).toContain(relativeFilePath);
 	});
 });

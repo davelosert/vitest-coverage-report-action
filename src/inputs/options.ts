@@ -20,6 +20,7 @@ type Options = {
 	prNumber: number | undefined;
 	commitSHA: string;
 	commentOn: Array<CommentOn>;
+	fileCoverageRootPath: string;
 };
 
 async function readOptions(octokit: Octokit): Promise<Options> {
@@ -70,6 +71,8 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		prNumber = await getPullRequestNumber(octokit);
 	}
 
+	const fileCoverageRootPath = core.getInput("file-coverage-root-path");
+
 	return {
 		fileCoverageMode,
 		jsonFinalPath,
@@ -81,6 +84,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		prNumber,
 		commitSHA,
 		commentOn,
+		fileCoverageRootPath,
 	};
 }
 

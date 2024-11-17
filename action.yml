@@ -24,9 +24,13 @@ inputs:
       required: false
       description: 'How to show summary for files coverage. Uses "changes" by default.'
       default: changes
+  file-coverage-root-path:
+      required: false
+      description: 'The root (or absolute) part of the path used within the json coverage reports to point to the covered files. You can change this if your reports were generated in a different context (e.g., a docker container) and the absolute paths don''t match the current runner''s workspace. Uses the runner''s workspace path by default.'
+      default: ${{ github.workspace }}
   working-directory:
       required: false
-      description: 'Custom working directory'
+      description: 'Working directory where to look for the vite config file and the coverage report files. Uses "./" by default.'
       default: ./
   name:
       required: false

@@ -17,9 +17,8 @@ type FileCoverageInputs = {
 	fileCoverageMode: FileCoverageMode;
 	pullChanges: string[];
 	commitSHA: string;
+	workspacePath: string;
 };
-
-const workspacePath = process.cwd();
 
 const generateFileCoverageHtml = ({
 	jsonSummary,
@@ -28,6 +27,7 @@ const generateFileCoverageHtml = ({
 	fileCoverageMode,
 	pullChanges,
 	commitSHA,
+	workspacePath,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
 
@@ -36,6 +36,7 @@ const generateFileCoverageHtml = ({
 	const [changedFiles, unchangedFiles] = splitFilesByChangeStatus(
 		filePaths,
 		pullChanges,
+		workspacePath,
 	);
 
 	if (
@@ -56,6 +57,7 @@ const generateFileCoverageHtml = ({
 								jsonSummaryCompare,
 								jsonFinal,
 								commitSHA,
+								workspacePath,
 							),
 						)
 						.join("")}
@@ -73,6 +75,7 @@ const generateFileCoverageHtml = ({
 									undefined,
 									jsonFinal,
 									commitSHA,
+									workspacePath,
 								),
 							)
 							.join("")}
@@ -104,6 +107,7 @@ function generateRow(
 	jsonSummaryCompare: JsonSummary | undefined,
 	jsonFinal: JsonFinal,
 	commitSHA: string,
+	workspacePath: string,
 ): string {
 	const coverageSummary = jsonSummary[filePath];
 	const coverageSummaryCompare = jsonSummaryCompare
@@ -169,6 +173,7 @@ function createRangeURLs(uncoveredLines: LineRange[], url: string): string {
 function splitFilesByChangeStatus(
 	filePaths: string[],
 	pullChanges: string[],
+	workspacePath: string,
 ): [string[], string[]] {
 	return filePaths.reduce(
 		([changedFiles, unchangedFiles], filePath) => {
