@@ -168,9 +168,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        branch:
-          - ${{ github.head_ref }}
-          - "main"
+        include:
+          - branch: main
+            artifact: main
+          - branch: ${{ github.head_ref }}
+            artifact: pull-request
 
     permissions:
       # Required to checkout the code
@@ -193,7 +195,7 @@ jobs:
       - name: "Upload Coverage"
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-${{ matrix.branch }}
+          name: coverage-${{ matrix.artifact }}
           path: coverage
 
   report-coverage:
@@ -203,7 +205,7 @@ jobs:
       - name: "Download Coverage Artifacts"
         uses: actions/download-artifact@v4
         with:
-          name: coverage-${{ github.head_ref }}
+          name: coverage-pull-request
           path: coverage
       - uses: actions/download-artifact@v4
         with:
