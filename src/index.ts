@@ -108,7 +108,7 @@ async function commentOnPR(
 			(error.status === 404 || error.status === 403)
 		) {
 			core.warning(
-				`Couldn't write a comment to the pull request. Please make sure your job has the permission 'pull-request: write'.
+				`Couldn't write a comment to the pull request. Please make sure your job has the permission 'pull-requests: write'.
                  Original Error was: [${error.name}] - ${error.message}`,
 			);
 		} else {
