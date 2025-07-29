@@ -203,6 +203,8 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
+        ## Check out the repository to obtain the vitest.config file
+      - uses: actions/checkout@v4
       - name: "Download Coverage Artifacts"
         uses: actions/download-artifact@v4
         with:
