@@ -333,6 +333,9 @@ It will then automatically locate the appropriate pull request to comment on.
 > [!NOTE]
 > This configuration also works for pull requests originating from your own repository (not forks), so it can be used generally.
 
+> [!NOTE]
+> If you see an error like: `Error: Unable to download artifact(s): Resource not accessible by integration` you may need to add the `actions: read` permission to the `coverage.yml` reporting action.
+
 #### Limitations & Considerations
 
 This approach has a few limitations:
