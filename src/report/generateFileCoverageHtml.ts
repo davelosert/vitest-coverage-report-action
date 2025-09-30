@@ -269,13 +269,17 @@ function splitFilesByCoverageChange(
 			const currentCoverage = jsonSummary[filePath];
 			const previousCoverage = jsonSummaryCompare[filePath];
 
-			// If file doesn't exist in comparison, skip it (shouldn't happen for unchanged files, but be safe)
+			// If file doesn't exist in comparison, consider it unaffected
 			if (!previousCoverage) {
 				unaffectedFiles.push(filePath);
 				return [affectedFiles, unaffectedFiles];
 			}
 
 			// Check if any coverage metric has changed
+			// Using strict equality is acceptable here because:
+			// 1. These percentages come from the same source (vitest coverage reports)
+			// 2. The comparison is only for categorization, not for display
+			// 3. Any actual change will be reflected in the comparison display
 			const hasChanged =
 				currentCoverage.statements.pct !== previousCoverage.statements.pct ||
 				currentCoverage.branches.pct !== previousCoverage.branches.pct ||
