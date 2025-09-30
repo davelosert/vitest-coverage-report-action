@@ -23,6 +23,7 @@ type Options = {
 	fileCoverageRootPath: string;
 	comparisonDecimalPlaces: number;
 	showAllFileComparisons: boolean;
+	showAffectedFiles: boolean;
 };
 
 async function readOptions(octokit: Octokit): Promise<Options> {
@@ -87,6 +88,9 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 	);
 	const showAllFileComparisons = showAllFileComparisonsInput === "true";
 
+	const showAffectedFilesInput = core.getInput("show-affected-files");
+	const showAffectedFiles = showAffectedFilesInput === "true";
+
 	return {
 		fileCoverageMode,
 		jsonFinalPath,
@@ -101,6 +105,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		fileCoverageRootPath,
 		comparisonDecimalPlaces,
 		showAllFileComparisons,
+		showAffectedFiles,
 	};
 }
 

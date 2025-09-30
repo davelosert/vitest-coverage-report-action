@@ -20,6 +20,7 @@ type FileCoverageInputs = {
 	workspacePath: string;
 	comparisonDecimalPlaces?: number;
 	showAllFileComparisons?: boolean;
+	showAffectedFiles?: boolean;
 };
 
 const generateFileCoverageHtml = ({
@@ -32,6 +33,7 @@ const generateFileCoverageHtml = ({
 	workspacePath,
 	comparisonDecimalPlaces = 2,
 	showAllFileComparisons = false,
+	showAffectedFiles = false,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
 
@@ -70,12 +72,64 @@ const generateFileCoverageHtml = ({
 	}
 
 	if (fileCoverageMode === FileCoverageMode.All && unchangedFiles.length > 0) {
-		// Pass comparison data to unchanged files only if showAllFileComparisons is true
-		const unchangedFilesCompare = showAllFileComparisons
-			? jsonSummaryCompare
-			: undefined;
+		// Split unchanged files into affected and unaffected if comparison data is available and feature is enabled
+		if (showAffectedFiles && jsonSummaryCompare) {
+			const [affectedFiles, unaffectedFiles] = splitFilesByCoverageChange(
+				unchangedFiles,
+				jsonSummary,
+				jsonSummaryCompare,
+			);
 
-		reportData += `
+			// Show affected files group
+			if (affectedFiles.length > 0) {
+				reportData += `
+						${formatGroupLine("Affected Files")}
+						${affectedFiles
+							.map((filePath) =>
+								generateRow(
+									filePath,
+									jsonSummary,
+									jsonSummaryCompare,
+									jsonFinal,
+									commitSHA,
+									workspacePath,
+									comparisonDecimalPlaces,
+								),
+							)
+							.join("")}
+					`;
+			}
+
+			// Show unaffected files group (with or without comparisons based on showAllFileComparisons)
+			if (unaffectedFiles.length > 0) {
+				const unaffectedFilesCompare = showAllFileComparisons
+					? jsonSummaryCompare
+					: undefined;
+
+				reportData += `
+						${formatGroupLine("Unaffected Files")}
+						${unaffectedFiles
+							.map((filePath) =>
+								generateRow(
+									filePath,
+									jsonSummary,
+									unaffectedFilesCompare,
+									jsonFinal,
+									commitSHA,
+									workspacePath,
+									comparisonDecimalPlaces,
+								),
+							)
+							.join("")}
+					`;
+			}
+		} else {
+			// Original behavior: show all unchanged files
+			const unchangedFilesCompare = showAllFileComparisons
+				? jsonSummaryCompare
+				: undefined;
+
+			reportData += `
 						${formatGroupLine("Unchanged Files")}
 						${unchangedFiles
 							.map((filePath) =>
@@ -91,6 +145,7 @@ const generateFileCoverageHtml = ({
 							)
 							.join("")}
 				`;
+		}
 	}
 
 	return oneLine`
@@ -199,6 +254,41 @@ function splitFilesByChangeStatus(
 				unchangedFiles.push(filePath);
 			}
 			return [changedFiles, unchangedFiles];
+		},
+		[[], []] as [string[], string[]],
+	);
+}
+
+function splitFilesByCoverageChange(
+	filePaths: string[],
+	jsonSummary: JsonSummary,
+	jsonSummaryCompare: JsonSummary,
+): [string[], string[]] {
+	return filePaths.reduce(
+		([affectedFiles, unaffectedFiles], filePath) => {
+			const currentCoverage = jsonSummary[filePath];
+			const previousCoverage = jsonSummaryCompare[filePath];
+
+			// If file doesn't exist in comparison, skip it (shouldn't happen for unchanged files, but be safe)
+			if (!previousCoverage) {
+				unaffectedFiles.push(filePath);
+				return [affectedFiles, unaffectedFiles];
+			}
+
+			// Check if any coverage metric has changed
+			const hasChanged =
+				currentCoverage.statements.pct !== previousCoverage.statements.pct ||
+				currentCoverage.branches.pct !== previousCoverage.branches.pct ||
+				currentCoverage.functions.pct !== previousCoverage.functions.pct ||
+				currentCoverage.lines.pct !== previousCoverage.lines.pct;
+
+			if (hasChanged) {
+				affectedFiles.push(filePath);
+			} else {
+				unaffectedFiles.push(filePath);
+			}
+
+			return [affectedFiles, unaffectedFiles];
 		},
 		[[], []] as [string[], string[]],
 	);

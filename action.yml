@@ -52,6 +52,10 @@ inputs:
     required: false
     description: 'Show comparison data for all files, not just changed files. Requires json-summary-compare-path to be set. Uses false by default.'
     default: 'false'
+  show-affected-files:
+    required: false
+    description: 'Group unchanged files into "Affected Files" (files with coverage changes) and "Unaffected Files" (files without coverage changes). Requires json-summary-compare-path to be set and file-coverage-mode to be "all". Uses false by default.'
+    default: 'false'
 runs:
   using: 'node20'
   main: 'dist/index.js'

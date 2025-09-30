@@ -69,6 +69,7 @@ const run = async () => {
 			workspacePath: options.fileCoverageRootPath,
 			comparisonDecimalPlaces: options.comparisonDecimalPlaces,
 			showAllFileComparisons: options.showAllFileComparisons,
+			showAffectedFiles: options.showAffectedFiles,
 		});
 		summary.addDetails("File Coverage", fileTable);
 	}

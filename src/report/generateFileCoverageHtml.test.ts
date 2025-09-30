@@ -435,4 +435,108 @@ describe("generateFileCoverageHtml()", () => {
 			`${icons.increase} <em>+10.00%</em>`,
 		);
 	});
+
+	it("groups files into affected and unaffected when showAffectedFiles is true", () => {
+		const changedFilePath = path.join(workspacePath, "src", "changedFile.ts");
+		const affectedFilePath = "src/affectedFile.ts";
+		const unaffectedFilePath = "src/unaffectedFile.ts";
+
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			[changedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 80 }),
+			}),
+			[affectedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 90 }),
+			}),
+			[unaffectedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 75 }),
+			}),
+		});
+
+		const jsonSummaryCompare: JsonSummary = createMockJsonSummary({
+			[changedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 70 }),
+			}),
+			[affectedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 80 }),
+			}),
+			[unaffectedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 75 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: ["src/changedFile.ts"],
+			commitSHA: "test-sha",
+			workspacePath,
+			showAffectedFiles: true,
+		});
+
+		// Should have Changed Files section
+		expect(html).toContain("Changed Files");
+		expect(html).toContain("src/changedFile.ts");
+
+		// Should have Affected Files section with coverage comparison
+		expect(html).toContain("Affected Files");
+		const affectedSection = html
+			.split("Affected Files")[1]
+			.split("Unaffected Files")[0];
+		expect(affectedSection).toContain("src/affectedFile.ts");
+		expect(affectedSection).toContain(`${icons.increase} <em>+10.00%</em>`);
+
+		// Should have Unaffected Files section
+		expect(html).toContain("Unaffected Files");
+		const unaffectedSection = html.split("Unaffected Files")[1];
+		expect(unaffectedSection).toContain("src/unaffectedFile.ts");
+		// Unaffected files should not have comparison by default
+		expect(unaffectedSection).not.toContain(icons.increase);
+		expect(unaffectedSection).not.toContain(icons.decrease);
+		expect(unaffectedSection).not.toContain(icons.equal);
+	});
+
+	it("shows comparison for unaffected files when both showAffectedFiles and showAllFileComparisons are true", () => {
+		const changedFilePath = path.join(workspacePath, "src", "changedFile.ts");
+		const unaffectedFilePath = "src/unaffectedFile.ts";
+
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			[changedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 80 }),
+			}),
+			[unaffectedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 75 }),
+			}),
+		});
+
+		const jsonSummaryCompare: JsonSummary = createMockJsonSummary({
+			[changedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 70 }),
+			}),
+			[unaffectedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 75 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: ["src/changedFile.ts"],
+			commitSHA: "test-sha",
+			workspacePath,
+			showAffectedFiles: true,
+			showAllFileComparisons: true,
+		});
+
+		// Should have Unaffected Files section with comparison
+		expect(html).toContain("Unaffected Files");
+		const unaffectedSection = html.split("Unaffected Files")[1];
+		expect(unaffectedSection).toContain("src/unaffectedFile.ts");
+		// With showAllFileComparisons, even unaffected files should show comparison
+		expect(unaffectedSection).toContain(`${icons.equal} <em>±0%</em>`);
+	});
 });
