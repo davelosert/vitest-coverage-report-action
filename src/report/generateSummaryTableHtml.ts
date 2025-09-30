@@ -8,6 +8,7 @@ function generateSummaryTableHtml(
 	jsonReport: CoverageReport,
 	thresholds: Thresholds = {},
 	jsonCompareReport: CoverageReport | undefined = undefined,
+	comparisonDecimalPlaces = 2,
 ): string {
 	return oneLine`
 		<table>
@@ -21,16 +22,16 @@ function generateSummaryTableHtml(
 			</thead>
 			<tbody>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.lines, category: "Lines", threshold: thresholds.lines, reportCompareNumbers: jsonCompareReport?.lines })}
+					${generateTableRow({ reportNumbers: jsonReport.lines, category: "Lines", threshold: thresholds.lines, reportCompareNumbers: jsonCompareReport?.lines, comparisonDecimalPlaces })}
 				</tr>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.statements, category: "Statements", threshold: thresholds.statements, reportCompareNumbers: jsonCompareReport?.statements })}
+					${generateTableRow({ reportNumbers: jsonReport.statements, category: "Statements", threshold: thresholds.statements, reportCompareNumbers: jsonCompareReport?.statements, comparisonDecimalPlaces })}
 				</tr>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.functions, category: "Functions", threshold: thresholds.functions, reportCompareNumbers: jsonCompareReport?.functions })}
+					${generateTableRow({ reportNumbers: jsonReport.functions, category: "Functions", threshold: thresholds.functions, reportCompareNumbers: jsonCompareReport?.functions, comparisonDecimalPlaces })}
 				</tr>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.branches, category: "Branches", threshold: thresholds.branches, reportCompareNumbers: jsonCompareReport?.branches })}
+					${generateTableRow({ reportNumbers: jsonReport.branches, category: "Branches", threshold: thresholds.branches, reportCompareNumbers: jsonCompareReport?.branches, comparisonDecimalPlaces })}
 				</tr>
 			</tbody>
 		</table>
@@ -42,11 +43,13 @@ function generateTableRow({
 	category,
 	threshold,
 	reportCompareNumbers,
+	comparisonDecimalPlaces = 2,
 }: {
 	reportNumbers: ReportNumbers;
 	category: string;
 	threshold?: number;
 	reportCompareNumbers?: ReportNumbers;
+	comparisonDecimalPlaces?: number;
 }): string {
 	let status = icons.blue;
 	let percent = `${reportNumbers.pct}%`;
@@ -58,7 +61,10 @@ function generateTableRow({
 
 	if (reportCompareNumbers) {
 		const percentDiff = reportNumbers.pct - reportCompareNumbers.pct;
-		const compareString = getCompareString(percentDiff);
+		const compareString = getCompareString(
+			percentDiff,
+			comparisonDecimalPlaces,
+		);
 		percent = `${percent}<br/>${compareString}`;
 	}
 
