@@ -48,6 +48,10 @@ inputs:
     required: false
     description: 'Number of decimal places to show in comparison percentages. Uses 2 by default.'
     default: '2'
+  show-all-file-comparisons:
+    required: false
+    description: 'Show comparison data for all files, not just changed files. Requires json-summary-compare-path to be set. Uses false by default.'
+    default: 'false'
 runs:
   using: 'node20'
   main: 'dist/index.js'

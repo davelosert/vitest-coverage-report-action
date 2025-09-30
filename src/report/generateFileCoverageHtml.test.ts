@@ -345,4 +345,94 @@ describe("generateFileCoverageHtml()", () => {
 
 		expect(html).toContain(relativeFilePath);
 	});
+
+	it("does not show comparison for unchanged files when showAllFileComparisons is false", () => {
+		const changedFilePath = path.join(workspacePath, "src", "changedFile.ts");
+		const unchangedFilePath = "src/unchangedFile.ts";
+
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			[changedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 80 }),
+			}),
+			[unchangedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 90 }),
+			}),
+		});
+
+		const jsonSummaryCompare: JsonSummary = createMockJsonSummary({
+			[changedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 70 }),
+			}),
+			[unchangedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 80 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: ["src/changedFile.ts"],
+			commitSHA: "test-sha",
+			workspacePath,
+			showAllFileComparisons: false,
+		});
+
+		// Changed file should have comparison
+		expect(html).toContain("src/changedFile.ts");
+		expect(html).toContain(`${icons.increase} <em>+10.00%</em>`);
+
+		// Unchanged file should NOT have comparison
+		const unchangedFileSection = html.split("Unchanged Files")[1];
+		expect(unchangedFileSection).toContain("src/unchangedFile.ts");
+		expect(unchangedFileSection).not.toContain(icons.increase);
+		expect(unchangedFileSection).not.toContain(icons.decrease);
+		expect(unchangedFileSection).not.toContain(icons.equal);
+	});
+
+	it("shows comparison for unchanged files when showAllFileComparisons is true", () => {
+		const changedFilePath = path.join(workspacePath, "src", "changedFile.ts");
+		const unchangedFilePath = "src/unchangedFile.ts";
+
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			[changedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 80 }),
+			}),
+			[unchangedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 90 }),
+			}),
+		});
+
+		const jsonSummaryCompare: JsonSummary = createMockJsonSummary({
+			[changedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 70 }),
+			}),
+			[unchangedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 80 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: ["src/changedFile.ts"],
+			commitSHA: "test-sha",
+			workspacePath,
+			showAllFileComparisons: true,
+		});
+
+		// Changed file should have comparison
+		expect(html).toContain("src/changedFile.ts");
+		expect(html).toContain(`${icons.increase} <em>+10.00%</em>`);
+
+		// Unchanged file SHOULD also have comparison when showAllFileComparisons is true
+		const unchangedFileSection = html.split("Unchanged Files")[1];
+		expect(unchangedFileSection).toContain("src/unchangedFile.ts");
+		expect(unchangedFileSection).toContain(
+			`${icons.increase} <em>+10.00%</em>`,
+		);
+	});
 });

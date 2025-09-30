@@ -22,6 +22,7 @@ type Options = {
 	commentOn: Array<CommentOn>;
 	fileCoverageRootPath: string;
 	comparisonDecimalPlaces: number;
+	showAllFileComparisons: boolean;
 };
 
 async function readOptions(octokit: Octokit): Promise<Options> {
@@ -81,6 +82,11 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		? Number.parseInt(comparisonDecimalPlacesInput, 10)
 		: 2;
 
+	const showAllFileComparisonsInput = core.getInput(
+		"show-all-file-comparisons",
+	);
+	const showAllFileComparisons = showAllFileComparisonsInput === "true";
+
 	return {
 		fileCoverageMode,
 		jsonFinalPath,
@@ -94,6 +100,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		commentOn,
 		fileCoverageRootPath,
 		comparisonDecimalPlaces,
+		showAllFileComparisons,
 	};
 }
 

@@ -19,6 +19,7 @@ type FileCoverageInputs = {
 	commitSHA: string;
 	workspacePath: string;
 	comparisonDecimalPlaces?: number;
+	showAllFileComparisons?: boolean;
 };
 
 const generateFileCoverageHtml = ({
@@ -30,6 +31,7 @@ const generateFileCoverageHtml = ({
 	commitSHA,
 	workspacePath,
 	comparisonDecimalPlaces = 2,
+	showAllFileComparisons = false,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
 
@@ -68,6 +70,11 @@ const generateFileCoverageHtml = ({
 	}
 
 	if (fileCoverageMode === FileCoverageMode.All && unchangedFiles.length > 0) {
+		// Pass comparison data to unchanged files only if showAllFileComparisons is true
+		const unchangedFilesCompare = showAllFileComparisons
+			? jsonSummaryCompare
+			: undefined;
+
 		reportData += `
 						${formatGroupLine("Unchanged Files")}
 						${unchangedFiles
@@ -75,7 +82,7 @@ const generateFileCoverageHtml = ({
 								generateRow(
 									filePath,
 									jsonSummary,
-									undefined,
+									unchangedFilesCompare,
 									jsonFinal,
 									commitSHA,
 									workspacePath,
