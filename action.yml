@@ -44,6 +44,10 @@ inputs:
     required: false
     description: 'Specify where you want a comment to appear: "pr" for pull-request (if one can be found), "commit" for the commit in which context the action was run, or "none" for no comments. You can provide a comma-separated list of "pr" and "commit" to comment on both. Uses "pr" by default.'
     default: pr
+  comparison-decimal-places:
+    required: false
+    description: 'Number of decimal places to show in comparison percentages. Uses 2 by default.'
+    default: '2'
 runs:
   using: 'node20'
   main: 'dist/index.js'

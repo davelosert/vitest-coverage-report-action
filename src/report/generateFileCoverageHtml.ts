@@ -18,6 +18,7 @@ type FileCoverageInputs = {
 	pullChanges: string[];
 	commitSHA: string;
 	workspacePath: string;
+	comparisonDecimalPlaces?: number;
 };
 
 const generateFileCoverageHtml = ({
@@ -28,6 +29,7 @@ const generateFileCoverageHtml = ({
 	pullChanges,
 	commitSHA,
 	workspacePath,
+	comparisonDecimalPlaces = 2,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
 
@@ -58,6 +60,7 @@ const generateFileCoverageHtml = ({
 								jsonFinal,
 								commitSHA,
 								workspacePath,
+								comparisonDecimalPlaces,
 							),
 						)
 						.join("")}
@@ -76,6 +79,7 @@ const generateFileCoverageHtml = ({
 									jsonFinal,
 									commitSHA,
 									workspacePath,
+									comparisonDecimalPlaces,
 								),
 							)
 							.join("")}
@@ -108,6 +112,7 @@ function generateRow(
 	jsonFinal: JsonFinal,
 	commitSHA: string,
 	workspacePath: string,
+	comparisonDecimalPlaces = 2,
 ): string {
 	const coverageSummary = jsonSummary[filePath];
 	const coverageSummaryCompare = jsonSummaryCompare
@@ -125,10 +130,10 @@ function generateRow(
 	return `
 			<tr>
 				<td align="left"><a href="${url}">${relativeFilePath}</a></td>
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "statements")}
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches")}
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions")}
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines")}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "statements", comparisonDecimalPlaces)}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches", comparisonDecimalPlaces)}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions", comparisonDecimalPlaces)}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines", comparisonDecimalPlaces)}
 				<td align="left">${createRangeURLs(uncoveredLines, url)}</td>
 			</tr>`;
 }
@@ -137,11 +142,12 @@ function generateCoverageCell(
 	summary: CoverageReport,
 	summaryCompare: CoverageReport | undefined,
 	field: keyof CoverageReport,
+	comparisonDecimalPlaces = 2,
 ): string {
 	let diffText = "";
 	if (summaryCompare) {
 		const diff = summary[field].pct - summaryCompare[field].pct;
-		diffText = `<br/>${getCompareString(diff)}`;
+		diffText = `<br/>${getCompareString(diff, comparisonDecimalPlaces)}`;
 	}
 	return `<td align="right">${summary[field].pct}%${diffText}</td>`;
 }

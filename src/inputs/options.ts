@@ -21,6 +21,7 @@ type Options = {
 	commitSHA: string;
 	commentOn: Array<CommentOn>;
 	fileCoverageRootPath: string;
+	comparisonDecimalPlaces: number;
 };
 
 async function readOptions(octokit: Octokit): Promise<Options> {
@@ -73,6 +74,13 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 
 	const fileCoverageRootPath = core.getInput("file-coverage-root-path");
 
+	const comparisonDecimalPlacesInput = core.getInput(
+		"comparison-decimal-places",
+	);
+	const comparisonDecimalPlaces = comparisonDecimalPlacesInput
+		? Number.parseInt(comparisonDecimalPlacesInput, 10)
+		: 2;
+
 	return {
 		fileCoverageMode,
 		jsonFinalPath,
@@ -85,6 +93,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		commitSHA,
 		commentOn,
 		fileCoverageRootPath,
+		comparisonDecimalPlaces,
 	};
 }
 
