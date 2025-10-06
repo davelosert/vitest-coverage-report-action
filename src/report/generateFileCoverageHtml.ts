@@ -18,6 +18,9 @@ type FileCoverageInputs = {
 	pullChanges: string[];
 	commitSHA: string;
 	workspacePath: string;
+	comparisonDecimalPlaces?: number;
+	showAllFileComparisons?: boolean;
+	showAffectedFiles?: boolean;
 };
 
 const generateFileCoverageHtml = ({
@@ -28,6 +31,9 @@ const generateFileCoverageHtml = ({
 	pullChanges,
 	commitSHA,
 	workspacePath,
+	comparisonDecimalPlaces = 2,
+	showAllFileComparisons = false,
+	showAffectedFiles = false,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
 
@@ -58,6 +64,7 @@ const generateFileCoverageHtml = ({
 								jsonFinal,
 								commitSHA,
 								workspacePath,
+								comparisonDecimalPlaces,
 							),
 						)
 						.join("")}
@@ -65,21 +72,80 @@ const generateFileCoverageHtml = ({
 	}
 
 	if (fileCoverageMode === FileCoverageMode.All && unchangedFiles.length > 0) {
-		reportData += `
+		// Split unchanged files into affected and unaffected if comparison data is available and feature is enabled
+		if (showAffectedFiles && jsonSummaryCompare) {
+			const [affectedFiles, unaffectedFiles] = splitFilesByCoverageChange(
+				unchangedFiles,
+				jsonSummary,
+				jsonSummaryCompare,
+			);
+
+			// Show affected files group
+			if (affectedFiles.length > 0) {
+				reportData += `
+						${formatGroupLine("Affected Files")}
+						${affectedFiles
+							.map((filePath) =>
+								generateRow(
+									filePath,
+									jsonSummary,
+									jsonSummaryCompare,
+									jsonFinal,
+									commitSHA,
+									workspacePath,
+									comparisonDecimalPlaces,
+								),
+							)
+							.join("")}
+					`;
+			}
+
+			// Show unaffected files group (with or without comparisons based on showAllFileComparisons)
+			if (unaffectedFiles.length > 0) {
+				const unaffectedFilesCompare = showAllFileComparisons
+					? jsonSummaryCompare
+					: undefined;
+
+				reportData += `
+						${formatGroupLine("Unaffected Files")}
+						${unaffectedFiles
+							.map((filePath) =>
+								generateRow(
+									filePath,
+									jsonSummary,
+									unaffectedFilesCompare,
+									jsonFinal,
+									commitSHA,
+									workspacePath,
+									comparisonDecimalPlaces,
+								),
+							)
+							.join("")}
+					`;
+			}
+		} else {
+			// Original behavior: show all unchanged files
+			const unchangedFilesCompare = showAllFileComparisons
+				? jsonSummaryCompare
+				: undefined;
+
+			reportData += `
 						${formatGroupLine("Unchanged Files")}
 						${unchangedFiles
 							.map((filePath) =>
 								generateRow(
 									filePath,
 									jsonSummary,
-									undefined,
+									unchangedFilesCompare,
 									jsonFinal,
 									commitSHA,
 									workspacePath,
+									comparisonDecimalPlaces,
 								),
 							)
 							.join("")}
 				`;
+		}
 	}
 
 	return oneLine`
@@ -108,6 +174,7 @@ function generateRow(
 	jsonFinal: JsonFinal,
 	commitSHA: string,
 	workspacePath: string,
+	comparisonDecimalPlaces = 2,
 ): string {
 	const coverageSummary = jsonSummary[filePath];
 	const coverageSummaryCompare = jsonSummaryCompare
@@ -125,10 +192,10 @@ function generateRow(
 	return `
 			<tr>
 				<td align="left"><a href="${url}">${relativeFilePath}</a></td>
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "statements")}
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches")}
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions")}
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines")}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "statements", comparisonDecimalPlaces)}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches", comparisonDecimalPlaces)}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions", comparisonDecimalPlaces)}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines", comparisonDecimalPlaces)}
 				<td align="left">${createRangeURLs(uncoveredLines, url)}</td>
 			</tr>`;
 }
@@ -137,11 +204,12 @@ function generateCoverageCell(
 	summary: CoverageReport,
 	summaryCompare: CoverageReport | undefined,
 	field: keyof CoverageReport,
+	comparisonDecimalPlaces = 2,
 ): string {
 	let diffText = "";
 	if (summaryCompare) {
 		const diff = summary[field].pct - summaryCompare[field].pct;
-		diffText = `<br/>${getCompareString(diff)}`;
+		diffText = `<br/>${getCompareString(diff, comparisonDecimalPlaces)}`;
 	}
 	return `<td align="right">${summary[field].pct}%${diffText}</td>`;
 }
@@ -186,6 +254,45 @@ function splitFilesByChangeStatus(
 				unchangedFiles.push(filePath);
 			}
 			return [changedFiles, unchangedFiles];
+		},
+		[[], []] as [string[], string[]],
+	);
+}
+
+function splitFilesByCoverageChange(
+	filePaths: string[],
+	jsonSummary: JsonSummary,
+	jsonSummaryCompare: JsonSummary,
+): [string[], string[]] {
+	return filePaths.reduce(
+		([affectedFiles, unaffectedFiles], filePath) => {
+			const currentCoverage = jsonSummary[filePath];
+			const previousCoverage = jsonSummaryCompare[filePath];
+
+			// If file doesn't exist in comparison, consider it unaffected
+			if (!previousCoverage) {
+				unaffectedFiles.push(filePath);
+				return [affectedFiles, unaffectedFiles];
+			}
+
+			// Check if any coverage metric has changed
+			// Using strict equality is acceptable here because:
+			// 1. These percentages come from the same source (vitest coverage reports)
+			// 2. The comparison is only for categorization, not for display
+			// 3. Any actual change will be reflected in the comparison display
+			const hasChanged =
+				currentCoverage.statements.pct !== previousCoverage.statements.pct ||
+				currentCoverage.branches.pct !== previousCoverage.branches.pct ||
+				currentCoverage.functions.pct !== previousCoverage.functions.pct ||
+				currentCoverage.lines.pct !== previousCoverage.lines.pct;
+
+			if (hasChanged) {
+				affectedFiles.push(filePath);
+			} else {
+				unaffectedFiles.push(filePath);
+			}
+
+			return [affectedFiles, unaffectedFiles];
 		},
 		[[], []] as [string[], string[]],
 	);
