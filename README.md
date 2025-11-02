@@ -206,11 +206,11 @@ jobs:
         ## Check out the repository to obtain the vitest.config file
       - uses: actions/checkout@v5
       - name: "Download Coverage Artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: coverage-pull-request
           path: coverage
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: coverage-main
           path: coverage-main
@@ -322,7 +322,7 @@ It will then automatically locate the appropriate pull request to comment on.
 
         steps:
           - uses: actions/checkout@v5
-          - uses: actions/download-artifact@v4
+          - uses: actions/download-artifact@v6
             with:
               github-token: ${{ secrets.GITHUB_TOKEN }}
               run-id: ${{ github.event.workflow_run.id }}
