@@ -24,7 +24,7 @@ describe("getViteConfigPath", () => {
 		);
 	});
 
-	it("returns null if config file can not be found", async (): Promise<void> => {
+	it("returns null if config file cannot be found", async (): Promise<void> => {
 		vi.spyOn(core, "warning").mockImplementationOnce(() => {});
 		await expect(
 			getViteConfigPath(mockWorkingDirectory, "doesNotExist"),

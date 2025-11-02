@@ -15,7 +15,7 @@ async function getPullRequestNumber(
 
 	const processedPrNumber: number | undefined = Number(prNumberFromInput);
 
-	// Check if it is a full integer. Check for non-null as qhen the option is not set, the parsed input will be an empty string
+	// Check if it is a full integer. Check for non-null as when the option is not set, the parsed input will be an empty string
 	// which becomes 0 when parsed to a number.
 	if (Number.isSafeInteger(processedPrNumber) && processedPrNumber !== 0) {
 		core.info(`Received pull-request number: ${processedPrNumber}`);
@@ -58,7 +58,7 @@ async function getPullRequestNumber(
 		const sha = github.context.payload.workflow_run.head_sha;
 		// ... in all other cases, we have to call the API to get a matching PR number
 		core.info(
-			`Trying to find a pull-request with a head commit matchin the SHA found in the action's "payload.workflow_run.head_sha" context (${sha}) from the GitHub API.`,
+			`Trying to find a pull-request with a head commit matching the SHA found in the action's "payload.workflow_run.head_sha" context (${sha}) from the GitHub API.`,
 		);
 		return await fetchPRsByListingAllPRs(
 			octokit,

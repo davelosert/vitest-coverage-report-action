@@ -223,7 +223,7 @@ describe("generateFileCoverageHtml()", () => {
 		expect(tableLine).toContain("#L5-L6");
 	});
 
-	it("renders an equal sign for files without changes to covergage", () => {
+	it("renders an equal sign for files without changes to coverage", () => {
 		const jsonSummary: JsonSummary = createMockJsonSummary({
 			"file1.ts": createMockCoverageReport(),
 		});
