@@ -54,7 +54,7 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - name: 'Install Node'
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: '20.x'
     - name: 'Install Deps'
@@ -186,7 +186,7 @@ jobs:
           ## Set repository to correctly checkout from forks
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: "Install Node"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20.x"
       - name: "Install Deps"
@@ -287,7 +287,7 @@ It will then automatically locate the appropriate pull request to comment on.
         steps:
           - uses: actions/checkout@v5
           - name: "Install Node"
-            uses: actions/setup-node@v4
+            uses: actions/setup-node@v6
             with:
               node-version: "20.x"
           - name: "Install Deps"
