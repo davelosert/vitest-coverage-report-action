@@ -52,7 +52,7 @@ jobs:
       pull-requests: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: 'Install Node'
       uses: actions/setup-node@v4
       with:
@@ -180,7 +180,7 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ matrix.branch }}
           ## Set repository to correctly checkout from forks
@@ -204,7 +204,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         ## Check out the repository to obtain the vitest.config file
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Download Coverage Artifacts"
         uses: actions/download-artifact@v4
         with:
@@ -285,7 +285,7 @@ It will then automatically locate the appropriate pull request to comment on.
           contents: read
 
         steps:
-          - uses: actions/checkout@v4
+          - uses: actions/checkout@v5
           - name: "Install Node"
             uses: actions/setup-node@v4
             with:
@@ -321,7 +321,7 @@ It will then automatically locate the appropriate pull request to comment on.
           pull-requests: write
 
         steps:
-          - uses: actions/checkout@v4
+          - uses: actions/checkout@v5
           - uses: actions/download-artifact@v4
             with:
               github-token: ${{ secrets.GITHUB_TOKEN }}
