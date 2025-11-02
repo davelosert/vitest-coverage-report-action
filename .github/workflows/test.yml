@@ -72,3 +72,10 @@ jobs:
           file-coverage-mode: "all"
           json-summary-compare-path: coverage-main/coverage-summary.json
           comment-on: 'pr,commit'
+
+      - name: "Upload build"
+        if: env.ACTIONS_STEP_DEBUG == 'true'
+        uses: actions/upload-artifact@v5
+        with:
+          name: dist
+          path: dist
