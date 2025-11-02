@@ -15,7 +15,7 @@ async function getPullRequestNumber(
 
 	const processedPrNumber: number | undefined = Number(prNumberFromInput);
 
-	// Check if it is a full integer. Check for non-null as qhen the option is not set, the parsed input will be an empty string
+	// Check if it is a full integer. Check for non-null as when the option is not set, the parsed input will be an empty string
 	// which becomes 0 when parsed to a number.
 	if (Number.isSafeInteger(processedPrNumber) && processedPrNumber !== 0) {
 		core.info(`Received pull-request number: ${processedPrNumber}`);
