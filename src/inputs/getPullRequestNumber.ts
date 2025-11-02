@@ -58,7 +58,7 @@ async function getPullRequestNumber(
 		const sha = github.context.payload.workflow_run.head_sha;
 		// ... in all other cases, we have to call the API to get a matching PR number
 		core.info(
-			`Trying to find a pull-request with a head commit matchin the SHA found in the action's "payload.workflow_run.head_sha" context (${sha}) from the GitHub API.`,
+			`Trying to find a pull-request with a head commit matching the SHA found in the action's "payload.workflow_run.head_sha" context (${sha}) from the GitHub API.`,
 		);
 		return await fetchPRsByListingAllPRs(
 			octokit,
