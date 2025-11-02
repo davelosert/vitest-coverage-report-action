@@ -40,7 +40,7 @@ describe("getUncoveredLinesFromStatements()", () => {
 		expect(uncoveredLines).toEqual([]);
 	});
 
-	it("returns a linge range of 3 lines if all statements are uncovered.", () => {
+	it("returns a line range of 3 lines if all statements are uncovered.", () => {
 		const statements: StatementCoverageReport = {
 			statementMap: {
 				"0": {
