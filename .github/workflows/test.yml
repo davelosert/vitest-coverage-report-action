@@ -32,7 +32,7 @@ jobs:
       - name: "Upload Coverage"
         uses: actions/upload-artifact@v4
         with:
-          ## We can't use the branch name as it can contain invalid characters (e.g. dependabot has forward slashes in it's branch name)
+          ## We can't use the branch name as it can contain invalid characters (e.g. dependabot has forward slashes in its branch name)
           name: "coverage-${{ matrix.branch == 'main' && 'main' || 'test-branch' }}"
           path: coverage
 
