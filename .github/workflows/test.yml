@@ -30,7 +30,7 @@ jobs:
       - name: "Test"
         run: npm run test:coverage
       - name: "Upload Coverage"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           ## We can't use the branch name as it can contain invalid characters (e.g. dependabot has forward slashes in its branch name)
           name: "coverage-${{ matrix.branch == 'main' && 'main' || 'test-branch' }}"

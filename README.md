@@ -194,7 +194,7 @@ jobs:
       - name: "Test"
         run: npx vitest --coverage.enabled true
       - name: "Upload Coverage"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-${{ matrix.artifact }}
           path: coverage
@@ -296,7 +296,7 @@ It will then automatically locate the appropriate pull request to comment on.
             run: npx vitest --coverage.enabled true
 
           - name: "Upload Coverage"
-            uses: actions/upload-artifact@v4
+            uses: actions/upload-artifact@v5
             with:
               name: coverage
               path: coverage
