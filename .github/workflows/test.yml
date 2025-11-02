@@ -9,17 +9,21 @@ jobs:
 
     strategy:
       matrix:
-        branch:
-          - ${{ github.head_ref }}
-          - "main"
+        include:
+          - ref: ${{ github.head_ref }}
+            repo: ${{ github.event.pull_request.head.repo.full_name }}
+            kind: incoming
+          - ref: ${{ github.event.pull_request.base.ref }}
+            repo: ${{ github.event.pull_request.base.repo.full_name }}
+            kind: base
 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ matrix.branch }}
+          ref: ${{ matrix.ref }}
           ## Set repository to correctly checkout from forks
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          repository: ${{ matrix.repo }}
       - name: "Install Node"
         uses: actions/setup-node@v6
         with:
@@ -32,8 +36,7 @@ jobs:
       - name: "Upload Coverage"
         uses: actions/upload-artifact@v5
         with:
-          ## We can't use the branch name as it can contain invalid characters (e.g. dependabot has forward slashes in its branch name)
-          name: "coverage-${{ matrix.branch == 'main' && 'main' || 'test-branch' }}"
+          name: "coverage-${{ matrix.kind }}"
           path: coverage
 
   build-and-report:
@@ -57,20 +60,20 @@ jobs:
       - name: "Download Coverage Artifacts for ${{ github.head_ref}}"
         uses: actions/download-artifact@v6
         with:
-          name: coverage-test-branch
+          name: coverage-incoming
           path: coverage 
 
       - name: "Download Coverage Artifacts for main"
         uses: actions/download-artifact@v6
         with:
-          name: coverage-main
-          path: coverage-main
+          name: coverage-base
+          path: coverage-base
 
       - name: "Test Action by generating coverage"
         uses: ./
         with:
           file-coverage-mode: "all"
-          json-summary-compare-path: coverage-main/coverage-summary.json
+          json-summary-compare-path: coverage-base/coverage-summary.json
           comment-on: 'pr,commit'
 
       - name: "Upload build"
