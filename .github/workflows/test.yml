@@ -9,19 +9,23 @@ jobs:
 
     strategy:
       matrix:
-        branch:
-          - ${{ github.head_ref }}
-          - "main"
+        include:
+          - ref: ${{ github.head_ref }}
+            repo: ${{ github.event.pull_request.head.repo.full_name }}
+            branch: test-branch
+          - ref: ${{ github.event.pull_request.base.ref }}
+            repo: ${{ github.event.pull_request.base.repo.full_name }}
+            branch: main
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
-          ref: ${{ matrix.branch }}
+          ref: ${{ matrix.ref }}
           ## Set repository to correctly checkout from forks
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          repository: ${{ matrix.repo }}
       - name: "Install Node"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20.x"
           cache: "npm"
@@ -30,7 +34,7 @@ jobs:
       - name: "Test"
         run: npm run test:coverage
       - name: "Upload Coverage"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           ## We can't use the branch name as it can contain invalid characters (e.g. dependatbot hast forwared slashes in it's branch name)
           name: "coverage-${{ matrix.branch == 'main' && 'main' || 'test-branch' }}"
@@ -40,9 +44,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Install Node"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20.x"
           cache: "npm"
@@ -55,13 +59,13 @@ jobs:
         run: rm -rf node_modules
 
       - name: "Download Coverage Artifacts for ${{ github.head_ref}}"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: coverage-test-branch
           path: coverage 
 
       - name: "Download Coverage Artifacts for main"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: coverage-main
           path: coverage-main
@@ -72,3 +76,9 @@ jobs:
           file-coverage-mode: "all"
           json-summary-compare-path: coverage-main/coverage-summary.json
           comment-on: 'pr,commit'
+
+      - name: "Upload build"
+        uses: actions/upload-artifact@v5
+        with:
+          name: dist
+          path: dist
