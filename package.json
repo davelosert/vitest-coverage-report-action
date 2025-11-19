@@ -41,13 +41,13 @@
     "@semantic-release/git": "10.0.1",
     "@semantic-release/github": "11.0.6",
     "@types/common-tags": "1.8.4",
-    "@types/node": "24.10.0",
-    "@vitest/coverage-v8": "4.0.6",
-    "esbuild": "0.25.12",
+    "@types/node": "24.10.1",
+    "@vitest/coverage-v8": "4.0.10",
+    "esbuild": "0.27.0",
     "semantic-release": "25.0.2",
     "semantic-release-github-actions-tags": "2.0.2",
     "typescript": "5.9.3",
-    "vite": "7.1.12",
-    "vitest": "4.0.6"
+    "vite": "7.2.2",
+    "vitest": "4.0.10"
   }
 }
