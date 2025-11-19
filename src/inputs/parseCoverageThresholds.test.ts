@@ -19,7 +19,7 @@ describe("generateTableData", () => {
 	const getConfig = (configName: string) =>
 		path.resolve(mockConfigPath, configName);
 
-	it("returns no thresholds if config file can not be found.", async (): Promise<void> => {
+	it("returns no thresholds if config file cannot be found.", async (): Promise<void> => {
 		const thresholds = await parseCoverageThresholds(getConfig("doesNotExist"));
 
 		expect(thresholds).toEqual({});
