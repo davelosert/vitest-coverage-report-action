@@ -21,6 +21,9 @@ type Options = {
 	commitSHA: string;
 	commentOn: Array<CommentOn>;
 	fileCoverageRootPath: string;
+	comparisonDecimalPlaces: number;
+	showAllFileComparisons: boolean;
+	showAffectedFiles: boolean;
 };
 
 async function readOptions(octokit: Octokit): Promise<Options> {
@@ -73,6 +76,21 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 
 	const fileCoverageRootPath = core.getInput("file-coverage-root-path");
 
+	const comparisonDecimalPlacesInput = core.getInput(
+		"comparison-decimal-places",
+	);
+	const comparisonDecimalPlaces = comparisonDecimalPlacesInput
+		? Number.parseInt(comparisonDecimalPlacesInput, 10)
+		: 2;
+
+	const showAllFileComparisonsInput = core.getInput(
+		"show-all-file-comparisons",
+	);
+	const showAllFileComparisons = showAllFileComparisonsInput === "true";
+
+	const showAffectedFilesInput = core.getInput("show-affected-files");
+	const showAffectedFiles = showAffectedFilesInput === "true";
+
 	return {
 		fileCoverageMode,
 		jsonFinalPath,
@@ -85,6 +103,9 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		commitSHA,
 		commentOn,
 		fileCoverageRootPath,
+		comparisonDecimalPlaces,
+		showAllFileComparisons,
+		showAffectedFiles,
 	};
 }
 
