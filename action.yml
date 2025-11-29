@@ -44,6 +44,18 @@ inputs:
     required: false
     description: 'Specify where you want a comment to appear: "pr" for pull-request (if one can be found), "commit" for the commit in which context the action was run, or "none" for no comments. You can provide a comma-separated list of "pr" and "commit" to comment on both. Uses "pr" by default.'
     default: pr
+  comparison-decimal-places:
+    required: false
+    description: 'Number of decimal places to show in comparison percentages. Uses 2 by default.'
+    default: '2'
+  show-all-file-comparisons:
+    required: false
+    description: 'Show comparison data for all files, not just changed files. Requires json-summary-compare-path to be set. Uses false by default.'
+    default: 'false'
+  show-affected-files:
+    required: false
+    description: 'Group unchanged files into "Affected Files" (files with coverage changes) and "Unaffected Files" (files without coverage changes). Requires json-summary-compare-path to be set and file-coverage-mode to be "all". Uses false by default.'
+    default: 'false'
 runs:
   using: 'node24'
   main: 'dist/index.js'
