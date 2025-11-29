@@ -37,8 +37,9 @@ You need to install [NodeJS & NPM](https://nodejs.org/en) to be able to test you
 5. Make sure linter passes on your machine: `npm run lint` (powered by [biome.js][biome]).
 6. Make your change(s), add tests, and make sure the tests and linter still pass.
   6.1. In case the linters fail, use `npm run lint:write` to automatically fix all automatically fixable issues. Fix the rest manually.
-7. Push to your fork and [submit a pull request][pr].
-8. Pat your self on the back and wait for your pull request to be reviewed and merged.
+7. You do not need to include changes to `dist/`, they will be integrated into the repository as part of a release process after your pr is merged.
+8. Push to your fork and [submit a pull request][pr].
+9. Pat your self on the back and wait for your pull request to be reviewed and merged.
 
 #### Coding Guidelines
 
