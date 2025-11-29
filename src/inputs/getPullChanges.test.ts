@@ -1,5 +1,5 @@
 import { RequestError } from "@octokit/request-error";
-import { Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Octokit } from "../octokit";
 import { FileCoverageMode } from "./FileCoverageMode";
 import { getPullChanges } from "./getPullChanges";

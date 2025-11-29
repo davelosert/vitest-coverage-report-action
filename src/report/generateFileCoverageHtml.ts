@@ -6,8 +6,8 @@ import type { CoverageReport, JsonSummary } from "../types/JsonSummary";
 import { generateBlobFileUrl } from "./generateFileUrl";
 import { getCompareString } from "./getCompareString";
 import {
-	type LineRange,
 	getUncoveredLinesFromStatements,
+	type LineRange,
 } from "./getUncoveredLinesFromStatements";
 
 type FileCoverageInputs = {

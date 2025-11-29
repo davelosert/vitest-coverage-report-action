@@ -12,7 +12,7 @@ const getUncoveredLinesFromStatements = ({
 	const keys = Object.keys(statementMap);
 
 	const uncoveredLineRanges: LineRange[] = [];
-	let currentRange: LineRange | undefined = undefined;
+	let currentRange: LineRange | undefined;
 	for (const key of keys) {
 		if (s[key] > 0) {
 			// If the statement is covered, we need to close the current range.

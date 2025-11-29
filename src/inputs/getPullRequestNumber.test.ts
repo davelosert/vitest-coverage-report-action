@@ -1,11 +1,11 @@
 import type * as core from "@actions/core";
 import {
-	type Mock,
 	afterEach,
 	beforeEach,
 	describe,
 	expect,
 	it,
+	type Mock,
 	vi,
 } from "vitest";
 import type { Octokit } from "../octokit";
