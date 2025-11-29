@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { parseThresholdIcons } from "./parseThresholdAlert";
+import { parseThresholdIcons } from "./parseThresholdIcons";
 
 vi.mock("@actions/core", () => ({
 	warning: vi.fn(),

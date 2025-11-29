@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { getTableLine } from "../../test/queryHelper";
-import { icons } from "../icons";
+import { defaultThresholdIcons, icons } from "../icons";
 import {
 	createMockCoverageReport,
 	createMockReportNumbers,
 } from "../types/JsonSummaryMockFactory";
-import type { ThresholdIcons } from "../types/ThresholdAlert";
+import type { ThresholdIcons } from "../types/ThresholdIcons";
 import type { Thresholds } from "../types/Threshold";
 import { generateSummaryTableHtml } from "./generateSummaryTableHtml";
 
@@ -81,7 +81,7 @@ describe("generateSummaryTabelHtml()", () => {
 		expect(getTableLine(1, summaryHtml)).toContain("8 / 10");
 	});
 
-	it("adds green-circle if percentage is above threshold.", async (): Promise<void> => {
+	it("shows blue-circle when vitest threshold is defined but no custom thresholdIcons provided.", async (): Promise<void> => {
 		const thresholds: Thresholds = { lines: 80 };
 		const mockReport = createMockCoverageReport({
 			lines: createMockReportNumbers({
@@ -92,25 +92,11 @@ describe("generateSummaryTabelHtml()", () => {
 			mockReport,
 			thresholds,
 			undefined,
+			defaultThresholdIcons,
 		);
 
-		expect(getTableLine(1, summaryHtml)).toContain(icons.green);
-	});
-
-	it("adds red-circle if percentage is below threshold.", async (): Promise<void> => {
-		const thresholds: Thresholds = { lines: 100 };
-		const mockReport = createMockCoverageReport({
-			lines: createMockReportNumbers({
-				pct: 81,
-			}),
-		});
-		const summaryHtml = generateSummaryTableHtml(
-			mockReport,
-			thresholds,
-			undefined,
-		);
-
-		expect(getTableLine(1, summaryHtml)).toContain(icons.red);
+		// With normalized behavior, default thresholdIcons (blue) is always used unless custom icons provided
+		expect(getTableLine(1, summaryHtml)).toContain(icons.blue);
 	});
 
 	it("if threshold is given, provides the threshold in the category column.", async (): Promise<void> => {
@@ -285,7 +271,7 @@ describe("generateSummaryTabelHtml()", () => {
 			expect(getTableLine(1, summaryHtml)).toContain(icons.blue);
 		});
 
-		it("vitest threshold takes precedence over thresholdIcons", async (): Promise<void> => {
+		it("thresholdIcons takes precedence when both vitest threshold and thresholdIcons are provided", async (): Promise<void> => {
 			const thresholds: Thresholds = { lines: 80 };
 			const thresholdIcons: ThresholdIcons = {
 				0: "❌",
@@ -305,11 +291,10 @@ describe("generateSummaryTabelHtml()", () => {
 				thresholdIcons,
 			);
 
-			// Should use green from vitest threshold, not any thresholdIcons icon
-			expect(getTableLine(1, summaryHtml)).toContain(icons.green);
-			expect(getTableLine(1, summaryHtml)).not.toContain("❌");
-			expect(getTableLine(1, summaryHtml)).not.toContain("⚠️");
-			expect(getTableLine(1, summaryHtml)).not.toContain("✅");
+			// thresholdIcons takes precedence - 85% matches the 50 threshold (⚠️)
+			expect(getTableLine(1, summaryHtml)).toContain("⚠️");
+			// But vitest threshold target should still be shown
+			expect(getTableLine(1, summaryHtml)).toContain("🎯 80%");
 		});
 
 		it("uses exact threshold boundary correctly", async (): Promise<void> => {

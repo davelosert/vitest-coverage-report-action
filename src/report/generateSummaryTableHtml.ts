@@ -1,7 +1,7 @@
 import { oneLine } from "common-tags";
-import { icons } from "../icons";
+import { defaultThresholdIcons, icons } from "../icons";
 import type { CoverageReport, ReportNumbers } from "../types/JsonSummary";
-import type { ThresholdIcons } from "../types/ThresholdAlert";
+import type { ThresholdIcons } from "../types/ThresholdIcons";
 import type { Thresholds } from "../types/Threshold";
 import { getCompareString } from "./getCompareString";
 
@@ -9,7 +9,7 @@ function generateSummaryTableHtml(
 	jsonReport: CoverageReport,
 	thresholds: Thresholds = {},
 	jsonCompareReport: CoverageReport | undefined = undefined,
-	thresholdIcons: ThresholdIcons | undefined = undefined,
+	thresholdIcons: ThresholdIcons = defaultThresholdIcons,
 ): string {
 	return oneLine`
 		<table>
@@ -72,19 +72,17 @@ function generateTableRow({
 	category: string;
 	threshold?: number;
 	reportCompareNumbers?: ReportNumbers;
-	thresholdIcons?: ThresholdIcons;
+	thresholdIcons: ThresholdIcons;
 }): string {
-	let status = icons.blue;
 	let percent = `${reportNumbers.pct}%`;
 
+	// If vitest threshold is defined, show the target percentage
 	if (threshold) {
-		// When vitest threshold is defined, use it for status determination
 		percent = `${percent} (${icons.target} ${threshold}%)`;
-		status = reportNumbers.pct >= threshold ? icons.green : icons.red;
-	} else if (thresholdIcons) {
-		// When no vitest threshold but thresholdIcons is provided, use it for status icon
-		status = getStatusFromThresholdIcons(reportNumbers.pct, thresholdIcons);
 	}
+
+	// Always use thresholdIcons for status icon
+	const status = getStatusFromThresholdIcons(reportNumbers.pct, thresholdIcons);
 
 	if (reportCompareNumbers) {
 		const percentDiff = reportNumbers.pct - reportCompareNumbers.pct;

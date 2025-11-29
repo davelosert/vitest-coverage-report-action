@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import type { ThresholdIcons } from "../types/ThresholdAlert";
+import type { ThresholdIcons } from "../types/ThresholdIcons";
 
 /**
  * Parses the threshold-icons input string into a ThresholdIcons object.
