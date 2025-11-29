@@ -41,7 +41,7 @@ const getViteConfigPath = async (workingDirectory: string, input: string) => {
 		}
 
 		return await testFilePath(workingDirectory, input);
-	} catch (error) {
+	} catch (_error) {
 		const searchPath = input
 			? path.resolve(workingDirectory, input)
 			: `any default location in "${workingDirectory}"`;

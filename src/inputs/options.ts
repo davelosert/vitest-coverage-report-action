@@ -65,7 +65,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 
 	const commitSHA = getCommitSHA();
 
-	let prNumber: number | undefined = undefined;
+	let prNumber: number | undefined;
 	if (commentOn.includes("pr")) {
 		// Get the user-defined pull-request number and perform input validation
 		prNumber = await getPullRequestNumber(octokit);
