@@ -5,6 +5,7 @@ import {
 	createMockCoverageReport,
 	createMockReportNumbers,
 } from "../types/JsonSummaryMockFactory";
+import type { ThresholdAlert } from "../types/ThresholdAlert";
 import type { Thresholds } from "../types/Threshold";
 import { generateSummaryTableHtml } from "./generateSummaryTableHtml";
 
@@ -194,5 +195,142 @@ describe("generateSummaryTabelHtml()", () => {
 		);
 
 		expect(getTableLine(1, summaryHtml)).toContain("90%<br/>🟰 <em>±0%</em>");
+	});
+
+	describe("thresholdAlert", () => {
+		it("uses thresholdAlert icon when no vitest threshold is defined", async (): Promise<void> => {
+			const thresholdAlert: ThresholdAlert = {
+				0: "🔴",
+				80: "🟠",
+				90: "🟢",
+			};
+			const mockReport = createMockCoverageReport({
+				lines: createMockReportNumbers({
+					pct: 85,
+				}),
+			});
+
+			const summaryHtml = generateSummaryTableHtml(
+				mockReport,
+				undefined,
+				undefined,
+				thresholdAlert,
+			);
+
+			expect(getTableLine(1, summaryHtml)).toContain("🟠");
+		});
+
+		it("uses red icon for low coverage based on thresholdAlert", async (): Promise<void> => {
+			const thresholdAlert: ThresholdAlert = {
+				0: "🔴",
+				80: "🟠",
+				90: "🟢",
+			};
+			const mockReport = createMockCoverageReport({
+				lines: createMockReportNumbers({
+					pct: 50,
+				}),
+			});
+
+			const summaryHtml = generateSummaryTableHtml(
+				mockReport,
+				undefined,
+				undefined,
+				thresholdAlert,
+			);
+
+			expect(getTableLine(1, summaryHtml)).toContain("🔴");
+		});
+
+		it("uses green icon for high coverage based on thresholdAlert", async (): Promise<void> => {
+			const thresholdAlert: ThresholdAlert = {
+				0: "🔴",
+				80: "🟠",
+				90: "🟢",
+			};
+			const mockReport = createMockCoverageReport({
+				lines: createMockReportNumbers({
+					pct: 95,
+				}),
+			});
+
+			const summaryHtml = generateSummaryTableHtml(
+				mockReport,
+				undefined,
+				undefined,
+				thresholdAlert,
+			);
+
+			expect(getTableLine(1, summaryHtml)).toContain("🟢");
+		});
+
+		it("falls back to blue if coverage is below all thresholds", async (): Promise<void> => {
+			const thresholdAlert: ThresholdAlert = {
+				50: "🟠",
+				80: "🟢",
+			};
+			const mockReport = createMockCoverageReport({
+				lines: createMockReportNumbers({
+					pct: 30,
+				}),
+			});
+
+			const summaryHtml = generateSummaryTableHtml(
+				mockReport,
+				undefined,
+				undefined,
+				thresholdAlert,
+			);
+
+			expect(getTableLine(1, summaryHtml)).toContain(icons.blue);
+		});
+
+		it("vitest threshold takes precedence over thresholdAlert", async (): Promise<void> => {
+			const thresholds: Thresholds = { lines: 80 };
+			const thresholdAlert: ThresholdAlert = {
+				0: "❌",
+				50: "⚠️",
+				90: "✅",
+			};
+			const mockReport = createMockCoverageReport({
+				lines: createMockReportNumbers({
+					pct: 85,
+				}),
+			});
+
+			const summaryHtml = generateSummaryTableHtml(
+				mockReport,
+				thresholds,
+				undefined,
+				thresholdAlert,
+			);
+
+			// Should use green from vitest threshold, not any thresholdAlert icon
+			expect(getTableLine(1, summaryHtml)).toContain(icons.green);
+			expect(getTableLine(1, summaryHtml)).not.toContain("❌");
+			expect(getTableLine(1, summaryHtml)).not.toContain("⚠️");
+			expect(getTableLine(1, summaryHtml)).not.toContain("✅");
+		});
+
+		it("uses exact threshold boundary correctly", async (): Promise<void> => {
+			const thresholdAlert: ThresholdAlert = {
+				0: "🔴",
+				80: "🟢",
+			};
+			const mockReport = createMockCoverageReport({
+				lines: createMockReportNumbers({
+					pct: 80,
+				}),
+			});
+
+			const summaryHtml = generateSummaryTableHtml(
+				mockReport,
+				undefined,
+				undefined,
+				thresholdAlert,
+			);
+
+			expect(getTableLine(1, summaryHtml)).toContain("🟢");
+		});
 	});
 });
