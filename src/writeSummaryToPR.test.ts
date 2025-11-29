@@ -1,6 +1,5 @@
 import * as core from "@actions/core";
-import * as github from "@actions/github";
-import { Mock, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Octokit } from "./octokit";
 import { writeSummaryToPR } from "./writeSummaryToPR";
 

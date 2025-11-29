@@ -52,9 +52,9 @@ jobs:
       pull-requests: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: 'Install Node'
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: '20.x'
     - name: 'Install Deps'
@@ -88,7 +88,7 @@ This action requires the `pull-requests: write` permission to add a comment to y
 | `file-coverage-mode`        | Defines how file-based coverage is reported. Possible values are `all`, `changes` or `none`.                                                                                                                                                                     | `changes`                                                                                                                                                                                                                                                          |
 | `file-coverage-root-path`   | The root (or absolute) part of the path used within the json coverage reports to point to the covered files. You can change this if your reports were generated in a different context (e.g., a docker container) and the absolute paths don't match the current runner's workspace. Uses the runner's workspace path by default. | `${{ github.workspace }}`                                                                                                                                                                                                                                          |
 | `name`                      | Give the report a custom name. This is useful if you want multiple reports for different test suites within the same PR. Needs to be unique.                                                                                                                     | ''                                                                                                                                                                                                                                                                 |
-| `pr-number`                 | The number of the PR to post a comment to. When using the `push` trigger, you can set this option to "auto" to make the action automaticaly search of a PR with a matching `sha` value and comment on it.                                                                                                                                                                                                              | If in the context of a PR, the number of that PR.<br/> If in the context of a triggered workflow, the PR of the triggering workflow.                                                                    <br/>If no PR context is found, it defaults to `undefined` |
+| `pr-number`                 | The number of the PR to post a comment to. When using the `push` trigger, you can set this option to "auto" to make the action automatically search of a PR with a matching `sha` value and comment on it.                                                                                                                                                                                                              | If in the context of a PR, the number of that PR.<br/> If in the context of a triggered workflow, the PR of the triggering workflow.                                                                    <br/>If no PR context is found, it defaults to `undefined` |
 | `comment-on`                | Specify where you want a comment to appear: "pr" for pull-request (if one can be found), "commit" for the commit in which context the action was run, or "none" for no comments. You can provide a comma-separated list of "pr" and "commit" to comment on both. | `pr`                                                                                                                                                                                                                                                               |
 
 #### File Coverage Mode
@@ -122,7 +122,7 @@ If your project includes multiple test suites and you want to consolidate their 
 ### Coverage Thresholds
 
 > [!WARNING]
-> Currently, this action does not import the vite-configuration, but parses it as string to extract the coverage-thresholds by an regexp. In other words: All thresholds need to be directly defined in the config-file given to this action through the vite-config-path input. E.g., when using workspace to extend a parent-configuration, the thresholds can not be defined in the parent-config.
+> Currently, this action does not import the vite-configuration, but parses it as string to extract the coverage-thresholds by a regexp. In other words: All thresholds need to be directly defined in the config-file given to this action through the vite-config-path input. E.g., when using workspace to extend a parent-configuration, the thresholds cannot be defined in the parent-config.
 
 This action reads the coverage thresholds specified in the `coverage` property of the Vite configuration file. It then uses these thresholds to determine the status of the generated report.
 
@@ -180,13 +180,13 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ matrix.branch }}
           ## Set repository to correctly checkout from forks
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: "Install Node"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20.x"
       - name: "Install Deps"
@@ -194,7 +194,7 @@ jobs:
       - name: "Test"
         run: npx vitest --coverage.enabled true
       - name: "Upload Coverage"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-${{ matrix.artifact }}
           path: coverage
@@ -204,13 +204,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         ## Check out the repository to obtain the vitest.config file
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Download Coverage Artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: coverage-pull-request
           path: coverage
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: coverage-main
           path: coverage-main
@@ -285,9 +285,9 @@ It will then automatically locate the appropriate pull request to comment on.
           contents: read
 
         steps:
-          - uses: actions/checkout@v4
+          - uses: actions/checkout@v5
           - name: "Install Node"
-            uses: actions/setup-node@v4
+            uses: actions/setup-node@v6
             with:
               node-version: "20.x"
           - name: "Install Deps"
@@ -296,7 +296,7 @@ It will then automatically locate the appropriate pull request to comment on.
             run: npx vitest --coverage.enabled true
 
           - name: "Upload Coverage"
-            uses: actions/upload-artifact@v4
+            uses: actions/upload-artifact@v5
             with:
               name: coverage
               path: coverage
@@ -321,8 +321,8 @@ It will then automatically locate the appropriate pull request to comment on.
           pull-requests: write
 
         steps:
-          - uses: actions/checkout@v4
-          - uses: actions/download-artifact@v4
+          - uses: actions/checkout@v5
+          - uses: actions/download-artifact@v6
             with:
               github-token: ${{ secrets.GITHUB_TOKEN }}
               run-id: ${{ github.event.workflow_run.id }}

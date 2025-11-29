@@ -1,5 +1,4 @@
-// biome-ignore lint/correctness/noEmptyCharacterClassInRegex: <explanation>
-const tableRowRegexp = /<tr>[^]+?<\/tr>/g;
+const tableRowRegexp = /<tr>[\s\S]+?<\/tr>/g;
 function getTableLine(line: number, html: string) {
 	const table = html.match(/<table>.*<\/table>/);
 	if (!table) {

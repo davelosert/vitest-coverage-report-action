@@ -1,11 +1,11 @@
 import type * as core from "@actions/core";
 import {
-	type Mock,
 	afterEach,
 	beforeEach,
 	describe,
 	expect,
 	it,
+	type Mock,
 	vi,
 } from "vitest";
 import type { Octokit } from "../octokit";
@@ -193,7 +193,7 @@ describe("getPullRequestNumber()", () => {
 		expect(result).toBe(101);
 	});
 
-	it("in context of a push event, when option PR-Number is set to auto, and the 'listPullRequestsAssociatedWithCommits' endpoint returns no PRs, and the 'pulls.list' endpoint returns only non-matchin PRs, returns undefined.", async () => {
+	it("in context of a push event, when option PR-Number is set to auto, and the 'listPullRequestsAssociatedWithCommits' endpoint returns no PRs, and the 'pulls.list' endpoint returns only non-matching PRs, returns undefined.", async () => {
 		vi.stubEnv("INPUT_PR-NUMBER", "auto");
 		mockContext.eventName = "push";
 		mockContext.payload = {
