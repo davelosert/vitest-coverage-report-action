@@ -5,7 +5,7 @@ import {
 	createMockCoverageReport,
 	createMockReportNumbers,
 } from "../types/JsonSummaryMockFactory";
-import type { ThresholdAlert } from "../types/ThresholdAlert";
+import type { ThresholdIcons } from "../types/ThresholdAlert";
 import type { Thresholds } from "../types/Threshold";
 import { generateSummaryTableHtml } from "./generateSummaryTableHtml";
 
@@ -197,9 +197,9 @@ describe("generateSummaryTabelHtml()", () => {
 		expect(getTableLine(1, summaryHtml)).toContain("90%<br/>🟰 <em>±0%</em>");
 	});
 
-	describe("thresholdAlert", () => {
-		it("uses thresholdAlert icon when no vitest threshold is defined", async (): Promise<void> => {
-			const thresholdAlert: ThresholdAlert = {
+	describe("thresholdIcons", () => {
+		it("uses thresholdIcons icon when no vitest threshold is defined", async (): Promise<void> => {
+			const thresholdIcons: ThresholdIcons = {
 				0: "🔴",
 				80: "🟠",
 				90: "🟢",
@@ -214,14 +214,14 @@ describe("generateSummaryTabelHtml()", () => {
 				mockReport,
 				undefined,
 				undefined,
-				thresholdAlert,
+				thresholdIcons,
 			);
 
 			expect(getTableLine(1, summaryHtml)).toContain("🟠");
 		});
 
-		it("uses red icon for low coverage based on thresholdAlert", async (): Promise<void> => {
-			const thresholdAlert: ThresholdAlert = {
+		it("uses red icon for low coverage based on thresholdIcons", async (): Promise<void> => {
+			const thresholdIcons: ThresholdIcons = {
 				0: "🔴",
 				80: "🟠",
 				90: "🟢",
@@ -236,14 +236,14 @@ describe("generateSummaryTabelHtml()", () => {
 				mockReport,
 				undefined,
 				undefined,
-				thresholdAlert,
+				thresholdIcons,
 			);
 
 			expect(getTableLine(1, summaryHtml)).toContain("🔴");
 		});
 
-		it("uses green icon for high coverage based on thresholdAlert", async (): Promise<void> => {
-			const thresholdAlert: ThresholdAlert = {
+		it("uses green icon for high coverage based on thresholdIcons", async (): Promise<void> => {
+			const thresholdIcons: ThresholdIcons = {
 				0: "🔴",
 				80: "🟠",
 				90: "🟢",
@@ -258,14 +258,14 @@ describe("generateSummaryTabelHtml()", () => {
 				mockReport,
 				undefined,
 				undefined,
-				thresholdAlert,
+				thresholdIcons,
 			);
 
 			expect(getTableLine(1, summaryHtml)).toContain("🟢");
 		});
 
 		it("falls back to blue if coverage is below all thresholds", async (): Promise<void> => {
-			const thresholdAlert: ThresholdAlert = {
+			const thresholdIcons: ThresholdIcons = {
 				50: "🟠",
 				80: "🟢",
 			};
@@ -279,15 +279,15 @@ describe("generateSummaryTabelHtml()", () => {
 				mockReport,
 				undefined,
 				undefined,
-				thresholdAlert,
+				thresholdIcons,
 			);
 
 			expect(getTableLine(1, summaryHtml)).toContain(icons.blue);
 		});
 
-		it("vitest threshold takes precedence over thresholdAlert", async (): Promise<void> => {
+		it("vitest threshold takes precedence over thresholdIcons", async (): Promise<void> => {
 			const thresholds: Thresholds = { lines: 80 };
-			const thresholdAlert: ThresholdAlert = {
+			const thresholdIcons: ThresholdIcons = {
 				0: "❌",
 				50: "⚠️",
 				90: "✅",
@@ -302,10 +302,10 @@ describe("generateSummaryTabelHtml()", () => {
 				mockReport,
 				thresholds,
 				undefined,
-				thresholdAlert,
+				thresholdIcons,
 			);
 
-			// Should use green from vitest threshold, not any thresholdAlert icon
+			// Should use green from vitest threshold, not any thresholdIcons icon
 			expect(getTableLine(1, summaryHtml)).toContain(icons.green);
 			expect(getTableLine(1, summaryHtml)).not.toContain("❌");
 			expect(getTableLine(1, summaryHtml)).not.toContain("⚠️");
@@ -313,7 +313,7 @@ describe("generateSummaryTabelHtml()", () => {
 		});
 
 		it("uses exact threshold boundary correctly", async (): Promise<void> => {
-			const thresholdAlert: ThresholdAlert = {
+			const thresholdIcons: ThresholdIcons = {
 				0: "🔴",
 				80: "🟢",
 			};
@@ -327,7 +327,7 @@ describe("generateSummaryTabelHtml()", () => {
 				mockReport,
 				undefined,
 				undefined,
-				thresholdAlert,
+				thresholdIcons,
 			);
 
 			expect(getTableLine(1, summaryHtml)).toContain("🟢");

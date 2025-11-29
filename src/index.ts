@@ -47,7 +47,7 @@ const run = async () => {
 				jsonSummary.total,
 				options.thresholds,
 				jsonSummaryCompare?.total,
-				options.thresholdAlert,
+				options.thresholdIcons,
 			),
 		);
 

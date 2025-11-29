@@ -1,14 +1,14 @@
 import * as core from "@actions/core";
-import type { ThresholdAlert } from "../types/ThresholdAlert";
+import type { ThresholdIcons } from "../types/ThresholdAlert";
 
 /**
- * Parses the threshold-alert input string into a ThresholdAlert object.
+ * Parses the threshold-icons input string into a ThresholdIcons object.
  * Expected format: "{0: '🔴', 80: '🟠', 90: '🟢'}"
  *
  * @param input - The raw input string from the action
- * @returns Parsed ThresholdAlert object or undefined if input is empty or invalid
+ * @returns Parsed ThresholdIcons object or undefined if input is empty or invalid
  */
-function parseThresholdAlert(input: string): ThresholdAlert | undefined {
+function parseThresholdIcons(input: string): ThresholdIcons | undefined {
 	if (!input.trim()) {
 		return undefined;
 	}
@@ -25,22 +25,22 @@ function parseThresholdAlert(input: string): ThresholdAlert | undefined {
 
 		// Validate the parsed object
 		if (typeof parsed !== "object" || parsed === null) {
-			core.warning(`Invalid threshold-alert format: expected an object`);
+			core.warning(`Invalid threshold-icons format: expected an object`);
 			return undefined;
 		}
 
-		const result: ThresholdAlert = {};
+		const result: ThresholdIcons = {};
 		for (const key of Object.keys(parsed)) {
 			const numKey = Number(key);
 			if (Number.isNaN(numKey)) {
 				core.warning(
-					`Invalid threshold-alert key "${key}": expected a number`,
+					`Invalid threshold-icons key "${key}": expected a number`,
 				);
 				continue;
 			}
 			if (typeof parsed[key] !== "string") {
 				core.warning(
-					`Invalid threshold-alert value for key "${key}": expected a string`,
+					`Invalid threshold-icons value for key "${key}": expected a string`,
 				);
 				continue;
 			}
@@ -48,17 +48,17 @@ function parseThresholdAlert(input: string): ThresholdAlert | undefined {
 		}
 
 		if (Object.keys(result).length === 0) {
-			core.warning(`threshold-alert has no valid entries`);
+			core.warning(`threshold-icons has no valid entries`);
 			return undefined;
 		}
 
 		return result;
 	} catch (error) {
 		core.warning(
-			`Failed to parse threshold-alert: ${error instanceof Error ? error.message : String(error)}`,
+			`Failed to parse threshold-icons: ${error instanceof Error ? error.message : String(error)}`,
 		);
 		return undefined;
 	}
 }
 
-export { parseThresholdAlert };
+export { parseThresholdIcons };

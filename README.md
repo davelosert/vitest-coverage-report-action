@@ -90,7 +90,7 @@ This action requires the `pull-requests: write` permission to add a comment to y
 | `name`                      | Give the report a custom name. This is useful if you want multiple reports for different test suites within the same PR. Needs to be unique.                                                                                                                     | ''                                                                                                                                                                                                                                                                 |
 | `pr-number`                 | The number of the PR to post a comment to. When using the `push` trigger, you can set this option to "auto" to make the action automatically search of a PR with a matching `sha` value and comment on it.                                                                                                                                                                                                              | If in the context of a PR, the number of that PR.<br/> If in the context of a triggered workflow, the PR of the triggering workflow.                                                                    <br/>If no PR context is found, it defaults to `undefined` |
 | `comment-on`                | Specify where you want a comment to appear: "pr" for pull-request (if one can be found), "commit" for the commit in which context the action was run, or "none" for no comments. You can provide a comma-separated list of "pr" and "commit" to comment on both. | `pr`                                                                                                                                                                                                                                                               |
-| `threshold-alert`           | A JSON object mapping coverage percentage thresholds to status icons. When no vitest coverage threshold is defined, this determines the icon shown. See [Threshold Alert](#threshold-alert) for details.                                                          | ''                                                                                                                                                                                                                                                                 |
+| `threshold-icons`           | A JSON object mapping coverage percentage thresholds to status icons. When no vitest coverage threshold is defined, this determines the icon shown. See [Threshold Icons](#threshold-icons) for details.                                                          | ''                                                                                                                                                                                                                                                                 |
 
 #### File Coverage Mode
 
@@ -120,9 +120,9 @@ If your project includes multiple test suites and you want to consolidate their 
         json-final-path: './coverage/coverage-final-backend.json'
 ```
 
-#### Threshold Alert
+#### Threshold Icons
 
-If you haven't established strict coverage thresholds in your `vitest.config` (which would fail the test run), you can still use the `threshold-alert` option to control the status icons displayed in the PR comment based on coverage percentage.
+If you haven't established strict coverage thresholds in your `vitest.config` (which would fail the test run), you can still use the `threshold-icons` option to control the status icons displayed in the PR comment based on coverage percentage.
 
 This is useful when you want visual feedback on coverage levels without enforcing them as pass/fail criteria.
 
@@ -133,7 +133,7 @@ The format is a JSON object where keys are coverage percentage thresholds and va
     - name: 'Report Coverage'
       uses:  davelosert/vitest-coverage-report-action@v2
       with:
-        threshold-alert: "{0: '🔴', 80: '🟠', 90: '🟢'}"
+        threshold-icons: "{0: '🔴', 80: '🟠', 90: '🟢'}"
 ```
 
 With this configuration:
@@ -142,7 +142,7 @@ With this configuration:
 - Coverage 90-100% will show 🟢
 
 > [!NOTE]
-> If a vitest coverage threshold is defined in your config, it takes precedence over `threshold-alert` for that category. The `threshold-alert` option only applies when no vitest threshold is set.
+> If a vitest coverage threshold is defined in your config, it takes precedence over `threshold-icons` for that category. The `threshold-icons` option only applies when no vitest threshold is set.
 
 ### Coverage Thresholds
 
@@ -174,7 +174,7 @@ With the above configuration, the report would appear as follows:
 
 ![Coverage Threshold Report](./docs/coverage-report-threshold.png)
 
-If no thresholds are defined, the status will display as '🔵' by default. You can customize this behavior using the [`threshold-alert`](#threshold-alert) option.
+If no thresholds are defined, the status will display as '🔵' by default. You can customize this behavior using the [`threshold-icons`](#threshold-icons) option.
 
 ### Coverage Trend Indicator
 

@@ -1,7 +1,7 @@
 import * as path from "node:path";
 import * as core from "@actions/core";
 import type { Octokit } from "../octokit";
-import type { ThresholdAlert } from "../types/ThresholdAlert";
+import type { ThresholdIcons } from "../types/ThresholdAlert";
 import type { Thresholds } from "../types/Threshold";
 import { type FileCoverageMode, getCoverageModeFrom } from "./FileCoverageMode";
 import { type CommentOn, getCommentOn } from "./getCommentOn";
@@ -9,7 +9,7 @@ import { getCommitSHA } from "./getCommitSHA";
 import { getPullRequestNumber } from "./getPullRequestNumber";
 import { getViteConfigPath } from "./getViteConfigPath";
 import { parseCoverageThresholds } from "./parseCoverageThresholds";
-import { parseThresholdAlert } from "./parseThresholdAlert";
+import { parseThresholdIcons } from "./parseThresholdAlert";
 
 type Options = {
 	fileCoverageMode: FileCoverageMode;
@@ -18,7 +18,7 @@ type Options = {
 	jsonSummaryComparePath: string | null;
 	name: string;
 	thresholds: Thresholds;
-	thresholdAlert: ThresholdAlert | undefined;
+	thresholdIcons: ThresholdIcons | undefined;
 	workingDirectory: string;
 	prNumber: number | undefined;
 	commitSHA: string;
@@ -66,7 +66,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		? await parseCoverageThresholds(viteConfigPath)
 		: {};
 
-	const thresholdAlert = parseThresholdAlert(core.getInput("threshold-alert"));
+	const thresholdIcons = parseThresholdIcons(core.getInput("threshold-icons"));
 
 	const commitSHA = getCommitSHA();
 
@@ -85,7 +85,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		jsonSummaryComparePath,
 		name,
 		thresholds,
-		thresholdAlert,
+		thresholdIcons,
 		workingDirectory,
 		prNumber,
 		commitSHA,

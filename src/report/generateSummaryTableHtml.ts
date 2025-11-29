@@ -1,7 +1,7 @@
 import { oneLine } from "common-tags";
 import { icons } from "../icons";
 import type { CoverageReport, ReportNumbers } from "../types/JsonSummary";
-import type { ThresholdAlert } from "../types/ThresholdAlert";
+import type { ThresholdIcons } from "../types/ThresholdAlert";
 import type { Thresholds } from "../types/Threshold";
 import { getCompareString } from "./getCompareString";
 
@@ -9,7 +9,7 @@ function generateSummaryTableHtml(
 	jsonReport: CoverageReport,
 	thresholds: Thresholds = {},
 	jsonCompareReport: CoverageReport | undefined = undefined,
-	thresholdAlert: ThresholdAlert | undefined = undefined,
+	thresholdIcons: ThresholdIcons | undefined = undefined,
 ): string {
 	return oneLine`
 		<table>
@@ -23,16 +23,16 @@ function generateSummaryTableHtml(
 			</thead>
 			<tbody>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.lines, category: "Lines", threshold: thresholds.lines, reportCompareNumbers: jsonCompareReport?.lines, thresholdAlert })}
+					${generateTableRow({ reportNumbers: jsonReport.lines, category: "Lines", threshold: thresholds.lines, reportCompareNumbers: jsonCompareReport?.lines, thresholdIcons })}
 				</tr>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.statements, category: "Statements", threshold: thresholds.statements, reportCompareNumbers: jsonCompareReport?.statements, thresholdAlert })}
+					${generateTableRow({ reportNumbers: jsonReport.statements, category: "Statements", threshold: thresholds.statements, reportCompareNumbers: jsonCompareReport?.statements, thresholdIcons })}
 				</tr>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.functions, category: "Functions", threshold: thresholds.functions, reportCompareNumbers: jsonCompareReport?.functions, thresholdAlert })}
+					${generateTableRow({ reportNumbers: jsonReport.functions, category: "Functions", threshold: thresholds.functions, reportCompareNumbers: jsonCompareReport?.functions, thresholdIcons })}
 				</tr>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.branches, category: "Branches", threshold: thresholds.branches, reportCompareNumbers: jsonCompareReport?.branches, thresholdAlert })}
+					${generateTableRow({ reportNumbers: jsonReport.branches, category: "Branches", threshold: thresholds.branches, reportCompareNumbers: jsonCompareReport?.branches, thresholdIcons })}
 				</tr>
 			</tbody>
 		</table>
@@ -40,20 +40,20 @@ function generateSummaryTableHtml(
 }
 
 /**
- * Gets the appropriate status icon based on coverage percentage and threshold alert config.
+ * Gets the appropriate status icon based on coverage percentage and threshold icons config.
  * Returns the icon for the highest threshold not exceeding the coverage percentage.
  */
-function getStatusFromThresholdAlert(
+function getStatusFromThresholdIcons(
 	pct: number,
-	thresholdAlert: ThresholdAlert,
+	thresholdIcons: ThresholdIcons,
 ): string {
-	const thresholds = Object.keys(thresholdAlert)
+	const thresholds = Object.keys(thresholdIcons)
 		.map(Number)
 		.sort((a, b) => b - a); // Sort descending
 
 	for (const threshold of thresholds) {
 		if (pct >= threshold) {
-			return thresholdAlert[threshold];
+			return thresholdIcons[threshold];
 		}
 	}
 
@@ -66,13 +66,13 @@ function generateTableRow({
 	category,
 	threshold,
 	reportCompareNumbers,
-	thresholdAlert,
+	thresholdIcons,
 }: {
 	reportNumbers: ReportNumbers;
 	category: string;
 	threshold?: number;
 	reportCompareNumbers?: ReportNumbers;
-	thresholdAlert?: ThresholdAlert;
+	thresholdIcons?: ThresholdIcons;
 }): string {
 	let status = icons.blue;
 	let percent = `${reportNumbers.pct}%`;
@@ -81,9 +81,9 @@ function generateTableRow({
 		// When vitest threshold is defined, use it for status determination
 		percent = `${percent} (${icons.target} ${threshold}%)`;
 		status = reportNumbers.pct >= threshold ? icons.green : icons.red;
-	} else if (thresholdAlert) {
-		// When no vitest threshold but thresholdAlert is provided, use it for status icon
-		status = getStatusFromThresholdAlert(reportNumbers.pct, thresholdAlert);
+	} else if (thresholdIcons) {
+		// When no vitest threshold but thresholdIcons is provided, use it for status icon
+		status = getStatusFromThresholdIcons(reportNumbers.pct, thresholdIcons);
 	}
 
 	if (reportCompareNumbers) {

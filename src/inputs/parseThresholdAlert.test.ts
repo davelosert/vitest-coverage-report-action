@@ -1,19 +1,19 @@
 import { describe, expect, it, vi } from "vitest";
-import { parseThresholdAlert } from "./parseThresholdAlert";
+import { parseThresholdIcons } from "./parseThresholdAlert";
 
 vi.mock("@actions/core", () => ({
 	warning: vi.fn(),
 }));
 
-describe("parseThresholdAlert", () => {
+describe("parseThresholdIcons", () => {
 	it("returns undefined for empty string", () => {
-		expect(parseThresholdAlert("")).toBeUndefined();
-		expect(parseThresholdAlert("   ")).toBeUndefined();
+		expect(parseThresholdIcons("")).toBeUndefined();
+		expect(parseThresholdIcons("   ")).toBeUndefined();
 	});
 
 	it("parses valid JSON with single quotes", () => {
 		const input = "{0: '🔴', 80: '🟠', 90: '🟢'}";
-		const result = parseThresholdAlert(input);
+		const result = parseThresholdIcons(input);
 		expect(result).toEqual({
 			0: "🔴",
 			80: "🟠",
@@ -23,7 +23,7 @@ describe("parseThresholdAlert", () => {
 
 	it("parses valid JSON with double quotes", () => {
 		const input = '{"0": "🔴", "80": "🟠", "90": "🟢"}';
-		const result = parseThresholdAlert(input);
+		const result = parseThresholdIcons(input);
 		expect(result).toEqual({
 			0: "🔴",
 			80: "🟠",
@@ -33,7 +33,7 @@ describe("parseThresholdAlert", () => {
 
 	it("handles single threshold", () => {
 		const input = "{50: '⚠️'}";
-		const result = parseThresholdAlert(input);
+		const result = parseThresholdIcons(input);
 		expect(result).toEqual({
 			50: "⚠️",
 		});
@@ -41,25 +41,25 @@ describe("parseThresholdAlert", () => {
 
 	it("returns undefined for invalid JSON", () => {
 		const input = "not valid json";
-		const result = parseThresholdAlert(input);
+		const result = parseThresholdIcons(input);
 		expect(result).toBeUndefined();
 	});
 
 	it("returns undefined for non-object value", () => {
 		const input = '"just a string"';
-		const result = parseThresholdAlert(input);
+		const result = parseThresholdIcons(input);
 		expect(result).toBeUndefined();
 	});
 
 	it("returns undefined for null", () => {
 		const input = "null";
-		const result = parseThresholdAlert(input);
+		const result = parseThresholdIcons(input);
 		expect(result).toBeUndefined();
 	});
 
 	it("skips non-numeric keys but parses valid ones", () => {
 		const input = "{0: '🔴', invalid: '🟠', 90: '🟢'}";
-		const result = parseThresholdAlert(input);
+		const result = parseThresholdIcons(input);
 		expect(result).toEqual({
 			0: "🔴",
 			90: "🟢",
@@ -68,7 +68,7 @@ describe("parseThresholdAlert", () => {
 
 	it("skips non-string values but parses valid ones", () => {
 		const input = "{0: '🔴', 80: 123, 90: '🟢'}";
-		const result = parseThresholdAlert(input);
+		const result = parseThresholdIcons(input);
 		expect(result).toEqual({
 			0: "🔴",
 			90: "🟢",
@@ -77,7 +77,7 @@ describe("parseThresholdAlert", () => {
 
 	it("returns undefined when no valid entries remain after filtering", () => {
 		const input = "{invalid: '🔴', bad: 123}";
-		const result = parseThresholdAlert(input);
+		const result = parseThresholdIcons(input);
 		expect(result).toBeUndefined();
 	});
 });
