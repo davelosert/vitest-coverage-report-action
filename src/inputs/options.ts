@@ -2,8 +2,8 @@ import * as path from "node:path";
 import * as core from "@actions/core";
 import { defaultThresholdIcons } from "../icons";
 import type { Octokit } from "../octokit";
-import type { ThresholdIcons } from "../types/ThresholdIcons";
 import type { Thresholds } from "../types/Threshold";
+import type { ThresholdIcons } from "../types/ThresholdIcons";
 import { type FileCoverageMode, getCoverageModeFrom } from "./FileCoverageMode";
 import { type CommentOn, getCommentOn } from "./getCommentOn";
 import { getCommitSHA } from "./getCommitSHA";
@@ -128,6 +128,6 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 	};
 }
 
-export { readOptions };
+export { readOptions, hasThresholds };
 
 export type { Options };

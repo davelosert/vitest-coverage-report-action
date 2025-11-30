@@ -5,8 +5,8 @@ import {
 	createMockCoverageReport,
 	createMockReportNumbers,
 } from "../types/JsonSummaryMockFactory";
-import type { ThresholdIcons } from "../types/ThresholdIcons";
 import type { Thresholds } from "../types/Threshold";
+import type { ThresholdIcons } from "../types/ThresholdIcons";
 import { generateSummaryTableHtml } from "./generateSummaryTableHtml";
 
 describe("generateSummaryTabelHtml()", () => {

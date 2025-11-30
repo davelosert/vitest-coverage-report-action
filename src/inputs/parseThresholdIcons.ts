@@ -33,9 +33,7 @@ function parseThresholdIcons(input: string): ThresholdIcons | undefined {
 		for (const key of Object.keys(parsed)) {
 			const numKey = Number(key);
 			if (Number.isNaN(numKey)) {
-				core.warning(
-					`Invalid threshold-icons key "${key}": expected a number`,
-				);
+				core.warning(`Invalid threshold-icons key "${key}": expected a number`);
 				continue;
 			}
 			if (typeof parsed[key] !== "string") {

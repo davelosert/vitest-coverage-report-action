@@ -1,8 +1,8 @@
 import { oneLine } from "common-tags";
 import { defaultThresholdIcons, icons } from "../icons";
 import type { CoverageReport, ReportNumbers } from "../types/JsonSummary";
-import type { ThresholdIcons } from "../types/ThresholdIcons";
 import type { Thresholds } from "../types/Threshold";
+import type { ThresholdIcons } from "../types/ThresholdIcons";
 import { getCompareString } from "./getCompareString";
 
 function generateSummaryTableHtml(

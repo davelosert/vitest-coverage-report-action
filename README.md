@@ -142,7 +142,7 @@ With this configuration:
 - Coverage 90-100% will show 🟢
 
 > [!NOTE]
-> If a vitest coverage threshold is defined in your config, it takes precedence over `threshold-icons` for that category. The `threshold-icons` option only applies when no vitest threshold is set.
+> When both vitest coverage threshold and `threshold-icons` are defined, `threshold-icons` determines the status icon displayed, while the vitest threshold is shown as a target percentage.
 
 ### Coverage Thresholds
 
