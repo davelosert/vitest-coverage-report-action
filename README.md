@@ -109,7 +109,7 @@ The `file-coverage-mode` option controls which files are included in the detaile
 - **`all`** - Show coverage for all files in the project, organized into three groups:
   - **Changed Files**: Files that were modified in the pull request
   - **Affected Files**: Unchanged files with different coverage metrics
-  - **Unaffected Files**: Unchanged files with the same coverage metrics
+  - **Unchanged Files**: Unchanged files with the same coverage metrics
   
   This provides the most complete view of your project's coverage. When comparison data is available via `json-summary-compare-path`, files are categorized by their coverage changes.
 

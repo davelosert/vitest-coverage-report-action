@@ -40,6 +40,26 @@ function hasThresholds(thresholds: Thresholds): boolean {
 	);
 }
 
+/**
+ * Parses and validates the comparison-decimal-places input.
+ * Returns a valid positive integer or the default value of 2.
+ */
+function parseComparisonDecimalPlaces(input: string): number {
+	if (!input) {
+		return 2;
+	}
+
+	const parsed = Number.parseInt(input, 10);
+	if (Number.isNaN(parsed) || parsed < 0) {
+		core.warning(
+			`Invalid value "${input}" for comparison-decimal-places. Using default value of 2.`,
+		);
+		return 2;
+	}
+
+	return parsed;
+}
+
 async function readOptions(octokit: Octokit): Promise<Options> {
 	// Working directory can be used to modify all default/provided paths (for monorepos, etc)
 	const workingDirectory = core.getInput("working-directory");
@@ -113,18 +133,9 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 
 	const fileCoverageRootPath = core.getInput("file-coverage-root-path");
 
-	const comparisonDecimalPlacesInput = core.getInput(
-		"comparison-decimal-places",
+	const comparisonDecimalPlaces = parseComparisonDecimalPlaces(
+		core.getInput("comparison-decimal-places"),
 	);
-	let comparisonDecimalPlaces = comparisonDecimalPlacesInput
-		? Number.parseInt(comparisonDecimalPlacesInput, 10)
-		: 2;
-	if (Number.isNaN(comparisonDecimalPlaces) || comparisonDecimalPlaces < 0) {
-		core.warning(
-			`Invalid value "${comparisonDecimalPlacesInput}" for comparison-decimal-places. Using default value of 2.`,
-		);
-		comparisonDecimalPlaces = 2;
-	}
 
 	return {
 		fileCoverageMode,
@@ -143,6 +154,6 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 	};
 }
 
-export { readOptions, hasThresholds };
+export { readOptions, hasThresholds, parseComparisonDecimalPlaces };
 
 export type { Options };

@@ -318,4 +318,50 @@ describe("generateSummaryTabelHtml()", () => {
 			expect(getTableLine(1, summaryHtml)).toContain("🟢");
 		});
 	});
+
+	describe("comparisonDecimalPlaces", () => {
+		it("uses custom decimal places for comparison percentages", async (): Promise<void> => {
+			const mockReport = createMockCoverageReport({
+				lines: createMockReportNumbers({
+					pct: 80.12345,
+				}),
+			});
+			const mockCompareReport = createMockCoverageReport({
+				lines: createMockReportNumbers({
+					pct: 70,
+				}),
+			});
+
+			const summaryHtml = generateSummaryTableHtml(
+				mockReport,
+				undefined,
+				mockCompareReport,
+				defaultThresholdIcons,
+				4, // custom decimal places
+			);
+
+			expect(getTableLine(1, summaryHtml)).toContain("+10.1235%");
+		});
+
+		it("defaults to 2 decimal places when not specified", async (): Promise<void> => {
+			const mockReport = createMockCoverageReport({
+				lines: createMockReportNumbers({
+					pct: 80.12345,
+				}),
+			});
+			const mockCompareReport = createMockCoverageReport({
+				lines: createMockReportNumbers({
+					pct: 70,
+				}),
+			});
+
+			const summaryHtml = generateSummaryTableHtml(
+				mockReport,
+				undefined,
+				mockCompareReport,
+			);
+
+			expect(getTableLine(1, summaryHtml)).toContain("+10.12%");
+		});
+	});
 });
