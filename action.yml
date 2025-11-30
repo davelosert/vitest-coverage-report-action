@@ -46,7 +46,7 @@ inputs:
     default: pr
   threshold-icons:
     required: false
-    description: "A JSON object mapping coverage percentage thresholds to status icons for display. When no vitest coverage threshold is defined, this determines the icon shown. Example: \"{0: '🔴', 80: '🟠', 90: '🟢'}\" shows 🔴 for 0-79%, 🟠 for 80-89%, 🟢 for 90-100%."
+    description: "A JSON object mapping coverage percentage thresholds to status icons for display. This determines the icon shown in coverage reports. Example: \"{0: '🔴', 80: '🟠', 90: '🟢'}\" shows 🔴 for 0-79%, 🟠 for 80-89%, 🟢 for 90-100%. When both threshold-icons and vitest thresholds are defined, threshold-icons controls the icon while vitest thresholds are shown as targets."
     default: ''
 runs:
   using: 'node24'
