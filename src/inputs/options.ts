@@ -1,13 +1,16 @@
 import * as path from "node:path";
 import * as core from "@actions/core";
+import { defaultThresholdIcons } from "../icons";
 import type { Octokit } from "../octokit";
 import type { Thresholds } from "../types/Threshold";
+import type { ThresholdIcons } from "../types/ThresholdIcons";
 import { type FileCoverageMode, getCoverageModeFrom } from "./FileCoverageMode";
 import { type CommentOn, getCommentOn } from "./getCommentOn";
 import { getCommitSHA } from "./getCommitSHA";
 import { getPullRequestNumber } from "./getPullRequestNumber";
 import { getViteConfigPath } from "./getViteConfigPath";
 import { parseCoverageThresholds } from "./parseCoverageThresholds";
+import { parseThresholdIcons } from "./parseThresholdIcons";
 
 type Options = {
 	fileCoverageMode: FileCoverageMode;
@@ -16,12 +19,25 @@ type Options = {
 	jsonSummaryComparePath: string | null;
 	name: string;
 	thresholds: Thresholds;
+	thresholdIcons: ThresholdIcons;
 	workingDirectory: string;
 	prNumber: number | undefined;
 	commitSHA: string;
 	commentOn: Array<CommentOn>;
 	fileCoverageRootPath: string;
 };
+
+/**
+ * Checks if any coverage thresholds are defined.
+ */
+function hasThresholds(thresholds: Thresholds): boolean {
+	return (
+		thresholds.lines !== undefined ||
+		thresholds.branches !== undefined ||
+		thresholds.functions !== undefined ||
+		thresholds.statements !== undefined
+	);
+}
 
 async function readOptions(octokit: Octokit): Promise<Options> {
 	// Working directory can be used to modify all default/provided paths (for monorepos, etc)
@@ -63,6 +79,29 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		? await parseCoverageThresholds(viteConfigPath)
 		: {};
 
+	// Parse user-provided threshold icons, returns undefined if empty/invalid (with warnings)
+	const parsedThresholdIcons = parseThresholdIcons(
+		core.getInput("threshold-icons"),
+	);
+
+	// Normalize threshold icons: always have a valid ThresholdIcons object
+	// - If valid icons provided, use them
+	// - If both coverage thresholds AND icons provided, warn about potential mismatch
+	// - If no valid icons, use default (blue circles)
+	let thresholdIcons: ThresholdIcons;
+	if (parsedThresholdIcons) {
+		thresholdIcons = parsedThresholdIcons;
+		if (hasThresholds(thresholds)) {
+			core.warning(
+				"Both coverage thresholds and threshold-icons are defined. " +
+					"The threshold-icons will be used for status display, but they may not reflect " +
+					"the actual pass/fail status from the coverage thresholds.",
+			);
+		}
+	} else {
+		thresholdIcons = defaultThresholdIcons;
+	}
+
 	const commitSHA = getCommitSHA();
 
 	let prNumber: number | undefined;
@@ -80,6 +119,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		jsonSummaryComparePath,
 		name,
 		thresholds,
+		thresholdIcons,
 		workingDirectory,
 		prNumber,
 		commitSHA,
@@ -88,6 +128,6 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 	};
 }
 
-export { readOptions };
+export { readOptions, hasThresholds };
 
 export type { Options };

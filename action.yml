@@ -44,6 +44,10 @@ inputs:
     required: false
     description: 'Specify where you want a comment to appear: "pr" for pull-request (if one can be found), "commit" for the commit in which context the action was run, or "none" for no comments. You can provide a comma-separated list of "pr" and "commit" to comment on both. Uses "pr" by default.'
     default: pr
+  threshold-icons:
+    required: false
+    description: "A JSON object mapping coverage percentage thresholds to status icons for display. This determines the icon shown in coverage reports. Example: \"{0: '🔴', 80: '🟠', 90: '🟢'}\" shows 🔴 for 0-79%, 🟠 for 80-89%, 🟢 for 90-100%. When both threshold-icons and vitest thresholds are defined, threshold-icons controls the icon while vitest thresholds are shown as targets."
+    default: ''
 runs:
   using: 'node24'
   main: 'dist/index.js'
