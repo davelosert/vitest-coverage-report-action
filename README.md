@@ -87,10 +87,10 @@ This action requires the `pull-requests: write` permission to add a comment to y
 | `github-token`              | A GitHub access token with permissions to write to issues (defaults to `secrets.GITHUB_TOKEN`).                                                                                                                                                                                                                                   | `${{ github.token }}`                                                                                                                                                                                                                                              |
 | `file-coverage-mode`        | Defines how file-based coverage is reported. Possible values are `none`, `changes`, `changes-affected`, or `all`. See [File Coverage Mode](#file-coverage-mode) section below for detailed explanations.                                                                                                                          | `changes`                                                                                                                                                                                                                                                          |
 | `file-coverage-root-path`   | The root (or absolute) part of the path used within the json coverage reports to point to the covered files. You can change this if your reports were generated in a different context (e.g., a docker container) and the absolute paths don't match the current runner's workspace. Uses the runner's workspace path by default. | `${{ github.workspace }}`                                                                                                                                                                                                                                          |
+| `comparison-decimal-places` | Number of decimal places to show in coverage comparison percentages. Useful for large projects where small percentage changes can represent significant coverage differences.                                                                                                                                                     | `2`                                                                                                                                                                                                                                                                |
 | `name`                      | Give the report a custom name. This is useful if you want multiple reports for different test suites within the same PR. Needs to be unique.                                                                                                                                                                                      | ''                                                                                                                                                                                                                                                                 |
 | `pr-number`                 | The number of the PR to post a comment to. When using the `push` trigger, you can set this option to "auto" to make the action automatically search of a PR with a matching `sha` value and comment on it.                                                                                                                        | If in the context of a PR, the number of that PR.<br/> If in the context of a triggered workflow, the PR of the triggering workflow.                                                                    <br/>If no PR context is found, it defaults to `undefined` |
 | `comment-on`                | Specify where you want a comment to appear: "pr" for pull-request (if one can be found), "commit" for the commit in which context the action was run, or "none" for no comments. You can provide a comma-separated list of "pr" and "commit" to comment on both.                                                                  | `pr`                                                                                                                                                                                                                                                               |
-| `comparison-decimal-places` | Number of decimal places to show in coverage comparison percentages. Useful for large projects where small percentage changes can represent significant coverage differences. | `2` |
 
 #### File Coverage Mode
 
@@ -137,6 +137,31 @@ If your project includes multiple test suites and you want to consolidate their 
         json-final-path: './coverage/coverage-final-backend.json'
 ```
 
+#### Threshold Icons
+
+If you haven't established strict coverage thresholds in your `vitest.config` (which would fail the test run), you can still use the `threshold-icons` option to control the status icons displayed in the PR comment based on coverage percentage.
+
+This is useful when you want visual feedback on coverage levels without enforcing them as pass/fail criteria.
+
+The format is a JSON object where keys are coverage percentage thresholds and values are the icons to display. The icon for the highest threshold not exceeding the coverage percentage is used.
+
+```yml
+## ...
+    - name: 'Report Coverage'
+      uses:  davelosert/vitest-coverage-report-action@v2
+      with:
+        threshold-icons: "{0: '🔴', 80: '🟠', 90: '🟢'}"
+```
+
+With this configuration:
+
+- Coverage 0-79% will show 🔴
+- Coverage 80-89% will show 🟠
+- Coverage 90-100% will show 🟢
+
+> [!NOTE]
+> When both vitest coverage threshold and `threshold-icons` are defined, `threshold-icons` determines the status icon displayed, while the vitest threshold is shown as a target percentage.
+
 ### Coverage Thresholds
 
 > [!WARNING]
@@ -167,7 +192,7 @@ With the above configuration, the report would appear as follows:
 
 ![Coverage Threshold Report](./docs/coverage-report-threshold.png)
 
-If no thresholds are defined, the status will display as '🔵'.
+If no thresholds are defined, the status will display as '🔵' by default. You can customize this behavior using the [`threshold-icons`](#threshold-icons) option.
 
 ### Coverage Trend Indicator
 
