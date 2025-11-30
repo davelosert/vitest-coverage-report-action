@@ -9,7 +9,7 @@ This is a GitHub Action that reports Vitest test coverage as GitHub step summari
 ### Core Technologies
 
 - **TypeScript**: Compiled with `target: ES2019`, `module: commonjs`, strict mode enabled
-- **Node.js 20**: Runtime environment for GitHub Actions
+- **Node.js 24**: Runtime environment for GitHub Actions
 - **esbuild**: Bundles TypeScript to a single `dist/index.js` file for deployment
 - **Vitest**: Testing framework with coverage support via `@vitest/coverage-v8`
 - **Biome**: Linter and formatter (replaces ESLint/Prettier)
