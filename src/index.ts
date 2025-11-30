@@ -68,8 +68,6 @@ const run = async () => {
 			commitSHA: options.commitSHA,
 			workspacePath: options.fileCoverageRootPath,
 			comparisonDecimalPlaces: options.comparisonDecimalPlaces,
-			showAllFileComparisons: options.showAllFileComparisons,
-			showAffectedFiles: options.showAffectedFiles,
 		});
 		summary.addDetails("File Coverage", fileTable);
 	}

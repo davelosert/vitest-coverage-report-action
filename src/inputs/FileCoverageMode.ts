@@ -3,6 +3,7 @@ import * as core from "@actions/core";
 enum FileCoverageMode {
 	All = "all",
 	Changes = "changes",
+	ChangesAffected = "changes-affected",
 	None = "none",
 }
 

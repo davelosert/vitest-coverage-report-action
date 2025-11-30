@@ -19,8 +19,6 @@ type FileCoverageInputs = {
 	commitSHA: string;
 	workspacePath: string;
 	comparisonDecimalPlaces?: number;
-	showAllFileComparisons?: boolean;
-	showAffectedFiles?: boolean;
 };
 
 const generateFileCoverageHtml = ({
@@ -32,8 +30,6 @@ const generateFileCoverageHtml = ({
 	commitSHA,
 	workspacePath,
 	comparisonDecimalPlaces = 2,
-	showAllFileComparisons = false,
-	showAffectedFiles = false,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
 
@@ -71,81 +67,81 @@ const generateFileCoverageHtml = ({
 				`;
 	}
 
-	if (fileCoverageMode === FileCoverageMode.All && unchangedFiles.length > 0) {
-		// Split unchanged files into affected and unaffected if comparison data is available and feature is enabled
-		if (showAffectedFiles && jsonSummaryCompare) {
-			const [affectedFiles, unaffectedFiles] = splitFilesByCoverageChange(
-				unchangedFiles,
-				jsonSummary,
-				jsonSummaryCompare,
-			);
+	if (
+		(fileCoverageMode === FileCoverageMode.ChangesAffected ||
+			fileCoverageMode === FileCoverageMode.All) &&
+		unchangedFiles.length > 0 &&
+		jsonSummaryCompare
+	) {
+		// Split unchanged files into affected and unaffected
+		const [affectedFiles, unaffectedFiles] = splitFilesByCoverageChange(
+			unchangedFiles,
+			jsonSummary,
+			jsonSummaryCompare,
+		);
 
-			// Show affected files group
-			if (affectedFiles.length > 0) {
-				reportData += `
-						${formatGroupLine("Affected Files")}
-						${affectedFiles
-							.map((filePath) =>
-								generateRow(
-									filePath,
-									jsonSummary,
-									jsonSummaryCompare,
-									jsonFinal,
-									commitSHA,
-									workspacePath,
-									comparisonDecimalPlaces,
-								),
-							)
-							.join("")}
-					`;
-			}
-
-			// Show unaffected files group (with or without comparisons based on showAllFileComparisons)
-			if (unaffectedFiles.length > 0) {
-				const unaffectedFilesCompare = showAllFileComparisons
-					? jsonSummaryCompare
-					: undefined;
-
-				reportData += `
-						${formatGroupLine("Unaffected Files")}
-						${unaffectedFiles
-							.map((filePath) =>
-								generateRow(
-									filePath,
-									jsonSummary,
-									unaffectedFilesCompare,
-									jsonFinal,
-									commitSHA,
-									workspacePath,
-									comparisonDecimalPlaces,
-								),
-							)
-							.join("")}
-					`;
-			}
-		} else {
-			// Original behavior: show all unchanged files
-			const unchangedFilesCompare = showAllFileComparisons
-				? jsonSummaryCompare
-				: undefined;
-
+		if (affectedFiles.length > 0) {
 			reportData += `
-						${formatGroupLine("Unchanged Files")}
-						${unchangedFiles
-							.map((filePath) =>
-								generateRow(
-									filePath,
-									jsonSummary,
-									unchangedFilesCompare,
-									jsonFinal,
-									commitSHA,
-									workspacePath,
-									comparisonDecimalPlaces,
-								),
-							)
-							.join("")}
+					${formatGroupLine("Affected Files")}
+					${affectedFiles
+						.map((filePath) =>
+							generateRow(
+								filePath,
+								jsonSummary,
+								jsonSummaryCompare,
+								jsonFinal,
+								commitSHA,
+								workspacePath,
+								comparisonDecimalPlaces,
+							),
+						)
+						.join("")}
 				`;
 		}
+
+		// In All mode, also show unaffected files
+		if (
+			fileCoverageMode === FileCoverageMode.All &&
+			unaffectedFiles.length > 0
+		) {
+			reportData += `
+					${formatGroupLine("Unaffected Files")}
+					${unaffectedFiles
+						.map((filePath) =>
+							generateRow(
+								filePath,
+								jsonSummary,
+								jsonSummaryCompare,
+								jsonFinal,
+								commitSHA,
+								workspacePath,
+								comparisonDecimalPlaces,
+							),
+						)
+						.join("")}
+				`;
+		}
+	} else if (
+		fileCoverageMode === FileCoverageMode.All &&
+		unchangedFiles.length > 0
+	) {
+		// Fallback if no comparison data: show all unchanged files together
+		reportData += `
+					${formatGroupLine("Unchanged Files")}
+					${unchangedFiles
+						.map((filePath) =>
+							generateRow(
+								filePath,
+								jsonSummary,
+								jsonSummaryCompare,
+								jsonFinal,
+								commitSHA,
+								workspacePath,
+								comparisonDecimalPlaces,
+							),
+						)
+						.join("")}
+			`;
 	}
 
 	return oneLine`

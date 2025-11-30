@@ -22,7 +22,7 @@ inputs:
       default: coverage/coverage-final.json
   file-coverage-mode:
       required: false
-      description: 'How to show summary for files coverage. Uses "changes" by default.'
+      description: 'How to show summary for files coverage. Options: "none" (no files), "changes" (only changed files), "changes-affected" (changed files and files with coverage changes), "all" (all files). Uses "changes" by default.'
       default: changes
   file-coverage-root-path:
       required: false
@@ -48,14 +48,6 @@ inputs:
     required: false
     description: 'Number of decimal places to show in comparison percentages. Uses 2 by default.'
     default: '2'
-  show-all-file-comparisons:
-    required: false
-    description: 'Show comparison data for all files, not just changed files. Requires json-summary-compare-path to be set. Uses false by default.'
-    default: 'false'
-  show-affected-files:
-    required: false
-    description: 'Group unchanged files into "Affected Files" (files with coverage changes) and "Unaffected Files" (files without coverage changes). Requires json-summary-compare-path to be set and file-coverage-mode to be "all". Uses false by default.'
-    default: 'false'
 runs:
   using: 'node24'
   main: 'dist/index.js'
