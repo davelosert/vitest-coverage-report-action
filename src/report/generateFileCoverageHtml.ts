@@ -271,38 +271,38 @@ function splitFilesByCoverageChange(
 	jsonSummary: JsonSummary,
 	jsonSummaryCompare: JsonSummary,
 ): [string[], string[]] {
-	return filePaths.reduce(
-		([affectedFiles, unaffectedFiles], filePath) => {
-			const currentCoverage = jsonSummary[filePath];
-			const previousCoverage = jsonSummaryCompare[filePath];
+	const affectedFiles: string[] = [];
+	const unaffectedFiles: string[] = [];
 
-			// If file doesn't exist in comparison, consider it unaffected
-			if (!previousCoverage) {
-				unaffectedFiles.push(filePath);
-				return [affectedFiles, unaffectedFiles];
-			}
+	for (const filePath of filePaths) {
+		const currentCoverage = jsonSummary[filePath];
+		const previousCoverage = jsonSummaryCompare[filePath];
 
-			// Check if any coverage metric has changed
-			// Using strict equality is acceptable here because:
-			// 1. These percentages come from the same source (vitest coverage reports)
-			// 2. The comparison is only for categorization, not for display
-			// 3. Any actual change will be reflected in the comparison display
-			const hasChanged =
-				currentCoverage.statements.pct !== previousCoverage.statements.pct ||
-				currentCoverage.branches.pct !== previousCoverage.branches.pct ||
-				currentCoverage.functions.pct !== previousCoverage.functions.pct ||
-				currentCoverage.lines.pct !== previousCoverage.lines.pct;
+		// If file doesn't exist in comparison, consider it unaffected
+		if (!previousCoverage) {
+			unaffectedFiles.push(filePath);
+			continue;
+		}
 
-			if (hasChanged) {
-				affectedFiles.push(filePath);
-			} else {
-				unaffectedFiles.push(filePath);
-			}
+		// Check if any coverage metric has changed
+		// Using strict equality is acceptable here because:
+		// 1. These percentages come from the same source (vitest coverage reports)
+		// 2. The comparison is only for categorization, not for display
+		// 3. Any actual change will be reflected in the comparison display
+		const hasChanged =
+			currentCoverage.statements.pct !== previousCoverage.statements.pct ||
+			currentCoverage.branches.pct !== previousCoverage.branches.pct ||
+			currentCoverage.functions.pct !== previousCoverage.functions.pct ||
+			currentCoverage.lines.pct !== previousCoverage.lines.pct;
 
-			return [affectedFiles, unaffectedFiles];
-		},
-		[[], []] as [string[], string[]],
-	);
+		if (hasChanged) {
+			affectedFiles.push(filePath);
+		} else {
+			unaffectedFiles.push(filePath);
+		}
+	}
+
+	return [affectedFiles, unaffectedFiles];
 }
 
 export { generateFileCoverageHtml };
