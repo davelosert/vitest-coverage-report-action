@@ -49,7 +49,7 @@ inputs:
     description: "A JSON object mapping coverage percentage thresholds to status icons for display. When no vitest coverage threshold is defined, this determines the icon shown. Example: \"{0: '🔴', 80: '🟠', 90: '🟢'}\" shows 🔴 for 0-79%, 🟠 for 80-89%, 🟢 for 90-100%."
     default: ''
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'
 branding:
   icon: 'check-circle'

@@ -8,7 +8,7 @@ import {
 	parseVitestJsonFinal,
 	parseVitestJsonSummary,
 } from "./inputs/parseJsonReports.js";
-import { type Octokit, createOctokit } from "./octokit.js";
+import { createOctokit, type Octokit } from "./octokit.js";
 import { generateCommitSHAUrl } from "./report/generateCommitSHAUrl.js";
 import { generateFileCoverageHtml } from "./report/generateFileCoverageHtml.js";
 import { generateHeadline } from "./report/generateHeadline.js";
@@ -88,22 +88,20 @@ const run = async () => {
 	await summary.write();
 };
 
-function handleError(error: any, kind: string, permission: string) {
-	if (
-		error instanceof RequestError
-	) {
+function handleError(error: unknown, kind: string, permission: string) {
+	if (error instanceof RequestError) {
 		switch (error.status) {
 			case 403:
 			case 404:
 				core.warning(
 					`Couldn't write a comment to the ${kind}. Please make sure your job has the permission '${permission}: write'.\n` +
-					`Original Error was: [${error.name}] - ${error.message}`,
+						`Original Error was: [${error.name}] - ${error.message}`,
 				);
 				return;
 			case 422:
 				core.warning(
 					`Couldn't write a comment to the ${kind}. Summary was probably too large - See the step summary ${getWorkflowSummaryURL()} instead.\n` +
-					`Original Error was: [${error.name}] - ${error.message}`,
+						`Original Error was: [${error.name}] - ${error.message}`,
 				);
 				return;
 		}
@@ -150,7 +148,10 @@ async function commentOnCommit(
 function getMarkerPostfix({
 	name,
 	workingDirectory,
-}: { name: string; workingDirectory: string }) {
+}: {
+	name: string;
+	workingDirectory: string;
+}) {
 	if (name) return name;
 	if (workingDirectory !== "./") return workingDirectory;
 	return "root";
