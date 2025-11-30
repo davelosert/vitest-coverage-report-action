@@ -133,6 +133,17 @@ const generateFileCoverageHtml = ({
 			</tr>
 		`;
 	} else if (
+		fileCoverageMode === FileCoverageMode.ChangesAffected &&
+		unchangedFiles.length > 0 &&
+		!jsonSummaryCompare
+	) {
+		// Add a note that comparison data is needed for affected files
+		reportData += `
+			<tr>
+				<td colspan="6"><em>Note: Comparison data is required to show affected files. Provide <code>json-summary-compare-path</code> to enable this feature.</em></td>
+			</tr>
+		`;
+	} else if (
 		fileCoverageMode === FileCoverageMode.All &&
 		unchangedFiles.length > 0
 	) {
