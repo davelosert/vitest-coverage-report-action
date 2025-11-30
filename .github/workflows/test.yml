@@ -75,6 +75,7 @@ jobs:
           file-coverage-mode: "all"
           json-summary-compare-path: coverage-base/coverage-summary.json
           comment-on: 'pr,commit'
+          threshold-icons: '{"0": "🔴", "80": "🟠", "90": "🟢"}'
 
       - name: "Upload build"
         if: env.ACTIONS_STEP_DEBUG == 'true'
