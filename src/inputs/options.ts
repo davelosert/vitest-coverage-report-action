@@ -77,9 +77,15 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 	const comparisonDecimalPlacesInput = core.getInput(
 		"comparison-decimal-places",
 	);
-	const comparisonDecimalPlaces = comparisonDecimalPlacesInput
+	let comparisonDecimalPlaces = comparisonDecimalPlacesInput
 		? Number.parseInt(comparisonDecimalPlacesInput, 10)
 		: 2;
+	if (Number.isNaN(comparisonDecimalPlaces) || comparisonDecimalPlaces < 0) {
+		core.warning(
+			`Invalid value "${comparisonDecimalPlacesInput}" for comparison-decimal-places. Using default value of 2.`,
+		);
+		comparisonDecimalPlaces = 2;
+	}
 
 	return {
 		fileCoverageMode,

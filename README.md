@@ -90,6 +90,7 @@ This action requires the `pull-requests: write` permission to add a comment to y
 | `name`                      | Give the report a custom name. This is useful if you want multiple reports for different test suites within the same PR. Needs to be unique.                                                                                                                                                                                      | ''                                                                                                                                                                                                                                                                 |
 | `pr-number`                 | The number of the PR to post a comment to. When using the `push` trigger, you can set this option to "auto" to make the action automatically search of a PR with a matching `sha` value and comment on it.                                                                                                                        | If in the context of a PR, the number of that PR.<br/> If in the context of a triggered workflow, the PR of the triggering workflow.                                                                    <br/>If no PR context is found, it defaults to `undefined` |
 | `comment-on`                | Specify where you want a comment to appear: "pr" for pull-request (if one can be found), "commit" for the commit in which context the action was run, or "none" for no comments. You can provide a comma-separated list of "pr" and "commit" to comment on both.                                                                  | `pr`                                                                                                                                                                                                                                                               |
+| `comparison-decimal-places` | Number of decimal places to show in coverage comparison percentages. Useful for large projects where small percentage changes can represent significant coverage differences. | `2` |
 
 #### File Coverage Mode
 
@@ -97,7 +98,7 @@ The `file-coverage-mode` option controls which files are included in the detaile
 
 - **`none`** - Don't show any file-level coverage details. Only the overall summary statistics are displayed.
 
-- **`changes`** (default) - Show coverage only for files that were changed in the pull request. This provides a focused view of how your changes affect coverage. Requires comparison data from `json-summary-compare-path` to determine which files changed.
+- **`changes`** (default) - Show coverage only for files that were changed in the pull request. This provides a focused view of how your changes affect coverage. If `json-summary-compare-path` is provided, comparison deltas will also be displayed.
 
 - **`changes-affected`** - Show coverage for:
   - **Changed Files**: Files that were modified in the pull request

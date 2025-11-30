@@ -578,4 +578,33 @@ describe("generateFileCoverageHtml()", () => {
 			.filter((row) => row.includes("src/unaffectedFile.ts"));
 		expect(unaffectedFileRows.length).toBe(1);
 	});
+
+	it("uses custom decimal places in file comparisons", () => {
+		const changedFilePath = path.join(workspacePath, "src", "changedFile.ts");
+
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			[changedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 80.12345 }),
+			}),
+		});
+
+		const jsonSummaryCompare: JsonSummary = createMockJsonSummary({
+			[changedFilePath]: createMockCoverageReport({
+				branches: createMockReportNumbers({ pct: 70 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: ["src/changedFile.ts"],
+			commitSHA: "test-sha",
+			workspacePath,
+			comparisonDecimalPlaces: 4,
+		});
+
+		expect(html).toContain("+10.1235%");
+	});
 });
