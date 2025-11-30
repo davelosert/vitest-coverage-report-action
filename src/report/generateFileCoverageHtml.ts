@@ -99,19 +99,19 @@ const generateFileCoverageHtml = ({
 				`;
 		}
 
-		// In All mode, also show unaffected files
+		// In All mode, also show unchanged files (without comparison data since they're unchanged)
 		if (
 			fileCoverageMode === FileCoverageMode.All &&
 			unaffectedFiles.length > 0
 		) {
 			reportData += `
-					${formatGroupLine("Unaffected Files")}
+					${formatGroupLine("Unchanged Files")}
 					${unaffectedFiles
 						.map((filePath) =>
 							generateRow(
 								filePath,
 								jsonSummary,
-								jsonSummaryCompare,
+								undefined,
 								jsonFinal,
 								commitSHA,
 								workspacePath,

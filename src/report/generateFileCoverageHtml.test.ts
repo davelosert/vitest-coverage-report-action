@@ -491,15 +491,18 @@ describe("generateFileCoverageHtml()", () => {
 		expect(html).toContain("Affected Files");
 		const affectedSection = html
 			.split("Affected Files")[1]
-			.split("Unaffected Files")[0];
+			.split("Unchanged Files")[0];
 		expect(affectedSection).toContain("src/affectedFile.ts");
 		expect(affectedSection).toContain(`${icons.increase} <em>+10.00%</em>`);
 
-		// Should have Unaffected Files section with files that have no coverage changes
-		expect(html).toContain("Unaffected Files");
-		const unaffectedSection = html.split("Unaffected Files")[1];
-		expect(unaffectedSection).toContain("src/unaffectedFile.ts");
-		expect(unaffectedSection).toContain(`${icons.equal} <em>±0%</em>`);
+		// Should have Unchanged Files section with files that have no coverage changes (no comparison data)
+		expect(html).toContain("Unchanged Files");
+		const unchangedSection = html.split("Unchanged Files")[1];
+		expect(unchangedSection).toContain("src/unaffectedFile.ts");
+		// Unchanged files should NOT show comparison data
+		expect(unchangedSection).not.toContain(icons.equal);
+		expect(unchangedSection).not.toContain(icons.increase);
+		expect(unchangedSection).not.toContain(icons.decrease);
 	});
 
 	it("ensures affected files only appear in affected section and not in unaffected section in all mode", () => {
@@ -556,16 +559,16 @@ describe("generateFileCoverageHtml()", () => {
 		// Verify Affected Files section contains only affected file
 		const affectedSection = html
 			.split("Affected Files")[1]
-			.split("Unaffected Files")[0];
+			.split("Unchanged Files")[0];
 		expect(affectedSection).toContain("src/affectedFile.ts");
 		expect(affectedSection).not.toContain("src/changedFile.ts");
 		expect(affectedSection).not.toContain("src/unaffectedFile.ts");
 
-		// Verify Unaffected Files section contains only unaffected file
-		const unaffectedSection = html.split("Unaffected Files")[1];
-		expect(unaffectedSection).toContain("src/unaffectedFile.ts");
-		expect(unaffectedSection).not.toContain("src/changedFile.ts");
-		expect(unaffectedSection).not.toContain("src/affectedFile.ts");
+		// Verify Unchanged Files section contains only unchanged file
+		const unchangedSection = html.split("Unchanged Files")[1];
+		expect(unchangedSection).toContain("src/unaffectedFile.ts");
+		expect(unchangedSection).not.toContain("src/changedFile.ts");
+		expect(unchangedSection).not.toContain("src/affectedFile.ts");
 
 		// Count table rows to ensure each file appears exactly once
 		const affectedFileRows = html

@@ -87,9 +87,9 @@ ${r.message}`),[];throw r}finally{ZA.endGroup()}}var la=O(require("node:path")),
 					${fa("Affected Files")}
 					${u.map(C=>Ia(C,e,A,t,o,n,i)).join("")}
 				`),r==="all"&&Q.length>0&&(c+=`
-					${fa("Unaffected Files")}
-					${Q.map(C=>Ia(C,e,A,t,o,n,i)).join("")}
-				`)}else r==="changes-affected"&&E.length>0&&!A?c+=`
+					${fa("Unchanged Files")}
+					${Q.map(C=>Ia(C,e,void 0,t,o,n,i)).join("")}
+				`)}else r==="changes-affected"&&E.length>0&&!A||r==="changes-affected"&&E.length>0&&!A?c+=`
 			<tr>
 				<td colspan="6"><em>Note: Comparison data is required to show affected files. Provide <code>json-summary-compare-path</code> to enable this feature.</em></td>
 			</tr>
