@@ -22,7 +22,7 @@ inputs:
       default: coverage/coverage-final.json
   file-coverage-mode:
       required: false
-      description: 'How to show summary for files coverage. Uses "changes" by default.'
+      description: 'How to show summary for files coverage. Options: "none" (no files), "changes" (only changed files), "changes-affected" (changed files and files with coverage changes), "all" (all files). Uses "changes" by default.'
       default: changes
   file-coverage-root-path:
       required: false
@@ -48,6 +48,10 @@ inputs:
     required: false
     description: "A JSON object mapping coverage percentage thresholds to status icons for display. This determines the icon shown in coverage reports. Example: \"{0: '🔴', 80: '🟠', 90: '🟢'}\" shows 🔴 for 0-79%, 🟠 for 80-89%, 🟢 for 90-100%. When both threshold-icons and vitest thresholds are defined, threshold-icons controls the icon while vitest thresholds are shown as targets."
     default: ''
+  comparison-decimal-places:
+    required: false
+    description: 'Number of decimal places to show in comparison percentages. This is especially useful in large projects where even small percentage changes can represent significant coverage differences, such as entire test suites being added or removed. Uses 2 by default.'
+    default: '2'
 runs:
   using: 'node24'
   main: 'dist/index.js'

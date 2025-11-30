@@ -16,6 +16,16 @@ describe("FileCoverageMode", () => {
 		expect(getCoverageModeFrom("changes")).toBe(FileCoverageMode.Changes);
 	});
 
+	it('parses "changes-affected" to the right value', () => {
+		expect(getCoverageModeFrom("changes-affected")).toBe(
+			FileCoverageMode.ChangesAffected,
+		);
+	});
+
+	it('parses "none" to the right value', () => {
+		expect(getCoverageModeFrom("none")).toBe(FileCoverageMode.None);
+	});
+
 	it('defaults to "changes" if the input is not valid', () => {
 		expect(getCoverageModeFrom("invalid")).toBe(FileCoverageMode.Changes);
 	});

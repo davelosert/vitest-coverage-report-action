@@ -25,6 +25,7 @@ type Options = {
 	commitSHA: string;
 	commentOn: Array<CommentOn>;
 	fileCoverageRootPath: string;
+	comparisonDecimalPlaces: number;
 };
 
 /**
@@ -37,6 +38,26 @@ function hasThresholds(thresholds: Thresholds): boolean {
 		thresholds.functions !== undefined ||
 		thresholds.statements !== undefined
 	);
+}
+
+/**
+ * Parses and validates the comparison-decimal-places input.
+ * Returns a valid positive integer or the default value of 2.
+ */
+function parseComparisonDecimalPlaces(input: string): number {
+	if (!input) {
+		return 2;
+	}
+
+	const parsed = Number.parseInt(input, 10);
+	if (Number.isNaN(parsed) || parsed < 0) {
+		core.warning(
+			`Invalid value "${input}" for comparison-decimal-places. Using default value of 2.`,
+		);
+		return 2;
+	}
+
+	return parsed;
 }
 
 async function readOptions(octokit: Octokit): Promise<Options> {
@@ -112,6 +133,10 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 
 	const fileCoverageRootPath = core.getInput("file-coverage-root-path");
 
+	const comparisonDecimalPlaces = parseComparisonDecimalPlaces(
+		core.getInput("comparison-decimal-places"),
+	);
+
 	return {
 		fileCoverageMode,
 		jsonFinalPath,
@@ -125,9 +150,10 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		commitSHA,
 		commentOn,
 		fileCoverageRootPath,
+		comparisonDecimalPlaces,
 	};
 }
 
-export { readOptions, hasThresholds };
+export { readOptions, hasThresholds, parseComparisonDecimalPlaces };
 
 export type { Options };

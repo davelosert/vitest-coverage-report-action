@@ -18,6 +18,7 @@ type FileCoverageInputs = {
 	pullChanges: string[];
 	commitSHA: string;
 	workspacePath: string;
+	comparisonDecimalPlaces?: number;
 };
 
 const generateFileCoverageHtml = ({
@@ -28,6 +29,7 @@ const generateFileCoverageHtml = ({
 	pullChanges,
 	commitSHA,
 	workspacePath,
+	comparisonDecimalPlaces = 2,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
 
@@ -58,28 +60,99 @@ const generateFileCoverageHtml = ({
 								jsonFinal,
 								commitSHA,
 								workspacePath,
+								comparisonDecimalPlaces,
 							),
 						)
 						.join("")}
 				`;
 	}
 
-	if (fileCoverageMode === FileCoverageMode.All && unchangedFiles.length > 0) {
-		reportData += `
-						${formatGroupLine("Unchanged Files")}
-						${unchangedFiles
-							.map((filePath) =>
-								generateRow(
-									filePath,
-									jsonSummary,
-									undefined,
-									jsonFinal,
-									commitSHA,
-									workspacePath,
-								),
-							)
-							.join("")}
+	if (
+		(fileCoverageMode === FileCoverageMode.ChangesAffected ||
+			fileCoverageMode === FileCoverageMode.All) &&
+		unchangedFiles.length > 0 &&
+		jsonSummaryCompare
+	) {
+		// Split unchanged files into affected and unaffected
+		const [affectedFiles, unaffectedFiles] = splitFilesByCoverageChange(
+			unchangedFiles,
+			jsonSummary,
+			jsonSummaryCompare,
+		);
+
+		if (affectedFiles.length > 0) {
+			reportData += `
+					${formatGroupLine("Affected Files")}
+					${affectedFiles
+						.map((filePath) =>
+							generateRow(
+								filePath,
+								jsonSummary,
+								jsonSummaryCompare,
+								jsonFinal,
+								commitSHA,
+								workspacePath,
+								comparisonDecimalPlaces,
+							),
+						)
+						.join("")}
 				`;
+		}
+
+		// In All mode, also show unchanged files (without comparison data since they're unchanged)
+		if (
+			fileCoverageMode === FileCoverageMode.All &&
+			unaffectedFiles.length > 0
+		) {
+			reportData += `
+					${formatGroupLine("Unchanged Files")}
+					${unaffectedFiles
+						.map((filePath) =>
+							generateRow(
+								filePath,
+								jsonSummary,
+								undefined,
+								jsonFinal,
+								commitSHA,
+								workspacePath,
+								comparisonDecimalPlaces,
+							),
+						)
+						.join("")}
+				`;
+		}
+	} else if (
+		fileCoverageMode === FileCoverageMode.ChangesAffected &&
+		unchangedFiles.length > 0 &&
+		!jsonSummaryCompare
+	) {
+		// Add a note that comparison data is needed for affected files
+		reportData += `
+			<tr>
+				<td colspan="6"><em>Note: Comparison data is required to show affected files. Provide <code>json-summary-compare-path</code> to enable this feature.</em></td>
+			</tr>
+		`;
+	} else if (
+		fileCoverageMode === FileCoverageMode.All &&
+		unchangedFiles.length > 0
+	) {
+		// Fallback if no comparison data: show all unchanged files together
+		reportData += `
+					${formatGroupLine("Unchanged Files")}
+					${unchangedFiles
+						.map((filePath) =>
+							generateRow(
+								filePath,
+								jsonSummary,
+								jsonSummaryCompare,
+								jsonFinal,
+								commitSHA,
+								workspacePath,
+								comparisonDecimalPlaces,
+							),
+						)
+						.join("")}
+			`;
 	}
 
 	return oneLine`
@@ -108,6 +181,7 @@ function generateRow(
 	jsonFinal: JsonFinal,
 	commitSHA: string,
 	workspacePath: string,
+	comparisonDecimalPlaces = 2,
 ): string {
 	const coverageSummary = jsonSummary[filePath];
 	const coverageSummaryCompare = jsonSummaryCompare
@@ -125,10 +199,10 @@ function generateRow(
 	return `
 			<tr>
 				<td align="left"><a href="${url}">${relativeFilePath}</a></td>
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "statements")}
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches")}
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions")}
-					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines")}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "statements", comparisonDecimalPlaces)}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches", comparisonDecimalPlaces)}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions", comparisonDecimalPlaces)}
+					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines", comparisonDecimalPlaces)}
 				<td align="left">${createRangeURLs(uncoveredLines, url)}</td>
 			</tr>`;
 }
@@ -137,11 +211,12 @@ function generateCoverageCell(
 	summary: CoverageReport,
 	summaryCompare: CoverageReport | undefined,
 	field: keyof CoverageReport,
+	comparisonDecimalPlaces = 2,
 ): string {
 	let diffText = "";
 	if (summaryCompare) {
 		const diff = summary[field].pct - summaryCompare[field].pct;
-		diffText = `<br/>${getCompareString(diff)}`;
+		diffText = `<br/>${getCompareString(diff, comparisonDecimalPlaces)}`;
 	}
 	return `<td align="right">${summary[field].pct}%${diffText}</td>`;
 }
@@ -189,6 +264,45 @@ function splitFilesByChangeStatus(
 		},
 		[[], []] as [string[], string[]],
 	);
+}
+
+function splitFilesByCoverageChange(
+	filePaths: string[],
+	jsonSummary: JsonSummary,
+	jsonSummaryCompare: JsonSummary,
+): [string[], string[]] {
+	const affectedFiles: string[] = [];
+	const unaffectedFiles: string[] = [];
+
+	for (const filePath of filePaths) {
+		const currentCoverage = jsonSummary[filePath];
+		const previousCoverage = jsonSummaryCompare[filePath];
+
+		// If file doesn't exist in comparison, consider it unaffected
+		if (!previousCoverage) {
+			unaffectedFiles.push(filePath);
+			continue;
+		}
+
+		// Check if any coverage metric has changed
+		// Using strict equality is acceptable here because:
+		// 1. These percentages come from the same source (vitest coverage reports)
+		// 2. The comparison is only for categorization, not for display
+		// 3. Any actual change will be reflected in the comparison display
+		const hasChanged =
+			currentCoverage.statements.pct !== previousCoverage.statements.pct ||
+			currentCoverage.branches.pct !== previousCoverage.branches.pct ||
+			currentCoverage.functions.pct !== previousCoverage.functions.pct ||
+			currentCoverage.lines.pct !== previousCoverage.lines.pct;
+
+		if (hasChanged) {
+			affectedFiles.push(filePath);
+		} else {
+			unaffectedFiles.push(filePath);
+		}
+	}
+
+	return [affectedFiles, unaffectedFiles];
 }
 
 export { generateFileCoverageHtml };
