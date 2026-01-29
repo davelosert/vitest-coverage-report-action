@@ -32,7 +32,7 @@
   "homepage": "https://github.com/davelosert/vitest-coverage-report-action#readme",
   "dependencies": {
     "@actions/core": "2.0.2",
-    "@actions/github": "7.0.0",
+    "@actions/github": "8.0.0",
     "common-tags": "1.8.2"
   },
   "devDependencies": {
