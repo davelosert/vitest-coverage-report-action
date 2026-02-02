@@ -71,17 +71,6 @@ jobs:
 > [!NOTE]
 > To enable comments on pull requests originating from forks, please refer to the configuration provided in the [Working with Pull Requests from Forks](#working-with-pull-requests-from-forks) section.
 
-#### Example: Expanding File Coverage by Default
-
-For teams that want to see file-level coverage immediately without clicking to expand:
-
-```yml
-- name: 'Report Coverage'
-  uses: davelosert/vitest-coverage-report-action@v2
-  with:
-    file-coverage-expanded: true
-```
-
 ### Required Permissions
 
 This action requires the `pull-requests: write` permission to add a comment to your pull request. If you're using the default `GITHUB_TOKEN`, ensure that you include both `pull-requests: write` and `contents: read` permissions in the job. The `contents: read` permission is necessary for the `actions/checkout` action to checkout the repository. This is particularly important for new repositories created after GitHub's [announcement](https://github.blog/changelog/2023-02-02-github-actions-updating-the-default-github_token-permissions-to-read-only/) to change the default permissions to `read-only` for all new `GITHUB_TOKEN`s.
