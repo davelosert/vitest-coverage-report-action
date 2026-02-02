@@ -634,17 +634,15 @@ describe("generateFileCoverageHtml()", () => {
 		expect(html).toContain("src/changedFile.ts");
 
 		// Should contain the informative message about needing comparison data
-		expect(html).toContain("Comparison data is required to show affected files");
+		expect(html).toContain(
+			"Comparison data is required to show affected files",
+		);
 		expect(html).toContain("json-summary-compare-path");
 	});
 
 	it("shows unchanged files without comparison indicators in All mode", () => {
 		const changedFilePath = path.join(workspacePath, "src", "changedFile.ts");
-		const affectedFilePath = path.join(
-			workspacePath,
-			"src",
-			"affectedFile.ts",
-		);
+		const affectedFilePath = path.join(workspacePath, "src", "affectedFile.ts");
 		const unchangedFilePath = path.join(
 			workspacePath,
 			"src",

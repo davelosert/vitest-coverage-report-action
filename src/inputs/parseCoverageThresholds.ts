@@ -36,10 +36,10 @@ const parseCoverageThresholds = async (
 		const statements = rawContent.match(regexStatements);
 
 		return {
-			lines: lines ? Number.parseInt(lines[1]) : undefined,
-			branches: branches ? Number.parseInt(branches[1]) : undefined,
-			functions: functions ? Number.parseInt(functions[1]) : undefined,
-			statements: statements ? Number.parseInt(statements[1]) : undefined,
+			lines: lines ? Number.parseInt(lines[1], 10) : undefined,
+			branches: branches ? Number.parseInt(branches[1], 10) : undefined,
+			functions: functions ? Number.parseInt(functions[1], 10) : undefined,
+			statements: statements ? Number.parseInt(statements[1], 10) : undefined,
 		};
 	} catch (err: unknown) {
 		core.warning(
