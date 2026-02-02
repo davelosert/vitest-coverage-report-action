@@ -68,8 +68,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 	const fileCoverageModeRaw = core.getInput("file-coverage-mode"); // all/changes/none
 	const fileCoverageMode = getCoverageModeFrom(fileCoverageModeRaw);
 
-	const fileCoverageExpandedRaw = core.getInput("file-coverage-expanded");
-	const fileCoverageExpanded = fileCoverageExpandedRaw === "true";
+	const fileCoverageExpanded = core.getBooleanInput("file-coverage-expanded");
 
 	const jsonSummaryPath = path.resolve(
 		workingDirectory,
