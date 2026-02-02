@@ -70,7 +70,14 @@ const run = async () => {
 			workspacePath: options.fileCoverageRootPath,
 			comparisonDecimalPlaces: options.comparisonDecimalPlaces,
 		});
-		summary.addDetails("File Coverage", fileTable);
+
+		if (options.fileCoverageExpanded) {
+			summary.addRaw(
+				`<details open><summary>File Coverage</summary>${fileTable}</details>\n`,
+			);
+		} else {
+			summary.addDetails("File Coverage", fileTable);
+		}
 	}
 
 	const commitSHAUrl = generateCommitSHAUrl(options.commitSHA);
