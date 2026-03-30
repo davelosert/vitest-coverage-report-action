@@ -3,6 +3,11 @@ import * as core from "@actions/core";
 import { describe, expect, it, vi } from "vitest";
 import { getViteConfigPath } from "./getViteConfigPath";
 
+vi.mock("@actions/core", async (importOriginal) => ({
+	...((await importOriginal()) as object),
+	warning: vi.fn(),
+}));
+
 describe("getViteConfigPath", () => {
 	const mockWorkingDirectory = path.resolve(
 		__dirname,
