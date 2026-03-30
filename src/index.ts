@@ -69,6 +69,7 @@ const run = async () => {
 			commitSHA: options.commitSHA,
 			workspacePath: options.fileCoverageRootPath,
 			comparisonDecimalPlaces: options.comparisonDecimalPlaces,
+			showUncoveredLines: options.showUncoveredLines,
 		});
 
 		if (options.fileCoverageExpanded) {

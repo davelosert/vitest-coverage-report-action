@@ -28,6 +28,10 @@ inputs:
       required: false
       description: 'When true, the File Coverage section will be expanded by default. When false, the section will be collapsed and require a click to expand. Uses false by default.'
       default: 'false'
+  show-uncovered-lines:
+      required: false
+      description: 'When true, the "Uncovered Lines" column is shown in the file coverage table. When false, the column is hidden, reducing table width. Uses true by default.'
+      default: 'true'
   file-coverage-root-path:
       required: false
       description: 'The root (or absolute) part of the path used within the json coverage reports to point to the covered files. You can change this if your reports were generated in a different context (e.g., a docker container) and the absolute paths don''t match the current runner''s workspace. Uses the runner''s workspace path by default.'

@@ -693,4 +693,80 @@ describe("generateFileCoverageHtml()", () => {
 		expect(unchangedSection).not.toContain(icons.increase);
 		expect(unchangedSection).not.toContain(icons.decrease);
 	});
+
+	it("hides the Uncovered Lines column when showUncoveredLines is false", () => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"src/exampleFile.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 70 }),
+			}),
+		});
+		const jsonFinal: JsonFinal = {
+			...createJsonFinalEntry("src/exampleFile.ts", [
+				{ line: 1, covered: false },
+				{ line: 2, covered: false },
+			]),
+		};
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal,
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
+			showUncoveredLines: false,
+		});
+
+		expect(html).not.toContain("Uncovered Lines");
+		expect(html).not.toContain("#L1-L2");
+		expect(html).toContain("70%");
+	});
+
+	it("shows the Uncovered Lines column by default", () => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"src/exampleFile.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 70 }),
+			}),
+		});
+		const jsonFinal: JsonFinal = {
+			...createJsonFinalEntry("src/exampleFile.ts", [
+				{ line: 1, covered: false },
+				{ line: 2, covered: false },
+			]),
+		};
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal,
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
+		});
+
+		expect(html).toContain("Uncovered Lines");
+		expect(html).toContain("#L1-L2");
+	});
+
+	it("uses colspan 5 for group lines when showUncoveredLines is false", () => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"src/exampleFile.ts": createMockCoverageReport(),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
+			showUncoveredLines: false,
+		});
+
+		expect(html).toContain('colspan="5"');
+		expect(html).not.toContain('colspan="6"');
+	});
 });
