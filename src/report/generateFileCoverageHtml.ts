@@ -19,6 +19,7 @@ type FileCoverageInputs = {
 	commitSHA: string;
 	workspacePath: string;
 	comparisonDecimalPlaces?: number;
+	showUncoveredLines?: boolean;
 };
 
 const generateFileCoverageHtml = ({
@@ -30,6 +31,7 @@ const generateFileCoverageHtml = ({
 	commitSHA,
 	workspacePath,
 	comparisonDecimalPlaces = 2,
+	showUncoveredLines = true,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
 
@@ -50,7 +52,7 @@ const generateFileCoverageHtml = ({
 
 	if (changedFiles.length > 0) {
 		reportData += `
-					${formatGroupLine("Changed Files")} 
+					${formatGroupLine("Changed Files", showUncoveredLines)} 
 					${changedFiles
 						.map((filePath) =>
 							generateRow(
@@ -61,6 +63,7 @@ const generateFileCoverageHtml = ({
 								commitSHA,
 								workspacePath,
 								comparisonDecimalPlaces,
+								showUncoveredLines,
 							),
 						)
 						.join("")}
@@ -82,7 +85,7 @@ const generateFileCoverageHtml = ({
 
 		if (affectedFiles.length > 0) {
 			reportData += `
-					${formatGroupLine("Affected Files")}
+					${formatGroupLine("Affected Files", showUncoveredLines)}
 					${affectedFiles
 						.map((filePath) =>
 							generateRow(
@@ -93,6 +96,7 @@ const generateFileCoverageHtml = ({
 								commitSHA,
 								workspacePath,
 								comparisonDecimalPlaces,
+								showUncoveredLines,
 							),
 						)
 						.join("")}
@@ -105,7 +109,7 @@ const generateFileCoverageHtml = ({
 			unaffectedFiles.length > 0
 		) {
 			reportData += `
-					${formatGroupLine("Unchanged Files")}
+					${formatGroupLine("Unchanged Files", showUncoveredLines)}
 					${unaffectedFiles
 						.map((filePath) =>
 							generateRow(
@@ -116,6 +120,7 @@ const generateFileCoverageHtml = ({
 								commitSHA,
 								workspacePath,
 								comparisonDecimalPlaces,
+								showUncoveredLines,
 							),
 						)
 						.join("")}
@@ -129,7 +134,7 @@ const generateFileCoverageHtml = ({
 		// Add a note that comparison data is needed for affected files
 		reportData += `
 			<tr>
-				<td colspan="6"><em>Note: Comparison data is required to show affected files. Provide <code>json-summary-compare-path</code> to enable this feature.</em></td>
+				<td colspan="${showUncoveredLines ? 6 : 5}"><em>Note: Comparison data is required to show affected files. Provide <code>json-summary-compare-path</code> to enable this feature.</em></td>
 			</tr>
 		`;
 	} else if (
@@ -138,7 +143,7 @@ const generateFileCoverageHtml = ({
 	) {
 		// Fallback if no comparison data: show all unchanged files together
 		reportData += `
-					${formatGroupLine("Unchanged Files")}
+					${formatGroupLine("Unchanged Files", showUncoveredLines)}
 					${unchangedFiles
 						.map((filePath) =>
 							generateRow(
@@ -149,6 +154,7 @@ const generateFileCoverageHtml = ({
 								commitSHA,
 								workspacePath,
 								comparisonDecimalPlaces,
+								showUncoveredLines,
 							),
 						)
 						.join("")}
@@ -164,7 +170,7 @@ const generateFileCoverageHtml = ({
 				 <th align="right">Branches</th>
 				 <th align="right">Functions</th>
 				 <th align="right">Lines</th>
-				 <th align="left">Uncovered Lines</th>
+				 ${showUncoveredLines ? '<th align="left">Uncovered Lines</th>' : ""}
 				</tr>
 			</thead>
 			<tbody>
@@ -182,6 +188,7 @@ function generateRow(
 	commitSHA: string,
 	workspacePath: string,
 	comparisonDecimalPlaces = 2,
+	showUncoveredLines = true,
 ): string {
 	const coverageSummary = jsonSummary[filePath];
 	const coverageSummaryCompare = jsonSummaryCompare
@@ -203,7 +210,7 @@ function generateRow(
 					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "branches", comparisonDecimalPlaces)}
 					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "functions", comparisonDecimalPlaces)}
 					${generateCoverageCell(coverageSummary, coverageSummaryCompare, "lines", comparisonDecimalPlaces)}
-				<td align="left">${createRangeURLs(uncoveredLines, url)}</td>
+				${showUncoveredLines ? `<td align="left">${createRangeURLs(uncoveredLines, url)}</td>` : ""}
 			</tr>`;
 }
 
@@ -221,10 +228,10 @@ function generateCoverageCell(
 	return `<td align="right">${summary[field].pct}%${diffText}</td>`;
 }
 
-function formatGroupLine(caption: string): string {
+function formatGroupLine(caption: string, showUncoveredLines = true): string {
 	return `
 				<tr>
-					<td align="left" colspan="6"><b>${caption}</b></td>
+					<td align="left" colspan="${showUncoveredLines ? 6 : 5}"><b>${caption}</b></td>
 				</tr>
 	`;
 }

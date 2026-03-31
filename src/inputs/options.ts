@@ -15,6 +15,7 @@ import { parseThresholdIcons } from "./parseThresholdIcons";
 type Options = {
 	fileCoverageMode: FileCoverageMode;
 	fileCoverageExpanded: boolean;
+	showUncoveredLines: boolean;
 	jsonFinalPath: string;
 	jsonSummaryPath: string;
 	jsonSummaryComparePath: string | null;
@@ -69,6 +70,8 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 	const fileCoverageMode = getCoverageModeFrom(fileCoverageModeRaw);
 
 	const fileCoverageExpanded = core.getBooleanInput("file-coverage-expanded");
+
+	const showUncoveredLines = core.getBooleanInput("show-uncovered-lines");
 
 	const jsonSummaryPath = path.resolve(
 		workingDirectory,
@@ -143,6 +146,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 	return {
 		fileCoverageMode,
 		fileCoverageExpanded,
+		showUncoveredLines,
 		jsonFinalPath,
 		jsonSummaryPath,
 		jsonSummaryComparePath,

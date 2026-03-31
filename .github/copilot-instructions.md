@@ -188,4 +188,4 @@ npm start         # Build and run locally
 5. **Co-locate tests** - Keep tests next to implementation
 6. **Handle errors gracefully** - Especially GitHub API errors
 7. **Use `.js` extensions** in imports - Required for module resolution
-8. **Build before committing** - Ensure `dist/index.js` is up to date with `npm run build`
+8. **Do NOT include `dist/` changes in pull requests** - The `dist/` folder contains build artifacts (`dist/index.js`, `dist/index.js.map`) that are generated during the release process. Never commit changes to files in `dist/` as part of a PR.
