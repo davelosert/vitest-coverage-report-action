@@ -26,10 +26,10 @@ jobs:
         run: npm run build
       - name: Get Release Token
         id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@v4
+        uses: actions/create-github-app-token@v3
         with:
-          application_id: ${{ secrets.RELEASE_APP_ID }}
-          application_private_key: ${{ secrets.RELEASE_APP_CERT }}
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_CERT }}
       - name: Semantic Release
         run: npx semantic-release
         env:
