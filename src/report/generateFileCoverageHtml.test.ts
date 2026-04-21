@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getTableLine } from "../../test/queryHelper";
 import { icons } from "../icons";
 import { FileCoverageMode } from "../inputs/FileCoverageMode";
+import { SortBy } from "../inputs/SortBy";
 import type { JsonFinal } from "../types/JsonFinal";
 import { createJsonFinalEntry } from "../types/JsonFinalMockFactory";
 import type { JsonSummary } from "../types/JsonSummary";
@@ -748,6 +749,138 @@ describe("generateFileCoverageHtml()", () => {
 
 		expect(html).toContain("Uncovered Lines");
 		expect(html).toContain("#L1-L2");
+	});
+
+	it("preserves vitest's original file order by default (SortBy.Name)", () => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"src/high.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 90 }),
+			}),
+			"src/low.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 10 }),
+			}),
+			"src/medium.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 50 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
+		});
+
+		const highIdx = html.indexOf("src/high.ts");
+		const lowIdx = html.indexOf("src/low.ts");
+		const mediumIdx = html.indexOf("src/medium.ts");
+		expect(highIdx).toBeLessThan(lowIdx);
+		expect(lowIdx).toBeLessThan(mediumIdx);
+	});
+
+	it("sorts files by statements coverage ascending when sortBy is CoverageAsc", () => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"src/high.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 90 }),
+			}),
+			"src/low.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 10 }),
+			}),
+			"src/medium.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 50 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
+			sortBy: SortBy.CoverageAsc,
+		});
+
+		const lowIdx = html.indexOf("src/low.ts");
+		const mediumIdx = html.indexOf("src/medium.ts");
+		const highIdx = html.indexOf("src/high.ts");
+		expect(lowIdx).toBeLessThan(mediumIdx);
+		expect(mediumIdx).toBeLessThan(highIdx);
+	});
+
+	it("sorts files by statements coverage descending when sortBy is CoverageDesc", () => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"src/high.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 90 }),
+			}),
+			"src/low.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 10 }),
+			}),
+			"src/medium.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 50 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
+			sortBy: SortBy.CoverageDesc,
+		});
+
+		const highIdx = html.indexOf("src/high.ts");
+		const mediumIdx = html.indexOf("src/medium.ts");
+		const lowIdx = html.indexOf("src/low.ts");
+		expect(highIdx).toBeLessThan(mediumIdx);
+		expect(mediumIdx).toBeLessThan(lowIdx);
+	});
+
+	it("sorts within each file group independently (changed and unchanged)", () => {
+		const changedHigh = path.join(workspacePath, "src", "changedHigh.ts");
+		const changedLow = path.join(workspacePath, "src", "changedLow.ts");
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			[changedHigh]: createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 80 }),
+			}),
+			[changedLow]: createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 20 }),
+			}),
+			"src/unchangedHigh.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 70 }),
+			}),
+			"src/unchangedLow.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 30 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: ["src/changedHigh.ts", "src/changedLow.ts"],
+			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
+			sortBy: SortBy.CoverageAsc,
+		});
+
+		expect(html.indexOf("src/changedLow.ts")).toBeLessThan(
+			html.indexOf("src/changedHigh.ts"),
+		);
+		expect(html.indexOf("src/changedHigh.ts")).toBeLessThan(
+			html.indexOf("src/unchangedLow.ts"),
+		);
+		expect(html.indexOf("src/unchangedLow.ts")).toBeLessThan(
+			html.indexOf("src/unchangedHigh.ts"),
+		);
 	});
 
 	it("uses colspan 5 for group lines when showUncoveredLines is false", () => {

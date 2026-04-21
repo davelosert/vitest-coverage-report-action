@@ -70,6 +70,7 @@ const run = async () => {
 			workspacePath: options.fileCoverageRootPath,
 			comparisonDecimalPlaces: options.comparisonDecimalPlaces,
 			showUncoveredLines: options.showUncoveredLines,
+			sortBy: options.sortBy,
 		});
 
 		if (options.fileCoverageExpanded) {
