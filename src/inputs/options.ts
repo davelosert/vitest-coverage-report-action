@@ -11,7 +11,7 @@ import { getPullRequestNumber } from "./getPullRequestNumber";
 import { getViteConfigPath } from "./getViteConfigPath";
 import { parseCoverageThresholds } from "./parseCoverageThresholds";
 import { parseThresholdIcons } from "./parseThresholdIcons";
-import { getSortByFrom, type SortBy } from "./SortBy";
+import { getSortByFrom, type SortBy } from "./sortBy";
 
 type Options = {
 	fileCoverageMode: FileCoverageMode;

@@ -34,7 +34,7 @@ inputs:
       default: 'true'
   sort-by:
       required: false
-      description: 'How to order files within each file coverage group. Options: "name" (preserve vitest''s collection order), "coverage-asc" (statements coverage ascending — worst first), "coverage-desc" (statements coverage descending — best first). Uses "name" by default.'
+      description: 'How to order files within each file coverage group. Use "name" to preserve vitest''s collection order, or "<metric>-<direction>" to sort by a coverage metric. Metrics: "statements", "branches", "functions", "lines". Directions: "asc" (worst first), "desc" (best first). E.g. "statements-asc". Uses "name" by default.'
       default: 'name'
   file-coverage-root-path:
       required: false
