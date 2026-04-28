@@ -1,6 +1,7 @@
 import * as path from "node:path";
 import { oneLine } from "common-tags";
 import { FileCoverageMode } from "../inputs/FileCoverageMode";
+import type { SortBy } from "../inputs/sortBy";
 import type { JsonFinal } from "../types/JsonFinal";
 import type { CoverageReport, JsonSummary } from "../types/JsonSummary";
 import { generateBlobFileUrl } from "./generateFileUrl";
@@ -20,6 +21,7 @@ type FileCoverageInputs = {
 	workspacePath: string;
 	comparisonDecimalPlaces?: number;
 	showUncoveredLines?: boolean;
+	sortBy?: SortBy;
 };
 
 const generateFileCoverageHtml = ({
@@ -32,6 +34,7 @@ const generateFileCoverageHtml = ({
 	workspacePath,
 	comparisonDecimalPlaces = 2,
 	showUncoveredLines = true,
+	sortBy = { metric: "name" } as SortBy,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
 
@@ -42,6 +45,9 @@ const generateFileCoverageHtml = ({
 		pullChanges,
 		workspacePath,
 	);
+
+	sortFilesByMetric(changedFiles, jsonSummary, sortBy);
+	sortFilesByMetric(unchangedFiles, jsonSummary, sortBy);
 
 	if (
 		fileCoverageMode === FileCoverageMode.Changes &&
@@ -271,6 +277,22 @@ function splitFilesByChangeStatus(
 		},
 		[[], []] as [string[], string[]],
 	);
+}
+
+function sortFilesByMetric(
+	filePaths: string[],
+	jsonSummary: JsonSummary,
+	sortBy: SortBy,
+): void {
+	if (sortBy.metric === "name") {
+		return;
+	}
+	const { metric, direction } = sortBy;
+	filePaths.sort((a, b) => {
+		const aPct = jsonSummary[a]?.[metric].pct ?? 0;
+		const bPct = jsonSummary[b]?.[metric].pct ?? 0;
+		return direction === "asc" ? aPct - bPct : bPct - aPct;
+	});
 }
 
 function splitFilesByCoverageChange(
