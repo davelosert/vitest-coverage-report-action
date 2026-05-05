@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getTableLine } from "../../test/queryHelper";
 import { icons } from "../icons";
 import { FileCoverageMode } from "../inputs/FileCoverageMode";
+import type { SortBy } from "../inputs/sortBy";
 import type { JsonFinal } from "../types/JsonFinal";
 import { createJsonFinalEntry } from "../types/JsonFinalMockFactory";
 import type { JsonSummary } from "../types/JsonSummary";
@@ -748,6 +749,161 @@ describe("generateFileCoverageHtml()", () => {
 
 		expect(html).toContain("Uncovered Lines");
 		expect(html).toContain("#L1-L2");
+	});
+
+	it("preserves vitest's original file order when sortBy is name", () => {
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"src/high.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 90 }),
+			}),
+			"src/low.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 10 }),
+			}),
+			"src/medium.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 50 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
+		});
+
+		const highIdx = html.indexOf("src/high.ts");
+		const lowIdx = html.indexOf("src/low.ts");
+		const mediumIdx = html.indexOf("src/medium.ts");
+		expect(highIdx).toBeGreaterThanOrEqual(0);
+		expect(lowIdx).toBeGreaterThanOrEqual(0);
+		expect(mediumIdx).toBeGreaterThanOrEqual(0);
+		expect(highIdx).toBeLessThan(lowIdx);
+		expect(lowIdx).toBeLessThan(mediumIdx);
+	});
+
+	it.each([
+		"statements",
+		"branches",
+		"functions",
+		"lines",
+	] as const)("sorts files by %s coverage ascending", (metric) => {
+		const sortBy: SortBy = { metric, direction: "asc" };
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"src/high.ts": createMockCoverageReport({
+				[metric]: createMockReportNumbers({ pct: 90 }),
+			}),
+			"src/low.ts": createMockCoverageReport({
+				[metric]: createMockReportNumbers({ pct: 10 }),
+			}),
+			"src/medium.ts": createMockCoverageReport({
+				[metric]: createMockReportNumbers({ pct: 50 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
+			sortBy,
+		});
+
+		const lowIdx = html.indexOf("src/low.ts");
+		const mediumIdx = html.indexOf("src/medium.ts");
+		const highIdx = html.indexOf("src/high.ts");
+		expect(lowIdx).toBeGreaterThanOrEqual(0);
+		expect(mediumIdx).toBeGreaterThanOrEqual(0);
+		expect(highIdx).toBeGreaterThanOrEqual(0);
+		expect(lowIdx).toBeLessThan(mediumIdx);
+		expect(mediumIdx).toBeLessThan(highIdx);
+	});
+
+	it.each([
+		"statements",
+		"branches",
+		"functions",
+		"lines",
+	] as const)("sorts files by %s coverage descending", (metric) => {
+		const sortBy: SortBy = { metric, direction: "desc" };
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			"src/high.ts": createMockCoverageReport({
+				[metric]: createMockReportNumbers({ pct: 90 }),
+			}),
+			"src/low.ts": createMockCoverageReport({
+				[metric]: createMockReportNumbers({ pct: 10 }),
+			}),
+			"src/medium.ts": createMockCoverageReport({
+				[metric]: createMockReportNumbers({ pct: 50 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: [],
+			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
+			sortBy,
+		});
+
+		const highIdx = html.indexOf("src/high.ts");
+		const mediumIdx = html.indexOf("src/medium.ts");
+		const lowIdx = html.indexOf("src/low.ts");
+		expect(highIdx).toBeGreaterThanOrEqual(0);
+		expect(mediumIdx).toBeGreaterThanOrEqual(0);
+		expect(lowIdx).toBeGreaterThanOrEqual(0);
+		expect(highIdx).toBeLessThan(mediumIdx);
+		expect(mediumIdx).toBeLessThan(lowIdx);
+	});
+
+	it("sorts within each file group independently (changed and unchanged)", () => {
+		const changedHigh = path.join(workspacePath, "src", "changedHigh.ts");
+		const changedLow = path.join(workspacePath, "src", "changedLow.ts");
+		const jsonSummary: JsonSummary = createMockJsonSummary({
+			[changedHigh]: createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 80 }),
+			}),
+			[changedLow]: createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 20 }),
+			}),
+			"src/unchangedHigh.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 70 }),
+			}),
+			"src/unchangedLow.ts": createMockCoverageReport({
+				statements: createMockReportNumbers({ pct: 30 }),
+			}),
+		});
+
+		const html = generateFileCoverageHtml({
+			jsonSummary,
+			jsonSummaryCompare: undefined,
+			jsonFinal: {},
+			fileCoverageMode: FileCoverageMode.All,
+			pullChanges: ["src/changedHigh.ts", "src/changedLow.ts"],
+			commitSHA: "test-sha",
+			workspacePath: process.cwd(),
+			sortBy: { metric: "statements", direction: "asc" },
+		});
+
+		const changedLowIdx = html.indexOf("src/changedLow.ts");
+		const changedHighIdx = html.indexOf("src/changedHigh.ts");
+		const unchangedLowIdx = html.indexOf("src/unchangedLow.ts");
+		const unchangedHighIdx = html.indexOf("src/unchangedHigh.ts");
+		expect(changedLowIdx).toBeGreaterThanOrEqual(0);
+		expect(changedHighIdx).toBeGreaterThanOrEqual(0);
+		expect(unchangedLowIdx).toBeGreaterThanOrEqual(0);
+		expect(unchangedHighIdx).toBeGreaterThanOrEqual(0);
+		expect(changedLowIdx).toBeLessThan(changedHighIdx);
+		expect(changedHighIdx).toBeLessThan(unchangedLowIdx);
+		expect(unchangedLowIdx).toBeLessThan(unchangedHighIdx);
 	});
 
 	it("uses colspan 5 for group lines when showUncoveredLines is false", () => {
