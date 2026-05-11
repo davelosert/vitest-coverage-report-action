@@ -34,7 +34,7 @@ const generateFileCoverageHtml = ({
 	workspacePath,
 	comparisonDecimalPlaces = 2,
 	showUncoveredLines = true,
-	sortBy = { metric: "name" } as SortBy,
+	sortBy = { metric: "name" } satisfies SortBy,
 }: FileCoverageInputs) => {
 	const filePaths = Object.keys(jsonSummary).filter((key) => key !== "total");
 
