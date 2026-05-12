@@ -32,6 +32,10 @@ inputs:
       required: false
       description: 'When true, the "Uncovered Lines" column is shown in the file coverage table. When false, the column is hidden, reducing table width. Uses true by default.'
       default: 'true'
+  sort-by:
+      required: false
+      description: 'How to order files within each file coverage group. Use "name" to preserve vitest''s collection order, or "<metric>-<direction>" to sort by a coverage metric. Metrics: "statements", "branches", "functions", "lines". Directions: "asc" (worst first), "desc" (best first). E.g. "statements-asc". Uses "name" by default.'
+      default: 'name'
   file-coverage-root-path:
       required: false
       description: 'The root (or absolute) part of the path used within the json coverage reports to point to the covered files. You can change this if your reports were generated in a different context (e.g., a docker container) and the absolute paths don''t match the current runner''s workspace. Uses the runner''s workspace path by default.'

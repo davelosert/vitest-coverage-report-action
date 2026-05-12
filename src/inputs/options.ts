@@ -11,11 +11,13 @@ import { getPullRequestNumber } from "./getPullRequestNumber";
 import { getViteConfigPath } from "./getViteConfigPath";
 import { parseCoverageThresholds } from "./parseCoverageThresholds";
 import { parseThresholdIcons } from "./parseThresholdIcons";
+import { getSortByFrom, type SortBy } from "./sortBy";
 
 type Options = {
 	fileCoverageMode: FileCoverageMode;
 	fileCoverageExpanded: boolean;
 	showUncoveredLines: boolean;
+	sortBy: SortBy;
 	jsonFinalPath: string;
 	jsonSummaryPath: string;
 	jsonSummaryComparePath: string | null;
@@ -72,6 +74,8 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 	const fileCoverageExpanded = core.getBooleanInput("file-coverage-expanded");
 
 	const showUncoveredLines = core.getBooleanInput("show-uncovered-lines");
+
+	const sortBy = getSortByFrom(core.getInput("sort-by"));
 
 	const jsonSummaryPath = path.resolve(
 		workingDirectory,
@@ -147,6 +151,7 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 		fileCoverageMode,
 		fileCoverageExpanded,
 		showUncoveredLines,
+		sortBy,
 		jsonFinalPath,
 		jsonSummaryPath,
 		jsonSummaryComparePath,
@@ -162,6 +167,5 @@ async function readOptions(octokit: Octokit): Promise<Options> {
 	};
 }
 
-export { readOptions, hasThresholds, parseComparisonDecimalPlaces };
-
 export type { Options };
+export { hasThresholds, parseComparisonDecimalPlaces, readOptions };
