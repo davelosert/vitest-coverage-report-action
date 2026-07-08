@@ -13,6 +13,7 @@ import { generateCommitSHAUrl } from "./report/generateCommitSHAUrl.js";
 import { generateFileCoverageHtml } from "./report/generateFileCoverageHtml.js";
 import { generateHeadline } from "./report/generateHeadline.js";
 import { generateSummaryTableHtml } from "./report/generateSummaryTableHtml.js";
+import { getWorkflowSummaryURL } from "./report/getWorkflowSummaryURL.js";
 import type { JsonSummary } from "./types/JsonSummary.js";
 import { writeSummaryToCommit } from "./writeSummaryToComment.js";
 import { writeSummaryToPR } from "./writeSummaryToPR.js";
@@ -166,12 +167,6 @@ function getMarkerPostfix({
 	if (name) return name;
 	if (workingDirectory !== "./") return workingDirectory;
 	return "root";
-}
-
-function getWorkflowSummaryURL() {
-	const { owner, repo } = github.context.repo;
-	const { runId } = github.context;
-	return `${github.context.serverUrl}/${owner}/${repo}/actions/runs/${runId}`;
 }
 
 run()

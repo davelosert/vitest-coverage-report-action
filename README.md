@@ -140,6 +140,33 @@ If your project includes multiple test suites and you want to consolidate their 
         json-final-path: './coverage/coverage-final-backend.json'
 ```
 
+#### Injecting into the Pull Request Description
+
+Instead of posting a separate comment, the action can inject the report into a section of the **pull request description**, handy when you use a PR template and want coverage to live in a specific place. Add a start/end marker pair to your PR template, and the action will replace everything between them on every run, leaving the rest of the description untouched:
+
+```md
+## Coverage
+
+<!-- vitest-coverage-report-marker-start-root -->
+<!-- vitest-coverage-report-marker-end-root -->
+```
+
+The `root` suffix is the same postfix used for the comment marker: it defaults to `root`, but becomes the [`name`](#name) if you set one (or the `working-directory` otherwise). So a step with `name: 'Frontend'` looks for `...-marker-start-Frontend`/`...-marker-end-Frontend`, which lets you inject several reports into one description:
+
+```md
+<!-- vitest-coverage-report-marker-start-Frontend -->
+<!-- vitest-coverage-report-marker-end-Frontend -->
+
+<!-- vitest-coverage-report-marker-start-Backend -->
+<!-- vitest-coverage-report-marker-end-Backend -->
+```
+
+Notes:
+
+- When the markers are present, the report goes into the description **only**, no comment is posted. If you previously ran in comment mode, delete the old comment once by hand.
+- Only one marker of a pair (or an end before its start) is treated as a mistake: the action logs a warning and falls back to posting a comment.
+- Because every run rewrites the same description, parallel jobs writing **different** markers into it can clobber each other (last write wins). If you inject multiple reports into one description, run them in a single job or guard them with a [`concurrency`](https://docs.github.com/en/actions/using-jobs/using-concurrency) group.
+
 #### Threshold Icons
 
 If you haven't established strict coverage thresholds in your `vitest.config` (which would fail the test run), you can still use the `threshold-icons` option to control the status icons displayed in the PR comment based on coverage percentage.
