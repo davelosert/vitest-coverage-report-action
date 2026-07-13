@@ -80,7 +80,7 @@ function generateTableRow({
 	let percent = `${reportNumbers.pct}%`;
 
 	// If vitest threshold is defined, show the target percentage
-	if (threshold !== undefined) {
+	if (threshold != null) {
 		percent = `${percent} (${icons.target} ${threshold}%)`;
 	}
 
