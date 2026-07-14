@@ -10,4 +10,12 @@
  */
 type ThresholdIcons = Record<number, string>;
 
-export type { ThresholdIcons };
+/** The resolved ThresholdIcons map to use for each coverage category. */
+type ThresholdIconsByCategory = {
+	lines: ThresholdIcons;
+	statements: ThresholdIcons;
+	functions: ThresholdIcons;
+	branches: ThresholdIcons;
+};
+
+export type { ThresholdIcons, ThresholdIconsByCategory };

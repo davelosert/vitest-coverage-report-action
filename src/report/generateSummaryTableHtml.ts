@@ -2,14 +2,24 @@ import { oneLine } from "common-tags";
 import { defaultThresholdIcons, icons } from "../icons";
 import type { CoverageReport, ReportNumbers } from "../types/JsonSummary";
 import type { Thresholds } from "../types/Threshold";
-import type { ThresholdIcons } from "../types/ThresholdIcons";
+import type {
+	ThresholdIcons,
+	ThresholdIconsByCategory,
+} from "../types/ThresholdIcons";
 import { getCompareString } from "./getCompareString";
+
+const allBlueThresholdIcons: ThresholdIconsByCategory = {
+	lines: defaultThresholdIcons,
+	statements: defaultThresholdIcons,
+	functions: defaultThresholdIcons,
+	branches: defaultThresholdIcons,
+};
 
 function generateSummaryTableHtml(
 	jsonReport: CoverageReport,
 	thresholds: Thresholds = {},
 	jsonCompareReport: CoverageReport | undefined = undefined,
-	thresholdIcons: ThresholdIcons = defaultThresholdIcons,
+	thresholdIcons: ThresholdIconsByCategory = allBlueThresholdIcons,
 	comparisonDecimalPlaces = 2,
 ): string {
 	return oneLine`
@@ -24,16 +34,16 @@ function generateSummaryTableHtml(
 			</thead>
 			<tbody>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.lines, category: "Lines", threshold: thresholds.lines, reportCompareNumbers: jsonCompareReport?.lines, thresholdIcons, comparisonDecimalPlaces })}
+					${generateTableRow({ reportNumbers: jsonReport.lines, category: "Lines", threshold: thresholds.lines, reportCompareNumbers: jsonCompareReport?.lines, thresholdIcons: thresholdIcons.lines, comparisonDecimalPlaces })}
 				</tr>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.statements, category: "Statements", threshold: thresholds.statements, reportCompareNumbers: jsonCompareReport?.statements, thresholdIcons, comparisonDecimalPlaces })}
+					${generateTableRow({ reportNumbers: jsonReport.statements, category: "Statements", threshold: thresholds.statements, reportCompareNumbers: jsonCompareReport?.statements, thresholdIcons: thresholdIcons.statements, comparisonDecimalPlaces })}
 				</tr>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.functions, category: "Functions", threshold: thresholds.functions, reportCompareNumbers: jsonCompareReport?.functions, thresholdIcons, comparisonDecimalPlaces })}
+					${generateTableRow({ reportNumbers: jsonReport.functions, category: "Functions", threshold: thresholds.functions, reportCompareNumbers: jsonCompareReport?.functions, thresholdIcons: thresholdIcons.functions, comparisonDecimalPlaces })}
 				</tr>
 				<tr>
-					${generateTableRow({ reportNumbers: jsonReport.branches, category: "Branches", threshold: thresholds.branches, reportCompareNumbers: jsonCompareReport?.branches, thresholdIcons, comparisonDecimalPlaces })}
+					${generateTableRow({ reportNumbers: jsonReport.branches, category: "Branches", threshold: thresholds.branches, reportCompareNumbers: jsonCompareReport?.branches, thresholdIcons: thresholdIcons.branches, comparisonDecimalPlaces })}
 				</tr>
 			</tbody>
 		</table>
@@ -84,7 +94,6 @@ function generateTableRow({
 		percent = `${percent} (${icons.target} ${threshold}%)`;
 	}
 
-	// Always use thresholdIcons for status icon
 	const status = getStatusFromThresholdIcons(reportNumbers.pct, thresholdIcons);
 
 	if (reportCompareNumbers) {
