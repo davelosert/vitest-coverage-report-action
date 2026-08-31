@@ -163,6 +163,7 @@ The `root` suffix is the same postfix used for the comment marker: it defaults t
 
 Notes:
 
+- Rewriting the description needs the same [`pull-requests: write`](#required-permissions) permission as commenting, so there's nothing extra to grant, but a read-only token can't update it and the run will fail.
 - When the markers are present, the report goes into the description **only**, no comment is posted. If you previously ran in comment mode, delete the old comment once by hand.
 - Only one marker of a pair (or an end before its start) is treated as a mistake: the action logs a warning and falls back to posting a comment.
 - Because every run rewrites the same description, parallel jobs writing **different** markers into it can clobber each other (last write wins). If you inject multiple reports into one description, run them in a single job or guard them with a [`concurrency`](https://docs.github.com/en/actions/using-jobs/using-concurrency) group.
