@@ -145,6 +145,24 @@ describe("writeSummaryToPR()", () => {
 		expect(mockOctokit.rest.issues.updateComment).toHaveBeenCalled();
 	});
 
+	it("warns and falls back to a comment when the end marker comes first", async () => {
+		mockOctokit.rest.pulls.get = vi.fn().mockResolvedValue({
+			data: {
+				body: "text\n<!-- vitest-coverage-report-marker-end-root -->\nreversed\n<!-- vitest-coverage-report-marker-start-root -->",
+			},
+		});
+
+		await writeSummaryToPR({
+			octokit: mockOctokit,
+			summary: mockSummary,
+			prNumber: 123,
+		});
+
+		expect(core.warning).toHaveBeenCalled();
+		expect(mockOctokit.rest.pulls.update).not.toHaveBeenCalled();
+		expect(mockOctokit.rest.issues.updateComment).toHaveBeenCalled();
+	});
+
 	it("replaces an oversized report with a stub linking to the workflow summary", async () => {
 		mockSummary.stringify = vi.fn().mockReturnValue("x".repeat(70000));
 		mockOctokit.paginate.iterator = vi.fn().mockReturnValue([{ data: [] }]);
