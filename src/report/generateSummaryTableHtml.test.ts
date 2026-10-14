@@ -203,7 +203,7 @@ describe("generateSummaryTabelHtml()", () => {
 		);
 
 		expect(getTableLine(1, summaryHtml)).toContain(
-			"80%<br/>⬇️ <em>-10.00%</em>",
+			"80%<br/>⬇️ <em>-10.00 pp</em>",
 		);
 	});
 
@@ -226,7 +226,7 @@ describe("generateSummaryTabelHtml()", () => {
 		);
 
 		expect(getTableLine(1, summaryHtml)).toContain(
-			"90%<br/>⬆️ <em>+10.00%</em>",
+			"90%<br/>⬆️ <em>+10.00 pp</em>",
 		);
 	});
 
@@ -248,7 +248,7 @@ describe("generateSummaryTabelHtml()", () => {
 			mockCompareReport,
 		);
 
-		expect(getTableLine(1, summaryHtml)).toContain("90%<br/>🟰 <em>±0%</em>");
+		expect(getTableLine(1, summaryHtml)).toContain("90%<br/>🟰 <em>±0 pp</em>");
 	});
 
 	describe("thresholdIcons", () => {
@@ -408,7 +408,7 @@ describe("generateSummaryTabelHtml()", () => {
 				4, // custom decimal places
 			);
 
-			expect(getTableLine(1, summaryHtml)).toContain("+10.1235%");
+			expect(getTableLine(1, summaryHtml)).toContain("+10.1235 pp");
 		});
 
 		it("defaults to 2 decimal places when not specified", async (): Promise<void> => {
@@ -429,7 +429,7 @@ describe("generateSummaryTabelHtml()", () => {
 				mockCompareReport,
 			);
 
-			expect(getTableLine(1, summaryHtml)).toContain("+10.12%");
+			expect(getTableLine(1, summaryHtml)).toContain("+10.12 pp");
 		});
 	});
 });

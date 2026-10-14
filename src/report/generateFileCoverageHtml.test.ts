@@ -284,7 +284,7 @@ describe("generateFileCoverageHtml()", () => {
 		});
 
 		expect(html).toContain("file1.ts");
-		expect(html).toContain(`${icons.increase} <em>+10.00%</em>`);
+		expect(html).toContain(`${icons.increase} <em>+10.00 pp</em>`);
 		const equalSignCount = (html.match(new RegExp(icons.increase, "g")) || [])
 			.length;
 		expect(equalSignCount).toBe(1);
@@ -319,7 +319,7 @@ describe("generateFileCoverageHtml()", () => {
 		});
 
 		expect(html).toContain("file1.ts");
-		expect(html).toContain(`${icons.decrease} <em>-10.00%</em>`);
+		expect(html).toContain(`${icons.decrease} <em>-10.00 pp</em>`);
 		const equalSignCount = (html.match(new RegExp(icons.decrease, "g")) || [])
 			.length;
 		expect(equalSignCount).toBe(1);
@@ -385,12 +385,14 @@ describe("generateFileCoverageHtml()", () => {
 
 		// Changed file should have comparison
 		expect(html).toContain("src/changedFile.ts");
-		expect(html).toContain(`${icons.increase} <em>+10.00%</em>`);
+		expect(html).toContain(`${icons.increase} <em>+10.00 pp</em>`);
 
 		// Unchanged file with coverage change should appear in Affected Files section
 		const affectedFileSection = html.split("Affected Files")[1];
 		expect(affectedFileSection).toContain("src/unchangedFile.ts");
-		expect(affectedFileSection).toContain(`${icons.increase} <em>+10.00%</em>`);
+		expect(affectedFileSection).toContain(
+			`${icons.increase} <em>+10.00 pp</em>`,
+		);
 	});
 
 	it("shows only changed and affected files in changes-affected mode", () => {
@@ -439,7 +441,7 @@ describe("generateFileCoverageHtml()", () => {
 		// Should have Affected Files section with coverage comparison
 		expect(html).toContain("Affected Files");
 		expect(html).toContain("src/affectedFile.ts");
-		expect(html).toContain(`${icons.increase} <em>+10.00%</em>`);
+		expect(html).toContain(`${icons.increase} <em>+10.00 pp</em>`);
 
 		// Should NOT have unaffected files
 		expect(html).not.toContain("src/unaffectedFile.ts");
@@ -494,7 +496,7 @@ describe("generateFileCoverageHtml()", () => {
 			.split("Affected Files")[1]
 			.split("Unchanged Files")[0];
 		expect(affectedSection).toContain("src/affectedFile.ts");
-		expect(affectedSection).toContain(`${icons.increase} <em>+10.00%</em>`);
+		expect(affectedSection).toContain(`${icons.increase} <em>+10.00 pp</em>`);
 
 		// Should have Unchanged Files section with files that have no coverage changes (no comparison data)
 		expect(html).toContain("Unchanged Files");
@@ -609,7 +611,7 @@ describe("generateFileCoverageHtml()", () => {
 			comparisonDecimalPlaces: 4,
 		});
 
-		expect(html).toContain("+10.1235%");
+		expect(html).toContain("+10.1235 pp");
 	});
 
 	it("shows informative message when ChangesAffected mode is used without comparison data", () => {
