@@ -68,6 +68,33 @@ describe("getPullChanges()", () => {
 		expect(result).toEqual(["file1.ts", "file2.ts"]);
 	});
 
+	it.each([0, 5])(
+		"includes renamed files with %i changed lines using their new path",
+		async (changes) => {
+			mockOctokit.paginate.iterator = vi.fn().mockReturnValue([
+				{
+					data: [
+						{
+							status: "renamed",
+							filename: "renamed.ts",
+							previous_filename: "original.ts",
+							changes,
+						},
+						{ status: "removed", filename: "removed.ts" },
+					],
+				},
+			]);
+
+			const result = await getPullChanges({
+				fileCoverageMode: FileCoverageMode.Changes,
+				prNumber: 123,
+				octokit: mockOctokit,
+			});
+
+			expect(result).toEqual(["renamed.ts"]);
+		},
+	);
+
 	it("handles RequestError with status 404 gracefully", async () => {
 		mockOctokit.paginate.iterator = vi
 			.fn()
