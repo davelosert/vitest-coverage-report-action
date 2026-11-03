@@ -43,7 +43,7 @@ export async function getPullChanges({
 
 			for (const file of response.data) {
 				core.debug(`[${file.status}] ${file.filename}`);
-				if (["added", "modified"].includes(file.status)) {
+				if (["added", "modified", "renamed"].includes(file.status)) {
 					paths.push(file.filename);
 				}
 			}
