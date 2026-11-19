@@ -35,23 +35,48 @@ const run = async () => {
 		);
 	}
 
-	const summary = core.summary
-		.addHeading(
-			generateHeadline({
-				workingDirectory: options.workingDirectory,
-				name: options.name,
-			}),
-			2,
-		)
-		.addRaw(
-			generateSummaryTableHtml(
-				jsonSummary.total,
-				options.thresholds,
-				jsonSummaryCompare?.total,
-				options.thresholdIcons,
-				options.comparisonDecimalPlaces,
-			),
-		);
+	const summaryTable = generateSummaryTableHtml(
+		jsonSummary.total,
+		options.thresholds,
+		jsonSummaryCompare?.total,
+		options.thresholdIcons,
+		options.comparisonDecimalPlaces,
+	);
+
+	const commitSHAUrl = generateCommitSHAUrl(options.commitSHA);
+	const footer = `<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a> for commit <a href="${commitSHAUrl}">${options.commitSHA.substring(0, 7)}</a> by the <a href="https://github.com/davelosert/vitest-coverage-report-action">Vitest Coverage Report Action</a></em>`;
+
+	// Fills core.summary's buffer with the report, with or without a file table.
+	const composeSummary = (fileTable: string | undefined): GitHubSummary => {
+		const summary = core.summary
+			.emptyBuffer()
+			.addHeading(
+				generateHeadline({
+					workingDirectory: options.workingDirectory,
+					name: options.name,
+				}),
+				2,
+			)
+			.addRaw(summaryTable);
+
+		if (fileTable !== undefined) {
+			if (options.fileCoverageExpanded) {
+				summary.addRaw(
+					`<details open><summary>File Coverage</summary>${fileTable}</details>\n`,
+				);
+			} else {
+				summary.addDetails("File Coverage", fileTable);
+			}
+		}
+
+		return summary.addRaw(footer);
+	};
+
+	let fileTable: string | undefined;
+	// Shorter versions for a PR comment the full report would not fit into:
+	// first without the uncovered-lines column (every range is a full URL),
+	// then without the file table at all. The step summary keeps the full one.
+	const shorterReports: string[] = [];
 
 	if (options.fileCoverageMode !== FileCoverageMode.None) {
 		const pullChanges = await getPullChanges({
@@ -61,36 +86,34 @@ const run = async () => {
 		});
 
 		const jsonFinal = await parseVitestJsonFinal(options.jsonFinalPath);
-		const fileTable = generateFileCoverageHtml({
-			jsonSummary,
-			jsonSummaryCompare,
-			jsonFinal,
-			fileCoverageMode: options.fileCoverageMode,
-			pullChanges,
-			commitSHA: options.commitSHA,
-			workspacePath: options.fileCoverageRootPath,
-			comparisonDecimalPlaces: options.comparisonDecimalPlaces,
-			showUncoveredLines: options.showUncoveredLines,
-			sortBy: options.sortBy,
-		});
+		const renderFileTable = (showUncoveredLines: boolean) =>
+			generateFileCoverageHtml({
+				jsonSummary,
+				jsonSummaryCompare,
+				jsonFinal,
+				fileCoverageMode: options.fileCoverageMode,
+				pullChanges,
+				commitSHA: options.commitSHA,
+				workspacePath: options.fileCoverageRootPath,
+				comparisonDecimalPlaces: options.comparisonDecimalPlaces,
+				showUncoveredLines,
+				sortBy: options.sortBy,
+			});
 
-		if (options.fileCoverageExpanded) {
-			summary.addRaw(
-				`<details open><summary>File Coverage</summary>${fileTable}</details>\n`,
-			);
-		} else {
-			summary.addDetails("File Coverage", fileTable);
+		fileTable = renderFileTable(options.showUncoveredLines);
+
+		if (options.commentOn.includes("pr")) {
+			if (options.showUncoveredLines) {
+				shorterReports.push(composeSummary(renderFileTable(false)).stringify());
+			}
+			shorterReports.push(composeSummary(undefined).stringify());
 		}
 	}
 
-	const commitSHAUrl = generateCommitSHAUrl(options.commitSHA);
-
-	summary.addRaw(
-		`<em>Generated in workflow <a href=${getWorkflowSummaryURL()}>#${github.context.runNumber}</a> for commit <a href="${commitSHAUrl}">${options.commitSHA.substring(0, 7)}</a> by the <a href="https://github.com/davelosert/vitest-coverage-report-action">Vitest Coverage Report Action</a></em>`,
-	);
+	const summary = composeSummary(fileTable);
 
 	if (options.commentOn.includes("pr")) {
-		await commentOnPR(octokit, summary, options);
+		await commentOnPR(octokit, summary, options, shorterReports);
 	}
 
 	if (options.commentOn.includes("commit")) {
@@ -125,11 +148,13 @@ async function commentOnPR(
 	octokit: Octokit,
 	summary: GitHubSummary,
 	options: Options,
+	shorterReports: string[],
 ) {
 	try {
 		await writeSummaryToPR({
 			octokit,
 			summary,
+			shorterReports,
 			markerPostfix: getMarkerPostfix({
 				name: options.name,
 				workingDirectory: options.workingDirectory,
