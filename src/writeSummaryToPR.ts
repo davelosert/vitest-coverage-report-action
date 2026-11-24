@@ -17,16 +17,31 @@ const END_MARKER = (markerPostfix = "root") =>
 const oversizeStub = () =>
 	`⚠️ Coverage report too large to inline, see the [workflow summary](${getWorkflowSummaryURL()}).`;
 
+// The first report that fits within `limit`, else undefined. `reports` runs
+// from the fullest version to the shortest.
+const firstThatFits = (
+	reports: string[],
+	limit: number,
+	wrap: (report: string) => string,
+): string | undefined => reports.map(wrap).find((body) => body.length <= limit);
+
 const writeSummaryToPR = async ({
 	octokit,
 	summary,
 	markerPostfix,
 	prNumber,
+	shorterReports = [],
 }: {
 	octokit: Octokit;
 	summary: typeof core.summary;
 	markerPostfix?: string;
 	prNumber?: number;
+	/**
+	 * Shorter versions of the report, tried in order when the full one is over
+	 * GitHub's size limit, before falling back to a stub that links to the
+	 * workflow summary.
+	 */
+	shorterReports?: string[];
 }) => {
 	// The user-defined pull request number takes precedence
 	if (!prNumber) {
@@ -34,17 +49,20 @@ const writeSummaryToPR = async ({
 		return;
 	}
 
-	const report = summary.stringify();
+	const reports = [summary.stringify(), ...shorterReports];
 
 	// If the PR body carries our marker pair, inject there and post no comment.
-	if (await tryInjectIntoBody({ octokit, report, markerPostfix, prNumber })) {
+	if (await tryInjectIntoBody({ octokit, reports, markerPostfix, prNumber })) {
 		return;
 	}
 
 	const marker = COMMENT_MARKER(markerPostfix);
-	const full = `${report}\n\n${marker}`;
 	const commentBody =
-		full.length <= MAX_BODY_LENGTH ? full : `${oversizeStub()}\n\n${marker}`;
+		firstThatFits(
+			reports,
+			MAX_BODY_LENGTH,
+			(report) => `${report}\n\n${marker}`,
+		) ?? `${oversizeStub()}\n\n${marker}`;
 	const existingComment = await findCommentByBody(octokit, marker, prNumber);
 
 	if (existingComment) {
@@ -70,12 +88,12 @@ const writeSummaryToPR = async ({
 // malformed (only one present, or end before start).
 async function tryInjectIntoBody({
 	octokit,
-	report,
+	reports,
 	markerPostfix,
 	prNumber,
 }: {
 	octokit: Octokit;
-	report: string;
+	reports: string[];
 	markerPostfix?: string;
 	prNumber: number;
 }): Promise<boolean> {
@@ -113,11 +131,12 @@ async function tryInjectIntoBody({
 	const otherRegions = Math.max(0, countStartMarkers(body) - 1);
 	const margin = otherRegions * (stub.length + 2);
 
-	const withReport = `${before}\n${report}\n${after}`;
 	const newBody =
-		withReport.length <= MAX_BODY_LENGTH - margin
-			? withReport
-			: `${before}\n${stub}\n${after}`;
+		firstThatFits(
+			reports,
+			MAX_BODY_LENGTH - margin,
+			(report) => `${before}\n${report}\n${after}`,
+		) ?? `${before}\n${stub}\n${after}`;
 
 	await octokit.rest.pulls.update({
 		owner: github.context.repo.owner,

@@ -181,4 +181,76 @@ describe("writeSummaryToPR()", () => {
 		expect(body).toContain("<!-- vitest-coverage-report-marker-root -->");
 		expect(body.length).toBeLessThanOrEqual(65536);
 	});
+	it("posts the first shorter report that fits when the full one is too large", async () => {
+		mockSummary.stringify = vi.fn().mockReturnValue("x".repeat(70000));
+		mockOctokit.paginate.iterator = vi.fn().mockReturnValue([{ data: [] }]);
+
+		await writeSummaryToPR({
+			octokit: mockOctokit,
+			summary: mockSummary,
+			prNumber: 123,
+			shorterReports: ["y".repeat(66000), "without links", "totals only"],
+		});
+
+		expect(mockOctokit.rest.issues.createComment).toHaveBeenCalledWith({
+			owner: "owner",
+			repo: "repo",
+			issue_number: 123,
+			body: "without links\n\n<!-- vitest-coverage-report-marker-root -->",
+		});
+	});
+
+	it("keeps the full report when it fits, whatever shorter ones are given", async () => {
+		await writeSummaryToPR({
+			octokit: mockOctokit,
+			summary: mockSummary,
+			prNumber: 123,
+			shorterReports: ["totals only"],
+		});
+
+		expect(mockOctokit.rest.issues.updateComment).toHaveBeenCalledWith(
+			expect.objectContaining({
+				body: "summary content\n\n<!-- vitest-coverage-report-marker-root -->",
+			}),
+		);
+	});
+
+	it("posts the stub when no shorter report fits either", async () => {
+		mockSummary.stringify = vi.fn().mockReturnValue("x".repeat(70000));
+		mockOctokit.paginate.iterator = vi.fn().mockReturnValue([{ data: [] }]);
+
+		await writeSummaryToPR({
+			octokit: mockOctokit,
+			summary: mockSummary,
+			prNumber: 123,
+			shorterReports: ["y".repeat(66000)],
+		});
+
+		const body = (
+			mockOctokit.rest.issues.createComment as ReturnType<typeof vi.fn>
+		).mock.calls[0][0].body;
+		expect(body).toContain("too large to inline");
+	});
+
+	it("injects the first shorter report that fits into the PR body", async () => {
+		mockSummary.stringify = vi.fn().mockReturnValue("x".repeat(70000));
+		mockOctokit.rest.pulls.get = vi.fn().mockResolvedValue({
+			data: {
+				body: "<!-- vitest-coverage-report-marker-start-root -->\nold\n<!-- vitest-coverage-report-marker-end-root -->",
+			},
+		});
+
+		await writeSummaryToPR({
+			octokit: mockOctokit,
+			summary: mockSummary,
+			prNumber: 123,
+			shorterReports: ["totals only"],
+		});
+
+		expect(mockOctokit.rest.pulls.update).toHaveBeenCalledWith(
+			expect.objectContaining({
+				body: "<!-- vitest-coverage-report-marker-start-root -->\ntotals only\n<!-- vitest-coverage-report-marker-end-root -->",
+			}),
+		);
+	});
 });
